@@ -1,20 +1,37 @@
 # Lecciones RSS
 
-Generador estático de cursos progresivos distribuidos como páginas HTML y feeds RSS. El proyecto se implementa a partir de la especificación aprobada en [`.spec/lecciones-rss/index.spec.md`](.spec/lecciones-rss/index.spec.md).
+Este repositorio genera tres cursos personales con Gemini y los publica como páginas HTML y feeds RSS mediante GitHub Actions.
 
-## Estado
+## Cursos
 
-La etapa 1 implementa contratos, validación del repositorio, descubrimiento dinámico de cursos y selección determinista del próximo paso. Gemini 2.5 Flash está decidido como proveedor, pero todavía no hay cursos reales, integración de IA, generación, sitio, feeds ni despliegue.
+- Audio digital práctico
+- Full Stack progresivo
+- Música clásica desde cero
 
-Los archivos `site.yml` y `courses/` se crearán después de confirmar el punto de inicio de cada curso. Hasta entonces, `npm run validate` informa correctamente que falta la configuración. Las pruebas usan repositorios temporales completos y no consumen APIs.
+Cada curso mantiene su temario, progreso y lecciones dentro de `courses/<slug>/`. Publicar una lección avanza automáticamente el cursor al siguiente paso. Una corrección posterior puede editar el mismo archivo para conservar su identificador y su URL.
 
-## Desarrollo
+## Horario
+
+El flujo `.github/workflows/publish.yml` se ejecuta todos los días a las 03:00 UTC, equivalente a las 00:00 de Buenos Aires. También puede iniciarse manualmente desde GitHub Actions.
+
+## Secreto
+
+La clave se guarda como el secreto `GEMINI_API_KEY` de GitHub Actions. Nunca debe escribirse en archivos del repositorio.
+
+## Direcciones RSS
+
+Después de activar GitHub Pages:
+
+- `https://santiagofj.github.io/rss-lecciones/audio-digital/feed.xml`
+- `https://santiagofj.github.io/rss-lecciones/fullstack/feed.xml`
+- `https://santiagofj.github.io/rss-lecciones/musica-clasica/feed.xml`
+
+## Comandos de comprobación
 
 ```bash
-npm install
+npm run validate
 npm run typecheck
 npm test
-npm run validate
 ```
 
-`validate` no modifica archivos. Comprueba contratos, rutas, identidades, secuencia de lecciones, correspondencia con el syllabus y coherencia del cursor.
+`npm run generate` realiza llamadas reales a Gemini, guarda como máximo una lección diaria por curso y construye `public/`.

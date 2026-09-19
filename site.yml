@@ -1,0 +1,13 @@
+schemaVersion: 1
+site:
+  id: 7db2cf19-5cf8-4b56-a393-a012c822f21a
+  title: Lecciones RSS de Santiago
+  description: Cursos personales progresivos publicados como RSS.
+  baseUrl: https://santiagofj.github.io/rss-lecciones/
+  language: es-AR
+generation:
+  model: gemini-2.5-flash
+  timeoutSeconds: 60
+  maxOutputTokens: 4096
+  maxInputBytes: 65536
+  maxLessonsPerRun: 3

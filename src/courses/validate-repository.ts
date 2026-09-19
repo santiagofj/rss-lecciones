@@ -142,6 +142,11 @@ async function readLessons(
   const issues: ValidationIssue[] = [];
   const lessons: Lesson[] = [];
   for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+    // Git no conserva directorios vacíos. Permitimos este único marcador para
+    // versionar lessons/ antes de que exista la primera lección.
+    if (entry.isFile() && entry.name === ".gitkeep") {
+      continue;
+    }
     const file = path.join(lessonsDirectory, entry.name);
     if (!isInside(lessonsDirectory, file)) {
       issues.push({ file: relativeFile(root, file), path: "", message: "ruta fuera de lessons" });

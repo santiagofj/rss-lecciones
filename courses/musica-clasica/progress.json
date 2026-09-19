@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "startStepId": "como-escuchar",
+  "learnerContext": "Este curso comienza desde cero. No debe asumir ni mencionar avances de conversaciones o cursos anteriores.",
+  "cursor": {
+    "lastLessonId": null,
+    "nextStepId": "como-escuchar"
+  }
+}

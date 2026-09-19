@@ -1,0 +1,15 @@
+schemaVersion: 1
+id: e208bbce-3b8b-4ace-9e63-819ee52d497a
+slug: musica-clasica
+title: Escuchar música clásica desde cero
+description: Un recorrido auditivo gradual, sin conocimientos musicales previos.
+status: active
+language: es-AR
+timezone: America/Argentina/Buenos_Aires
+schedule:
+  type: weekly
+  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+feed: true
+teaching:
+  audience: Oyente que comienza desde cero y quiere aprender a reconocer lo que escucha.
+  instructions: Usar lenguaje cotidiano, fragmentos fáciles de localizar y ejercicios de escucha breves. Introducir términos musicales sólo después de describir su efecto audible.

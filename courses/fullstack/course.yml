@@ -1,0 +1,15 @@
+schemaVersion: 1
+id: c84511ed-5f60-4089-9b43-f82f4fd47f35
+slug: fullstack
+title: Full Stack progresivo
+description: Backend y frontend conectados mediante decisiones observables y práctica breve.
+status: active
+language: es-AR
+timezone: America/Argentina/Buenos_Aires
+schedule:
+  type: weekly
+  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+feed: true
+teaching:
+  audience: Desarrollador de nivel inicial-intermedio que aprende mejor con ejemplos concretos.
+  instructions: Explicar primero el problema, luego el flujo y finalmente el código mínimo. Mantener una sola idea central, incluir una práctica y mostrar qué resultado confirma que funciona.
