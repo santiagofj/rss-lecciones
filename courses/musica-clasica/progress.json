@@ -3,7 +3,7 @@
   "startStepId": "como-escuchar",
   "learnerContext": "Este curso comienza desde cero. No debe asumir ni mencionar avances de conversaciones o cursos anteriores.",
   "cursor": {
-    "lastLessonId": null,
-    "nextStepId": "como-escuchar"
+    "lastLessonId": "cb65aa9e-6513-4f90-9a41-c66e35a890ce",
+    "nextStepId": "reconocer-melodia"
   }
 }
