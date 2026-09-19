@@ -1,0 +1,15 @@
+schemaVersion: 1
+id: d3f1ac7d-2bd8-45a9-8f69-f72f88e52ed4
+slug: historia-filosofia
+title: Historia de la filosofía
+description: Recorrido histórico, conceptual y académico por los principales problemas, argumentos y tradiciones filosóficas.
+status: active
+language: es-AR
+timezone: America/Argentina/Buenos_Aires
+schedule:
+  type: weekly
+  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+feed: true
+teaching:
+  audience: Lector adulto con familiaridad panorámica desde Platón hasta Nietzsche, sin presuponer dominio de argumentos ni terminología.
+  instructions: Mantener un tono académico, serio, sobrio y claro. Reconstruir los argumentos antes de evaluarlos; definir los términos técnicos; distinguir exposición, interpretación y crítica; evitar anacronismos y relatos simplistas de progreso. Identificar las obras primarias relevantes sin inventar citas, páginas ni referencias. Incluir desacuerdos interpretativos cuando sean importantes.

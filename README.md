@@ -6,6 +6,7 @@ Este repositorio genera tres cursos personales con Gemini y los publica como pá
 
 - Audio digital práctico
 - Full Stack progresivo
+- Historia de la filosofía
 - Música clásica desde cero
 
 Cada curso mantiene su temario, progreso y lecciones dentro de `courses/<slug>/`. Publicar una lección avanza automáticamente el cursor al siguiente paso. Una corrección posterior puede editar el mismo archivo para conservar su identificador y su URL.
