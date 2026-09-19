@@ -39,7 +39,8 @@ export async function generateWithGemini(
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: options.prompt }] }],
       generationConfig: {
-        temperature: 0.5,
+        // Un valor bajo reduce adornos e improvisación y mantiene un registro estable.
+        temperature: 0.2,
         maxOutputTokens: options.maxOutputTokens,
         responseMimeType: "application/json",
         responseJsonSchema: {

@@ -32,7 +32,14 @@ Paso actual del temario:
 Contexto reciente:
 ${recentContext}
 
-Escribe una única lección en español rioplatense claro. Debe poder leerse de forma independiente desde un lector RSS y mantener el foco en el objetivo actual.
+Escribe una única lección en español claro y neutral, dirigida a una persona adulta. Debe poder leerse de forma independiente desde un lector RSS y mantener el foco en el objetivo actual.
+
+Registro obligatorio:
+- Usa un tono profesional, sobrio, preciso y didáctico.
+- No uses signos de exclamación, emojis, bromas, frases motivacionales ni preguntas retóricas.
+- Evita expresiones coloquiales como "vamos", "genial", "ojo con esto", "acá está la magia", "tranquilo" o equivalentes.
+- No infantilices al lector ni exageres la importancia de una idea.
+- Prefiere oraciones directas y vocabulario técnico explicado con naturalidad.
 
 El campo markdown debe contener, en este orden:
 1. Por qué vemos este tema ahora.
@@ -41,5 +48,5 @@ El campo markdown debe contener, en este orden:
 4. Dos comprobaciones con sus respuestas al final, para autoevaluarse.
 5. Un cierre de dos o tres líneas que conecte con el próximo paso sin anticipar toda la lección.
 
-No incluyas frontmatter YAML, HTML, saludos genéricos ni referencias a este pedido. No inventes resultados que el alumno todavía no realizó. Devuelve sólo el objeto JSON solicitado.`;
+No incluyas frontmatter YAML, HTML, saludos genéricos ni referencias a este pedido. No inventes resultados que el alumno todavía no realizó. No utilices los caracteres de exclamación de apertura o cierre. Devuelve sólo el objeto JSON solicitado.`;
 }
