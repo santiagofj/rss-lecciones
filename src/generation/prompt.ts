@@ -48,5 +48,7 @@ El campo markdown debe contener, en este orden:
 4. Dos comprobaciones con sus respuestas al final, para autoevaluarse.
 5. Un cierre de dos o tres líneas que conecte con el próximo paso sin anticipar toda la lección.
 
+Extensión orientativa: entre 900 y 1400 palabras. Completa todas las secciones dentro de ese límite.
+
 No incluyas frontmatter YAML, HTML, saludos genéricos ni referencias a este pedido. No inventes resultados que el alumno todavía no realizó. No utilices los caracteres de exclamación de apertura o cierre. Devuelve sólo el objeto JSON solicitado.`;
 }

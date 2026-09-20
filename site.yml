@@ -8,6 +8,6 @@ site:
 generation:
   model: gemini-2.5-flash
   timeoutSeconds: 60
-  maxOutputTokens: 4096
+  maxOutputTokens: 8192
   maxInputBytes: 65536
   maxLessonsPerRun: 4
