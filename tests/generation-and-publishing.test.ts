@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { CourseConfig } from "../src/courses/types.js";
+import { normalizeLessonDraft } from "../src/generation/gemini.js";
 import { isScheduledForDate, localCalendarDate } from "../src/generation/schedule.js";
 import { renderMarkdown } from "../src/publishing/markdown.js";
 
@@ -36,5 +37,20 @@ describe("publicación segura de Markdown", () => {
     expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
     expect(html).not.toContain("<script>");
     expect(html).toContain("<strong>Práctica</strong>");
+  });
+});
+
+describe("normalización de respuestas de Gemini", () => {
+  it("recorta metadatos extensos sin descartar una lección válida", () => {
+    const draft = normalizeLessonDraft({
+      title: `Título ${"extenso ".repeat(30)}`,
+      summary: `Resumen ${"académico ".repeat(80)}`,
+      markdown: "Contenido sustancial. ".repeat(20),
+      campoNoSolicitado: "se ignora",
+    });
+
+    expect(draft.title.length).toBeLessThanOrEqual(160);
+    expect(draft.summary.length).toBeLessThanOrEqual(600);
+    expect(draft.markdown.length).toBeGreaterThanOrEqual(200);
   });
 });

@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-const lessonDraftSchema = z.strictObject({
-  title: z.string().trim().min(1).max(160),
-  summary: z.string().trim().min(1).max(600),
-  markdown: z.string().trim().min(200),
+const rawLessonDraftSchema = z.object({
+  title: z.string(),
+  summary: z.string(),
+  markdown: z.string(),
 });
 
 const geminiResponseSchema = z.object({
@@ -17,7 +17,11 @@ const geminiResponseSchema = z.object({
   ).min(1),
 });
 
-export type LessonDraft = z.infer<typeof lessonDraftSchema>;
+export type LessonDraft = {
+  title: string;
+  summary: string;
+  markdown: string;
+};
 
 type GenerateWithGeminiOptions = {
   apiKey: string;
@@ -36,6 +40,45 @@ class GeminiGenerationError extends Error {
 
 function delay(milliseconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function truncateAtWord(value: string, maximumLength: number): string {
+  const normalized = value.trim().replace(/\s+/g, " ");
+  if (normalized.length <= maximumLength) {
+    return normalized;
+  }
+  const candidate = normalized.slice(0, maximumLength + 1);
+  const lastSpace = candidate.lastIndexOf(" ");
+  const cutAt = lastSpace >= Math.floor(maximumLength * 0.75)
+    ? lastSpace
+    : maximumLength;
+  return `${candidate.slice(0, cutAt).trimEnd()}…`;
+}
+
+export function normalizeLessonDraft(value: unknown): LessonDraft {
+  const parsed = rawLessonDraftSchema.safeParse(value);
+  if (!parsed.success) {
+    const fields = [...new Set(parsed.error.issues.map((issue) => issue.path.join(".")))]
+      .filter((field) => field.length > 0)
+      .join(", ");
+    throw new GeminiGenerationError(
+      `La lección de Gemini tiene campos inválidos${fields.length > 0 ? `: ${fields}` : ""}`,
+      true,
+    );
+  }
+
+  const draft = {
+    title: truncateAtWord(parsed.data.title, 159),
+    summary: truncateAtWord(parsed.data.summary, 599),
+    markdown: parsed.data.markdown.trim(),
+  };
+  if (draft.title.length === 0 || draft.summary.length === 0 || draft.markdown.length < 200) {
+    throw new GeminiGenerationError(
+      "La lección de Gemini está vacía o es demasiado breve",
+      true,
+    );
+  }
+  return draft;
 }
 
 async function requestLessonDraft(
@@ -113,14 +156,7 @@ async function requestLessonDraft(
     throw new GeminiGenerationError("Gemini devolvió JSON inválido", true);
   }
 
-  const draft = lessonDraftSchema.safeParse(json);
-  if (!draft.success) {
-    throw new GeminiGenerationError(
-      "La lección de Gemini no cumple el formato requerido",
-      true,
-    );
-  }
-  return draft.data;
+  return normalizeLessonDraft(json);
 }
 
 export async function generateWithGemini(
