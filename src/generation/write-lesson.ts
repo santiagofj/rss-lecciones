@@ -13,13 +13,14 @@ type PreparedLesson = {
   prompt: string;
   generationDate: string;
   publishedAt: string;
+  extraRequestId?: string;
 };
 
 export async function writePreparedLesson(
   site: SiteConfig,
   prepared: PreparedLesson,
 ): Promise<string> {
-  const { course, draft, prompt, generationDate, publishedAt } = prepared;
+  const { course, draft, prompt, generationDate, publishedAt, extraRequestId } = prepared;
   const sequence = course.lessons.length + 1;
   const stepIndex = course.syllabus.frontmatter.steps.findIndex(
     (step) => step.id === course.progress.cursor.nextStepId,
@@ -44,6 +45,7 @@ export async function writePreparedLesson(
       model: site.generation.model,
       promptVersion: "v1",
       contextHash: createHash("sha256").update(prompt).digest("hex"),
+      ...(extraRequestId === undefined ? {} : { trigger: "extra", requestId: extraRequestId }),
     },
   };
 

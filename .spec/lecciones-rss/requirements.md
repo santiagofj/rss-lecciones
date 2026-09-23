@@ -23,6 +23,8 @@ Estado y aprobación: [índice](index.spec.md). MUST significa obligatorio tras 
 | REQ-015 | El curso MUST detener generación al agotar el syllabus y MUST conservar accesibles sus lecciones y feeds al pausarlo o terminarlo. |
 | REQ-016 | Las lecciones MUST expresar ubicación y propósito, objetivo, explicación, ejemplo o escucha concreta, práctica sustantiva y continuidad; cada materia MUST definir instrucciones educativas locales. |
 | REQ-017 | Una corrección específica solicitada por el usuario MUST aplicarse a la misma lección, regenerando HTML/RSS y conservando ID, GUID, número, ruta, fecha original y progreso; MUST NOT producir otra lección ni cambiar automáticamente el syllabus. |
+| REQ-018 | Cada nuevo dispatch manual con slug de curso MUST pedir exactamente una lección extra del siguiente paso, aunque ya haya lecciones de esa fecha; puede repetirse mientras queden pasos y cuota. |
+| REQ-019 | El tick programado MUST conservar como máximo una lección normal por curso y fecha local; las extras no consumen ese cupo. |
 
 ## Calidad y operación
 
@@ -30,7 +32,7 @@ Estado y aprobación: [índice](index.spec.md). MUST significa obligatorio tras 
 |---|---|
 | NFR-001 | Un error de API o validación previo a aceptar la lección MUST dejar intactos los archivos fuente de ese curso. |
 | NFR-002 | Una interrupción durante persistencia MUST ser detectable y recuperable sin perder lecciones aceptadas ni repetir su llamada a la API cuando ya existen localmente. |
-| NFR-003 | Cada curso MUST aceptar como máximo una lección por fecha local, incluyendo ejecuciones manuales; no se permite sobrescribir lecciones existentes. |
+| NFR-003 | Cada curso MUST aceptar como máximo una lección normal por fecha local; las extras manuales se identifican por solicitud. No se permite sobrescribir lecciones existentes. |
 | NFR-004 | Todas las operaciones que generan o despliegan MUST serializarse en Actions; un push concurrente externo MUST causar rechazo seguro, sin force push. |
 | NFR-005 | `GEMINI_API_KEY` MUST almacenarse exclusivamente en GitHub Secrets e inyectarse en el paso remoto de generación; MUST NOT aparecer en archivos, artifacts, logs ni HTML. |
 | NFR-006 | HTML y XML MUST escapar metadata y neutralizar contenido activo; sólo el directorio de salida pública MUST entrar en el artifact de Pages. |
@@ -39,6 +41,9 @@ Estado y aprobación: [índice](index.spec.md). MUST significa obligatorio tras 
 | NFR-009 | Los informes MUST distinguir omisión, generación, recuperación y fallos por curso, así como commit remoto y despliegue. |
 | NFR-010 | Los feeds MUST conservar GUID y fecha original al reconstruirse, tener orden estable y usar URLs canónicas absolutas. |
 | NFR-011 | Un fallo de generación en un curso MUST permitir procesar y conservar los éxitos de los otros; una configuración inválida MUST detener el lote antes de usar la API. |
+| NFR-012 | El historial MUST distinguir extras y normales sin invalidar lecciones previas; una respuesta inválida no avanza el cursor ni publica contenido parcial. |
+| NFR-013 | Curso inexistente, pausado o agotado y error de API MUST detener el pedido extra con diagnóstico; manual y schedule comparten serialización. |
+| NFR-014 | Un rerun del mismo pedido manual MUST NOT crear otra lección; un run nuevo puede crear la siguiente. |
 
 ## Restricciones y exclusiones
 

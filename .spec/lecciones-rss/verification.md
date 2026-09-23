@@ -6,6 +6,8 @@ La etapa comenzó de forma documental y luego recibió aprobación. En ese momen
 
 Enmienda v0.5 (2026-09-23): `npm run validate` validó los cuatro cursos; `npm run typecheck` y `npm test` pasaron (9 pruebas en 3 archivos), incluida una respuesta HTTP simulada que comprueba el nuevo modelo, `thinkingLevel` y el contrato JSON. `git diff --check` no reportó errores. La clave no está disponible en el entorno local y GitHub CLI no tiene una sesión válida; no se ejecutó una generación real con 3.8 ni se comparó su calidad editorial con 2.5. AC-028 tiene evidencia local parcial y sigue pendiente de integración.
 
+Enmienda v0.6 (2026-09-23): los fixtures locales cubren pedidos extra sucesivos con IDs de run diferentes, rerun del mismo ID, una lección diaria normal independiente, rechazo de curso inválido/pausado/agotado y rechazo de historial con fechas normales o IDs extra repetidos. El workflow YAML se comprobó localmente. Falta una ejecución manual real en Actions y comprobar el RSS servido; las pruebas locales no demuestran cuota ni éxito de Gemini.
+
 La versión aprobada 0.4 contenía nueve documentos, 28 requisitos REQ/NFR y 27 criterios AC. La enmienda v0.5 mantiene los requisitos y agrega AC-028 para la migración de modelo. La comprobación documental verifica cobertura de requisitos, métodos de verificación, enlaces locales y bloques Markdown cerrados. El índice y el registro de decisiones reflejan Q-001 y Q-004 resueltas y estado `APPROVED`. Esto comprueba cobertura documental, no funcionamiento del sistema.
 
 ### Etapa 1 — 2026-09-19
@@ -27,7 +29,7 @@ Evidencia parcial: AC-001 (discovery de cuarto curso), AC-002 (parte de validaci
 | AC-004 | Integración en filesystem temporal con proveedor simulado | Markdown/frontmatter completos, hash de contexto y cursor coherente |
 | AC-006, AC-024 | Proveedor simulado para errores/timeout y casos de límites; inspección de configuración SDK | Hashes de fuentes antes/después, conteo de llamadas y diagnóstico |
 | AC-007, AC-008 | Inyección de fallo en puntos de persistencia y reinicio de proceso | Estados intermedios detectados, recuperación sin API, contexto conservado |
-| AC-009, AC-010 | Reloj fijo y calendario; casos manual/programado, medianoche y fecha UTC/local distinta | Elegibilidad y unicidad diaria correctas; cero llamadas al omitir |
+| AC-009, AC-010 | Reloj fijo y calendario; tick normal, run manual nuevo/repetido, medianoche y fecha UTC/local distinta | Cupo normal diario y deduplicación por run; cero llamadas al omitir |
 | AC-012 | Dos procesos sobre misma carpeta; dos dispatches reales y push externo controlado | Un escritor local; serialización del run activo; rechazo push sin force |
 | AC-013, AC-014, AC-026 | Parser XML independiente y comparación de feeds entre builds/correcciones | Campos, contenido íntegro, orden, GUID/fecha persistentes y rutas estables |
 | AC-015, AC-017 | Build local sobre snapshot con baseUrl de proyecto; comprobador de enlaces y hashes | Enlaces válidos, archivos reproducibles, ninguna mutación de fuentes |
@@ -39,6 +41,7 @@ Evidencia parcial: AC-001 (discovery de cuarto curso), AC-002 (parte de validaci
 | AC-025 | Lote simulado con fallo y éxito, luego integración del workflow | Éxito durable, deploy permitido sobre fuentes válidas e informe de fallo parcial |
 | AC-027 | Corregir texto de una lección fixture, reconstruir y volver a seleccionar el siguiente paso | Contenido actualizado, metadata/cursor/syllabus intactos, mismo número de items y avance sin confirmación |
 | AC-028 | Inspección de configuración, prueba con respuesta simulada y generación real controlada | Modelo y parámetros admitidos, JSON aceptado o rechazado sin avance indebido; disponibilidad y calidad real registradas por separado |
+| AC-029 a AC-034 | Repositorio temporal con varios runs en una fecha, historial y feeds; luego dispatch real | Una extra por run nuevo, rerun inocuo, tick normal independiente, rechazo seguro y publicación remota comprobada |
 
 Las pruebas deben verificar comportamiento del dominio y recuperación real en disco, no reproducir helpers internos línea por línea. No se harán pruebas de cada plantilla visual simple. Las pruebas pagadas se limitan a las necesarias una vez confirmado modelo y límites; se usan fixtures para combinaciones de errores.
 

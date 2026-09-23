@@ -144,5 +144,10 @@ export const lessonFrontmatterSchema = z.strictObject({
     model: nonEmptyText,
     promptVersion: nonEmptyText,
     contextHash: z.string().regex(sha256Pattern, "debe ser un SHA-256 hexadecimal"),
-  }),
+    trigger: z.literal("extra").optional(),
+    requestId: z.string().regex(/^[1-9]\d*$/, "debe ser un ID numérico de GitHub Actions").optional(),
+  }).refine(
+    (generation) => (generation.trigger === "extra") === (generation.requestId !== undefined),
+    "trigger y requestId deben aparecer juntos",
+  ),
 });

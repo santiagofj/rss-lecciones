@@ -13,7 +13,15 @@ Cada curso mantiene su temario, progreso y lecciones dentro de `courses/<slug>/`
 
 ## Horario
 
-El flujo `.github/workflows/publish.yml` se ejecuta todos los días a las 03:00 UTC, equivalente a las 00:00 de Buenos Aires. También puede iniciarse manualmente desde GitHub Actions.
+El flujo `.github/workflows/publish.yml` se ejecuta todos los días a las 03:00 UTC, equivalente a las 00:00 de Buenos Aires. La ejecución programada genera como máximo una lección normal por curso y fecha local.
+
+Para pedir **otra lección** de un curso, inicia `Generar y publicar lecciones` desde GitHub Actions con el campo `course` (por ejemplo, `fullstack`). También puedes ejecutar:
+
+```powershell
+gh workflow run publish.yml --ref main -R santiagofj/rss-lecciones -f course=fullstack
+```
+
+Repite el pedido cuando quieras la siguiente lección, incluso el mismo día. Los pedidos se procesan de uno en uno (GitHub admite hasta 100 pendientes en este grupo). El curso debe estar activo y tener pasos pendientes; la cuota gratuita de Gemini también puede impedir un pedido. Reejecutar el mismo run no pide otra lección: para eso inicia un run nuevo.
 
 ## Secreto
 
@@ -35,4 +43,4 @@ npm run typecheck
 npm test
 ```
 
-`npm run generate` realiza llamadas reales a Gemini, guarda como máximo una lección diaria por curso y construye `public/`.
+`npm run generate` realiza llamadas reales a Gemini y construye `public/`. Sin el evento manual de Actions, aplica el límite de una lección normal diaria por curso.

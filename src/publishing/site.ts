@@ -84,7 +84,6 @@ export function renderFeed(baseUrl: string, course: LoadedCourse): string {
   const feedUrl = `${courseUrl}feed.xml`;
   const items = [...course.lessons]
     .sort((left, right) => right.frontmatter.sequence - left.frontmatter.sequence)
-    .slice(0, 30)
     .map((lesson) => {
       const itemUrl = `${courseUrl}${lessonFilename(lesson)}`;
       const html = renderMarkdown(lesson.markdown).replaceAll("]]>", "]]&gt;");

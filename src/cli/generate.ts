@@ -3,7 +3,8 @@ import process from "node:process";
 import { validateRepository } from "../courses/validate-repository.js";
 import { generateWithGemini } from "../generation/gemini.js";
 import { buildLessonPrompt } from "../generation/prompt.js";
-import { isScheduledForDate, localCalendarDate } from "../generation/schedule.js";
+import { localCalendarDate } from "../generation/schedule.js";
+import { requestFromEnvironment, selectCourses } from "../generation/selection.js";
 import { writePreparedLesson } from "../generation/write-lesson.js";
 import { buildPublicSite } from "../publishing/site.js";
 
@@ -26,17 +27,8 @@ async function main(): Promise<void> {
   }
 
   const now = new Date();
-  const candidates = initial.repository.courses.filter((course) => {
-    if (!isScheduledForDate(course.config, now)) {
-      return false;
-    }
-    const generationDate = localCalendarDate(now, course.config.timezone);
-    const alreadyGenerated = course.lessons.some(
-      (lesson) => lesson.frontmatter.generationDate === generationDate,
-    );
-    return !alreadyGenerated && course.progress.cursor.nextStepId !== null;
-  });
-  const dueCourses = candidates.slice(0, initial.repository.site.generation.maxLessonsPerRun);
+  const request = requestFromEnvironment(process.env);
+  const dueCourses = selectCourses(initial.repository, now, request);
 
   if (dueCourses.length > 0) {
     const apiKey = process.env.GEMINI_API_KEY?.trim();
@@ -75,16 +67,19 @@ async function main(): Promise<void> {
         prompt,
         generationDate: localCalendarDate(now, course.config.timezone),
         publishedAt: now.toISOString(),
+        ...(request.kind === "extra" ? { extraRequestId: request.requestId } : {}),
       });
     }
 
-    // Ningún archivo se modifica hasta que las tres respuestas fueron válidas.
+    // Ningún archivo se modifica hasta que todas las respuestas fueron válidas.
     for (const lesson of prepared) {
       const filename = await writePreparedLesson(initial.repository.site, lesson);
       console.log(`Guardada ${lesson.course.config.slug}/${filename}`);
     }
   } else {
-    console.log("No hay lecciones pendientes para la fecha local actual");
+    console.log(request.kind === "extra"
+      ? `La solicitud manual ${request.requestId} ya tiene una lección publicada`
+      : "No hay lecciones pendientes para la fecha local actual");
   }
 
   const finalState = await validateRepository(root);

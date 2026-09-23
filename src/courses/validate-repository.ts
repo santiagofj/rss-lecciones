@@ -222,7 +222,8 @@ function validateCourseRelationships(
     (left, right) => left.frontmatter.sequence - right.frontmatter.sequence,
   );
   const lessonIds = new Set<string>();
-  const generationDates = new Set<string>();
+  const normalGenerationDates = new Set<string>();
+  const extraRequestIds = new Set<string>();
 
   for (const [index, lesson] of lessons.entries()) {
     const metadata = lesson.frontmatter;
@@ -250,11 +251,19 @@ function validateCourseRelationships(
     if (lessonIds.has(metadata.id)) {
       issues.push({ file: lessonFile, path: "id", message: "ID de lección repetido en el curso" });
     }
-    if (generationDates.has(metadata.generationDate)) {
-      issues.push({ file: lessonFile, path: "generationDate", message: "ya existe una lección en esa fecha local" });
+    if (metadata.generation.trigger === "extra") {
+      const requestId = metadata.generation.requestId!;
+      if (extraRequestIds.has(requestId)) {
+        issues.push({ file: lessonFile, path: "generation.requestId", message: "ID de solicitud extra repetido en el curso" });
+      }
+      extraRequestIds.add(requestId);
+    } else {
+      if (normalGenerationDates.has(metadata.generationDate)) {
+        issues.push({ file: lessonFile, path: "generationDate", message: "ya existe una lección normal en esa fecha local" });
+      }
+      normalGenerationDates.add(metadata.generationDate);
     }
     lessonIds.add(metadata.id);
-    generationDates.add(metadata.generationDate);
   }
 
   const lastLesson = lessons.at(-1);

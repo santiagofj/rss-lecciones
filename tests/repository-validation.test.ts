@@ -5,7 +5,10 @@ import path from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 
 import { validateRepository } from "../src/courses/validate-repository.js";
+import { requestFromEnvironment, selectCourses, type GenerationRequest } from "../src/generation/selection.js";
+import { writePreparedLesson } from "../src/generation/write-lesson.js";
 import { selectNextLesson } from "../src/planning/next-lesson.js";
+import { renderFeed } from "../src/publishing/site.js";
 
 const temporaryDirectories: string[] = [];
 
@@ -37,6 +40,8 @@ type CourseFixtureOptions = {
   id?: string;
   lesson?: boolean;
   cursorNextStepId?: string | null;
+  status?: "active" | "paused";
+  schedule?: "manual" | "weekdays";
 };
 
 async function createCourse(
@@ -53,11 +58,11 @@ id: "${options.id ?? crypto.randomUUID()}"
 slug: ${slug}
 title: Curso ${slug}
 description: Descripción de prueba
-status: paused
+status: ${options.status ?? "paused"}
 language: es-AR
 timezone: America/Buenos_Aires
 schedule:
-  type: manual
+  type: ${options.schedule ?? "manual"}
 feed: true
 teaching:
   audience: Alumno de prueba
@@ -81,6 +86,18 @@ steps:
     title: Profundización
     objective: Aplicar el concepto inicial
     brief: Desarrollar un ejemplo práctico
+  - id: practica
+    unitId: fundamentos
+    topicId: ejercicio
+    title: Práctica
+    objective: Ejercitar lo aprendido
+    brief: Resolver un ejercicio
+  - id: repaso
+    unitId: fundamentos
+    topicId: cierre
+    title: Repaso
+    objective: Integrar lo aprendido
+    brief: Resumir el recorrido
 ---
 # Recorrido
 
@@ -138,6 +155,139 @@ afterEach(async () => {
       rm(directory, { recursive: true, force: true })
     ),
   );
+});
+
+async function generateFixtureLesson(
+  root: string,
+  request: GenerationRequest,
+  now: Date,
+): Promise<number> {
+  const result = await validateRepository(root);
+  expect(result.ok).toBe(true);
+  if (!result.ok) return 0;
+  const selected = selectCourses(result.repository, now, request);
+  for (const course of selected) {
+    await writePreparedLesson(result.repository.site, {
+      course,
+      draft: { title: "Lección de prueba", summary: "Resumen de prueba", markdown: "# Contenido\n\nTexto de prueba." },
+      prompt: "Contexto de prueba",
+      generationDate: "2026-09-23",
+      publishedAt: now.toISOString(),
+      ...(request.kind === "extra" ? { extraRequestId: request.requestId } : {}),
+    });
+  }
+  return selected.length;
+}
+
+describe("lecciones extras a pedido", () => {
+  const now = new Date("2026-09-23T12:00:00.000Z");
+
+  test("sólo workflow_dispatch activa el modo extra y exige identificador de run", async () => {
+    expect(requestFromEnvironment({ GITHUB_EVENT_NAME: "schedule", EXTRA_COURSE: "fullstack" }))
+      .toEqual({ kind: "scheduled" });
+    const root = await createRoot();
+    await createCourse(root, "fullstack", { status: "active" });
+    const result = await validateRepository(root);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const request = requestFromEnvironment({ GITHUB_EVENT_NAME: "workflow_dispatch", EXTRA_COURSE: "fullstack" });
+    expect(() => selectCourses(result.repository, now, request)).toThrow("GITHUB_RUN_ID válido");
+  });
+
+  test("dos pedidos nuevos avanzan dos pasos el mismo día y un rerun no avanza", async () => {
+    const root = await createRoot();
+    await createCourse(root, "fullstack", { status: "active", schedule: "weekdays" });
+    expect(await generateFixtureLesson(root, { kind: "scheduled" }, now)).toBe(1);
+    expect(await generateFixtureLesson(root, { kind: "extra", courseSlug: "fullstack", requestId: "100" }, now)).toBe(1);
+    expect(await generateFixtureLesson(root, { kind: "extra", courseSlug: "fullstack", requestId: "100" }, now)).toBe(0);
+    expect(await generateFixtureLesson(root, { kind: "extra", courseSlug: "fullstack", requestId: "101" }, now)).toBe(1);
+    expect(await generateFixtureLesson(root, { kind: "scheduled" }, now)).toBe(0);
+
+    const result = await validateRepository(root);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const course = result.repository.courses[0]!;
+    expect(course.lessons.map((lesson) => lesson.frontmatter.stepId)).toEqual([
+      "introduccion", "profundizacion", "practica",
+    ]);
+    expect(course.lessons.map((lesson) => lesson.frontmatter.generation.requestId)).toEqual([
+      undefined, "100", "101",
+    ]);
+    expect(course.progress.cursor.nextStepId).toBe("repaso");
+    expect(renderFeed(result.repository.site.site.baseUrl, course).match(/<item>/g)).toHaveLength(3);
+  });
+
+  test("las extras no consumen el cupo de la lección programada", async () => {
+    const root = await createRoot();
+    await createCourse(root, "fullstack", { status: "active", schedule: "weekdays" });
+    expect(await generateFixtureLesson(root, { kind: "extra", courseSlug: "fullstack", requestId: "200" }, now)).toBe(1);
+    expect(await generateFixtureLesson(root, { kind: "scheduled" }, now)).toBe(1);
+    expect(await generateFixtureLesson(root, { kind: "scheduled" }, now)).toBe(0);
+    const result = await validateRepository(root);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.repository.courses[0]!.lessons.map((lesson) => lesson.frontmatter.generation.trigger)).toEqual([
+      "extra", undefined,
+    ]);
+  });
+
+  test("rechaza cursos desconocidos y pausados antes de generar", async () => {
+    const root = await createRoot();
+    await createCourse(root, "fullstack");
+    const result = await validateRepository(root);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(() => selectCourses(result.repository, now, { kind: "extra", courseSlug: "otro", requestId: "300" }))
+      .toThrow("No existe el curso");
+    expect(() => selectCourses(result.repository, now, { kind: "extra", courseSlug: "fullstack", requestId: "300" }))
+      .toThrow("está pausado");
+    expect(() => selectCourses(result.repository, now, { kind: "extra", courseSlug: "../fullstack", requestId: "300" }))
+      .toThrow("slug del curso manual es inválido");
+  });
+
+  test("un curso activo sin pasos pendientes rechaza el pedido extra", async () => {
+    const root = await createRoot();
+    await createCourse(root, "fullstack", { status: "active" });
+    const result = await validateRepository(root);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const course = result.repository.courses[0]!;
+    course.progress.cursor.nextStepId = null;
+    expect(() => selectCourses(result.repository, now, { kind: "extra", courseSlug: "fullstack", requestId: "301" }))
+      .toThrow("no tiene pasos pendientes");
+  });
+
+  test("rechaza dos lecciones normales de una fecha y IDs extras repetidos", async () => {
+    const root = await createRoot();
+    await createCourse(root, "fullstack", { status: "active", schedule: "weekdays" });
+    expect(await generateFixtureLesson(root, { kind: "scheduled" }, now)).toBe(1);
+    let result = await validateRepository(root);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    await writePreparedLesson(result.repository.site, {
+      course: result.repository.courses[0]!,
+      draft: { title: "Otra normal", summary: "Resumen", markdown: "# Otra normal" },
+      prompt: "Contexto",
+      generationDate: "2026-09-23",
+      publishedAt: now.toISOString(),
+    });
+    result = await validateRepository(root);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues.some((issue) => issue.path === "generationDate")).toBe(true);
+
+    const secondFile = path.join(root, "courses", "fullstack", "lessons", "002-profundizacion.md");
+    const source = await readFile(secondFile, "utf8");
+    await writeFile(secondFile, source.replace("  contextHash:", "  trigger: extra\n  requestId: \"400\"\n  contextHash:"));
+    expect(await generateFixtureLesson(root, { kind: "extra", courseSlug: "fullstack", requestId: "401" }, now)).toBe(1);
+    const thirdFile = path.join(root, "courses", "fullstack", "lessons", "003-practica.md");
+    const thirdSource = await readFile(thirdFile, "utf8");
+    await writeFile(thirdFile, thirdSource.replace('requestId: "401"', 'requestId: "400"'));
+    result = await validateRepository(root);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues.some((issue) => issue.path === "generation.requestId")).toBe(true);
+  });
 });
 
 describe("validación del repositorio", () => {

@@ -5,10 +5,16 @@ on:
     # GitHub interpreta cron en UTC. 03:00 UTC = 00:00 en Buenos Aires.
     - cron: "0 3 * * *"
   workflow_dispatch:
+    inputs:
+      course:
+        description: "Slug del curso para generar una lección extra (ej.: fullstack)"
+        required: true
+        type: string
 
 concurrency:
   group: lecciones-diarias
   cancel-in-progress: false
+  queue: max
 
 permissions:
   contents: write
@@ -24,6 +30,8 @@ jobs:
     steps:
       - name: Descargar el repositorio
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Preparar Node.js
         uses: actions/setup-node@v4
@@ -41,6 +49,7 @@ jobs:
         run: npm run generate
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          EXTRA_COURSE: ${{ inputs.course }}
 
       - name: Verificar resultado
         run: |
@@ -56,7 +65,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No hay una lección nueva para guardar"
           else
-            git commit -m "content: publicar lecciones diarias"
+            git commit -m "content: publicar lecciones"
             git push
           fi
 

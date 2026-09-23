@@ -8,21 +8,22 @@ El reloj se recibe explícitamente para poder verificar escenarios. Al tomar el 
 
 | Estado/situación | Ejecución programada | Ejecución manual |
 |---|---|---|
-| `paused` | Omitir | Omitir; activar exige editar configuración |
+| `paused` | Omitir | Error; activar exige editar configuración |
 | `active`, weekdays | Lunes a viernes en fecha local | Puede generar cualquier día |
 | `active`, weekly | Sólo los días configurados en fecha local | Puede generar cualquier día |
 | `active`, manual | Omitir | Puede generar |
-| Fecha local ya ocupada | Omitir sin API | Omitir sin API |
-| Syllabus agotado | Omitir sin API | Omitir sin API |
+| Fecha local con lección normal | Omitir sin API | Puede generar una extra |
+| Syllabus agotado | Omitir sin API | Error sin API |
 
-Una ejecución manual fuera del calendario consume igualmente el cupo del día. No existe `--force` para producir una segunda lección. No hay backfill: si Actions no ejecutó ayer, hoy procesa sólo hoy. Una frecuencia nueva requiere extender el validador y evaluador de schedule; un curso nuevo con tipos existentes no requiere cambiar código.
+Cada ejecución manual nueva solicita una extra para un curso elegido, independientemente del calendario y de otras lecciones de ese día. La lección extra se identifica por `generation.trigger: extra` y `generation.requestId`; un rerun del mismo ID se omite. No hay backfill: si Actions no ejecutó ayer, hoy procesa sólo hoy. Una frecuencia nueva requiere extender el validador y evaluador de schedule; un curso nuevo con tipos existentes no requiere cambiar código.
 
 El workflow compartido debe ejecutarse diariamente a una hora aprobada para las zonas iniciales. Si más adelante se añaden zonas donde el tick cae en otra fecha local, se revisará la frecuencia del tick sin crear un workflow por curso. No se garantiza hora exacta de entrega. El horario 08:00 de cursos históricos no se traslada automáticamente a este sistema.
 
 ## Claves de unicidad
 
 - Identidad editorial: UUID permanente de la lección; no depende del título o URL.
-- Cupo diario: `(course.id, generationDate)`; se comprueba en todas las lecciones del curso.
+- Cupo diario normal: `(course.id, generationDate)` para lecciones sin `trigger: extra`.
+- Pedido extra: `(course.id, generation.requestId)`; IDs de run repetidos en un curso son inválidos.
 - Cobertura: `(course.id, stepId)`; un paso no genera una segunda lección.
 - Número/ruta: `(course.id, sequence)` y nombre derivado; nunca se sobrescriben.
 
@@ -56,9 +57,9 @@ Una reparación de preflight pertenece a una operación anterior interrumpida. S
 
 ## Workflow compartido y persistencia remota
 
-Un workflow `publish.yml` acepta `schedule`, `workflow_dispatch` y `push` a la rama predeterminada. El dispatch tiene un modo (`generate | build`) y, para generar, un slug de curso. Los inputs se validan y no se interpolan directamente como código shell. El modo build no necesita clave y permite recuperar despliegues.
+El workflow `publish.yml` acepta `schedule` y `workflow_dispatch`. El dispatch requiere un slug de curso y genera una extra. El input se valida y se pasa como variable de entorno, sin interpolarlo como código shell. Un rerun del mismo run no genera otra lección.
 
-Todas sus ejecuciones comparten un grupo de concurrencia y `cancel-in-progress: false`. Cada ejecución que obtiene turno hace checkout fresco de la rama predeterminada, no del commit antiguo capturado al entrar a la cola. La concurrencia de Actions ayuda a serializar runs, pero no se considera una cola garantizada de solicitudes ni excluye pushes humanos.
+Todas sus ejecuciones comparten un grupo de concurrencia, `cancel-in-progress: false` y `queue: max` (hasta 100 pendientes según GitHub). Cada ejecución que obtiene turno hace checkout fresco de `main`, no del commit antiguo capturado al entrar a la cola. La concurrencia de Actions serializa runs, pero no excluye pushes humanos ni garantiza el orden de despacho.
 
 Jobs:
 
