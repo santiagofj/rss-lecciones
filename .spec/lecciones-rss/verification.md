@@ -2,9 +2,11 @@
 
 ## Evidencia actual
 
-La etapa comenzó de forma documental y luego recibió aprobación. No se ejecutó Gemini, no se crearon cursos reales ni workflows, no se desplegó y no se comprobó ningún lector. La evidencia local de implementación se registra a medida que se ejecutan las verificaciones; los criterios de integración siguen pendientes.
+La etapa comenzó de forma documental y luego recibió aprobación. En ese momento no se había ejecutado Gemini, creado cursos reales ni workflows, desplegado el sitio o comprobado un lector. La evidencia local de implementación se registra a medida que se ejecutan las verificaciones; los criterios de integración siguen pendientes de evidencia actualizada.
 
-La versión aprobada 0.4 contiene nueve documentos, 28 requisitos REQ/NFR y 27 criterios AC. La comprobación documental verifica cobertura de requisitos, métodos de verificación, enlaces locales y bloques Markdown cerrados. El índice y el registro de decisiones reflejan Q-001 y Q-004 resueltas y estado `APPROVED`. Esto comprueba cobertura documental, no funcionamiento del sistema.
+Enmienda v0.5 (2026-09-23): `npm run validate` validó los cuatro cursos; `npm run typecheck` y `npm test` pasaron (9 pruebas en 3 archivos), incluida una respuesta HTTP simulada que comprueba el nuevo modelo, `thinkingLevel` y el contrato JSON. `git diff --check` no reportó errores. La clave no está disponible en el entorno local y GitHub CLI no tiene una sesión válida; no se ejecutó una generación real con 3.8 ni se comparó su calidad editorial con 2.5. AC-028 tiene evidencia local parcial y sigue pendiente de integración.
+
+La versión aprobada 0.4 contenía nueve documentos, 28 requisitos REQ/NFR y 27 criterios AC. La enmienda v0.5 mantiene los requisitos y agrega AC-028 para la migración de modelo. La comprobación documental verifica cobertura de requisitos, métodos de verificación, enlaces locales y bloques Markdown cerrados. El índice y el registro de decisiones reflejan Q-001 y Q-004 resueltas y estado `APPROVED`. Esto comprueba cobertura documental, no funcionamiento del sistema.
 
 ### Etapa 1 — 2026-09-19
 
@@ -36,6 +38,7 @@ Evidencia parcial: AC-001 (discovery de cuarto curso), AC-002 (parte de validaci
 | AC-023 | Revisión humana del syllabus y una lección por curso | Punto inicial aprobado y evaluación concreta de profundidad/práctica/continuidad |
 | AC-025 | Lote simulado con fallo y éxito, luego integración del workflow | Éxito durable, deploy permitido sobre fuentes válidas e informe de fallo parcial |
 | AC-027 | Corregir texto de una lección fixture, reconstruir y volver a seleccionar el siguiente paso | Contenido actualizado, metadata/cursor/syllabus intactos, mismo número de items y avance sin confirmación |
+| AC-028 | Inspección de configuración, prueba con respuesta simulada y generación real controlada | Modelo y parámetros admitidos, JSON aceptado o rechazado sin avance indebido; disponibilidad y calidad real registradas por separado |
 
 Las pruebas deben verificar comportamiento del dominio y recuperación real en disco, no reproducir helpers internos línea por línea. No se harán pruebas de cada plantilla visual simple. Las pruebas pagadas se limitan a las necesarias una vez confirmado modelo y límites; se usan fixtures para combinaciones de errores.
 

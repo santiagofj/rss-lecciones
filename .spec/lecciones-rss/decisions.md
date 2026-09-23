@@ -21,7 +21,7 @@ DEC-004 está confirmada por el usuario, junto con la política de correcciones 
 | DEC-015 | Validación global antes de API y aislamiento de fallos del proveedor por curso | Fallar todo por un timeout frena materias independientes; tolerar config rota puede ocultar errores de estado | NFR-009, NFR-011 |
 | DEC-016 | Congelar prefijo del plan; permitir ampliar/revisar sufijo sin publicar | Reordenar el pasado sin migración invalida la selección y continuidad | REQ-003, REQ-015 |
 | DEC-017 | **Confirmada:** corregir una lección existente sólo cuando el usuario pide un cambio específico; conservar identidad y avance | Republicar como nueva lección produciría duplicados y alteraría el recorrido; no se añade un flujo de aprobación por lección | REQ-017, NFR-010 |
-| DEC-018 | **Confirmada:** Gemini 2.5 Flash en nivel gratuito, con key sólo en GitHub Secrets | OpenAI requiere facturación API separada; el usuario ya tiene key de Gemini. El nivel gratuito de Gemini puede usar los datos para mejorar productos, aceptable sólo para contenido educativo no sensible | REQ-006, NFR-005 |
+| DEC-018 | **Confirmada:** Gemini 3.8 Flash en nivel gratuito, con key sólo en GitHub Secrets | Gemini 2.5 Flash fue la elección inicial; el usuario priorizó calidad sin costo y aprobó la migración el 2026-09-23. Una API gratuita de pesos abiertos exigiría otro proveedor y no ofrece aquí una mejora de calidad comprobada | REQ-006, NFR-005 |
 
 ## Preguntas abiertas
 
@@ -30,7 +30,7 @@ DEC-004 está confirmada por el usuario, junto con la política de correcciones 
 | Q-001 | RESUELTA, 2026-09-18 | El usuario eligió avance automático al publicar y consumo sólo por RSS; si detecta un problema pedirá una corrección puntual | Sin estado de confirmaciones, comandos de estudio ni cambios automáticos por conversaciones |
 | Q-002 | BLOCKER de activación educativa | Confirmar por curso si empieza desde cero o continúa, y cuál es el primer paso local | Se pueden construir motor y fixtures; no activar contenidos reales sin revisión |
 | Q-003 | BLOCKER de despliegue | Confirmar repo, plan/visibilidad, baseUrl y permisos de escritura compatibles con protecciones | Configuración externa y exposición pública; no bloquea fixtures locales |
-| Q-004 | RESUELTA, 2026-09-19 | Gemini 2.5 Flash gratuito; el usuario ya dispone de API key. Se mantienen los límites iniciales de `site.yml` y se validará calidad antes de activar | Habilita integración sin API OpenAI ni gasto inicial |
+| Q-004 | RESUELTA, actualizada 2026-09-23 | Gemini 3.8 Flash figura en el nivel gratuito; se reutiliza la API key existente. Se mantienen inicialmente los límites de `site.yml` y se comparará calidad y disponibilidad con una generación real | Habilita integración sin API OpenAI ni gasto inicial |
 | Q-005 | BLOCKER de scheduling real | Confirmar frecuencias de los tres cursos y hora del tick compartido | No trasladar calendarios de otros sistemas sin aprobación |
 
 Q-002 a Q-005 están delimitadas a etapas futuras y se resolverán antes de esas acciones; no se inventan sus respuestas. No se necesitan cinco preguntas simultáneas para revisar la arquitectura. Si sus respuestas contradicen el alcance propuesto, se actualiza la especificación antes de continuar.
@@ -41,3 +41,4 @@ Q-002 a Q-005 están delimitadas a etapas futuras y se resolverán antes de esas
 - 2026-09-18, v0.2: Q-001 resuelta por el usuario; avance automático y correcciones puntuales confirmados; REQ-017 y AC-027 añadidos; estado `READY FOR APPROVAL`. La arquitectura completa todavía no está aprobada.
 - 2026-09-19, v0.3: el usuario aprobó explícitamente la especificación completa y autorizó comenzar la implementación. Q-002 a Q-005 continúan como gates de activación de cursos, integración pagada y publicación.
 - 2026-09-19, v0.4: enmienda aprobada en conversación para usar Gemini 2.5 Flash gratuito; Q-004 resuelta. La clave se tratará únicamente como `GEMINI_API_KEY` en GitHub Secrets.
+- 2026-09-23, v0.5: el usuario aprobó migrar a Gemini 3.8 Flash para buscar mayor calidad sin costo. Se conserva el contrato de lección y la protección frente a respuestas inválidas; la mejora editorial queda pendiente de comparación real.

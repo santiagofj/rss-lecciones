@@ -11,7 +11,7 @@ Estado y aprobación: [índice](index.spec.md). MUST significa obligatorio tras 
 | REQ-003 | El sistema MUST elegir el siguiente paso de una secuencia local explícita y finita; la IA MUST NOT elegir, reordenar, saltar ni añadir pasos. |
 | REQ-004 | Cada lección MUST ser Markdown independiente con metadata validada, numeración por curso, identidad y URL permanentes. |
 | REQ-005 | El sistema MUST representar explícitamente punto de inicio, contexto del alumno y cursor del recorrido, avanzar automáticamente con las nuevas lecciones y MUST NOT exigir confirmación de lectura/estudio ni atribuir dominio por publicar. |
-| REQ-006 | La generación MUST usar Gemini API con `gemini-2.5-flash` detrás de un contrato de proveedor y aceptar sólo una respuesta completa validada para el paso seleccionado. |
+| REQ-006 | La generación MUST usar Gemini API con `gemini-3.8-flash` detrás de un contrato de proveedor y aceptar sólo una respuesta completa validada para el paso seleccionado. |
 | REQ-007 | El sistema MUST admitir generación manual para un curso y selección automática de cursos según calendario independiente. |
 | REQ-008 | El MVP MUST admitir `weekdays`, `weekly` con días y `manual`, además de cursos activos y pausados. |
 | REQ-009 | El sistema MUST crear RSS 2.0 global y por cada curso con `feed: true`, incluyendo el HTML completo de cada lección y enlace web. |
