@@ -6,8 +6,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("solicitud a Gemini 3.8 Flash", () => {
-  it("usa razonamiento compatible y conserva el contrato JSON de la lección", async () => {
+describe("solicitud a Gemini 2.5 Flash", () => {
+  it("restaura el presupuesto de razonamiento y conserva el contrato JSON de la lección", async () => {
     let requestedEndpoint = "";
     let requestBody: unknown;
     vi.stubGlobal("fetch", async (endpoint: string, init: RequestInit) => {
@@ -27,24 +27,24 @@ describe("solicitud a Gemini 3.8 Flash", () => {
 
     const draft = await generateWithGemini({
       apiKey: "clave-de-prueba",
-      model: "gemini-3.8-flash",
+      model: "gemini-2.5-flash",
       prompt: "Escribí una lección de prueba",
       timeoutSeconds: 5,
       maxOutputTokens: 8192,
     });
 
-    expect(requestedEndpoint).toContain("/models/gemini-3.8-flash:generateContent");
+    expect(requestedEndpoint).toContain("/models/gemini-2.5-flash:generateContent");
     expect(requestBody).toMatchObject({
       generationConfig: {
-        thinkingConfig: { thinkingLevel: "medium" },
+        temperature: 0.2,
+        thinkingConfig: { thinkingBudget: 1024 },
         responseMimeType: "application/json",
         responseJsonSchema: {
           required: ["title", "summary", "markdown"],
         },
       },
     });
-    expect(JSON.stringify(requestBody)).not.toContain("thinkingBudget");
-    expect(JSON.stringify(requestBody)).not.toContain("temperature");
+    expect(JSON.stringify(requestBody)).not.toContain("thinkingLevel");
     expect(draft.title).toBe("Título de prueba");
     expect(draft.markdown.length).toBeGreaterThanOrEqual(200);
   });

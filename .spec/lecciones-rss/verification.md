@@ -6,7 +6,9 @@ La etapa comenzó de forma documental y luego recibió aprobación. En ese momen
 
 Enmienda v0.5 (2026-09-23): `npm run validate` validó los cuatro cursos; `npm run typecheck` y `npm test` pasaron (9 pruebas en 3 archivos), incluida una respuesta HTTP simulada que comprueba el nuevo modelo, `thinkingLevel` y el contrato JSON. `git diff --check` no reportó errores. La clave no está disponible en el entorno local y GitHub CLI no tiene una sesión válida; no se ejecutó una generación real con 3.8 ni se comparó su calidad editorial con 2.5. AC-028 tiene evidencia local parcial y sigue pendiente de integración.
 
-Enmienda v0.6 (2026-09-23): los fixtures locales cubren pedidos extra sucesivos con IDs de run diferentes, rerun del mismo ID, una lección diaria normal independiente, rechazo de curso inválido/pausado/agotado y rechazo de historial con fechas normales o IDs extra repetidos. El workflow YAML se comprobó localmente. Falta una ejecución manual real en Actions y comprobar el RSS servido; las pruebas locales no demuestran cuota ni éxito de Gemini.
+Enmienda v0.6 (2026-09-23): los fixtures locales cubren pedidos extra sucesivos con IDs de run diferentes, rerun del mismo ID, una lección diaria normal independiente, rechazo de curso inválido/pausado/agotado y rechazo de historial con fechas normales o IDs extra repetidos. El workflow YAML se comprobó localmente. El usuario ejecutó el run manual `35873727059` para Historia de la filosofía y su rerun; ambos llegaron a la generación, pero cada intento recibió tres HTTP 503 de Gemini 3.8. No hubo lección nueva ni prueba de publicación exitosa de extras.
+
+Enmienda v0.7 (2026-09-23): el usuario aprobó volver a Gemini 2.5 Flash. La verificación local debe comprobar el modelo, `thinkingBudget: 1024`, `temperature: 0.2`, el JSON estructurado, los cuatro cursos y las pruebas. AC-035 seguirá pendiente hasta un pedido manual real exitoso con el nuevo commit.
 
 La versión aprobada 0.4 contenía nueve documentos, 28 requisitos REQ/NFR y 27 criterios AC. La enmienda v0.5 mantiene los requisitos y agrega AC-028 para la migración de modelo. La comprobación documental verifica cobertura de requisitos, métodos de verificación, enlaces locales y bloques Markdown cerrados. El índice y el registro de decisiones reflejan Q-001 y Q-004 resueltas y estado `APPROVED`. Esto comprueba cobertura documental, no funcionamiento del sistema.
 
@@ -40,8 +42,9 @@ Evidencia parcial: AC-001 (discovery de cuarto curso), AC-002 (parte de validaci
 | AC-023 | Revisión humana del syllabus y una lección por curso | Punto inicial aprobado y evaluación concreta de profundidad/práctica/continuidad |
 | AC-025 | Lote simulado con fallo y éxito, luego integración del workflow | Éxito durable, deploy permitido sobre fuentes válidas e informe de fallo parcial |
 | AC-027 | Corregir texto de una lección fixture, reconstruir y volver a seleccionar el siguiente paso | Contenido actualizado, metadata/cursor/syllabus intactos, mismo número de items y avance sin confirmación |
-| AC-028 | Inspección de configuración, prueba con respuesta simulada y generación real controlada | Modelo y parámetros admitidos, JSON aceptado o rechazado sin avance indebido; disponibilidad y calidad real registradas por separado |
+| AC-028 | Evidencia histórica de la migración a 3.8 | Pruebas locales pasadas; run `35873727059` y rerun fallidos por HTTP 503, sin lección nueva |
 | AC-029 a AC-034 | Repositorio temporal con varios runs en una fecha, historial y feeds; luego dispatch real | Una extra por run nuevo, rerun inocuo, tick normal independiente, rechazo seguro y publicación remota comprobada |
+| AC-035 | Inspección de configuración, prueba simulada y pedido manual real tras subir el rollback | Solicitud compatible con 2.5, respuesta válida publicada o diagnóstico preciso sin alterar progreso |
 
 Las pruebas deben verificar comportamiento del dominio y recuperación real en disco, no reproducir helpers internos línea por línea. No se harán pruebas de cada plantilla visual simple. Las pruebas pagadas se limitan a las necesarias una vez confirmado modelo y límites; se usan fixtures para combinaciones de errores.
 

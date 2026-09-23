@@ -21,14 +21,14 @@ site:
   baseUrl: "https://usuario.github.io/rss-lecciones/"
   language: es-AR
 generation:
-  model: gemini-3.8-flash
+  model: gemini-2.5-flash
   timeoutSeconds: 120
   maxOutputTokens: 6000
   maxInputBytes: 100000
   maxLessonsPerRun: 3
 ```
 
-Todos estos campos son obligatorios. `site.id` es permanente y no se deriva del dominio. `baseUrl` MUST ser HTTPS absoluta sin query ni fragmento y terminar en `/`; incluye el prefijo de Pages. Desde la enmienda v0.5, la generación usa `gemini-3.8-flash`, compatible con salida estructurada y disponible en el nivel gratuito según la documentación consultada el 2026-09-23. La calidad de las lecciones y los límites de la cuenta requieren comprobación real antes de atribuir una mejora.
+Todos estos campos son obligatorios. `site.id` es permanente y no se deriva del dominio. `baseUrl` MUST ser HTTPS absoluta sin query ni fragmento y terminar en `/`; incluye el prefijo de Pages. La enmienda v0.7 restaura `gemini-2.5-flash` y sus parámetros de generación tras los errores HTTP 503 observados con 3.8. El modelo 2.5 admite salida estructurada y nivel gratuito para proyectos con acceso; una ejecución real debe confirmar que el proyecto conserva ese acceso. Las lecciones existentes mantienen en `generation.model` el modelo con que fueron creadas.
 
 Los límites numéricos MUST ser enteros positivos. Los valores del ejemplo son recomendaciones iniciales sujetas a pruebas de calidad; no representan límites propios de Gemini. `maxLessonsPerRun` limita llamadas: si hay más cursos elegibles, se rechaza el lote con diagnóstico antes de llamar a la API, evitando dejar siempre sin ejecutar los últimos cursos. Al agregar cursos se revisa este límite de configuración.
 

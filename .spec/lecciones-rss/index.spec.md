@@ -1,7 +1,7 @@
 ---
 title: Lecciones RSS — especificación del MVP
 status: APPROVED
-version: 0.6
+version: 0.7
 created: 2026-09-18
 updated: 2026-09-23
 approved: 2026-09-23
@@ -13,9 +13,9 @@ approved: 2026-09-23
 
 Sistema personal que convierte un recorrido educativo local en lecciones permanentes, numeradas y consumibles desde RSS y una web estática. ChatGPT conserva su función de conversación; no se sincroniza con este sistema.
 
-Estado: **APPROVED**. El usuario aprobó explícitamente la especificación completa el 2026-09-19. El alcance aprobado incluye avance automático al publicar y correcciones puntuales a pedido. La enmienda v0.4 reemplazó OpenAI por Gemini 2.5 Flash en su nivel gratuito. La enmienda v0.5, aprobada el 2026-09-23, migra a Gemini 3.8 Flash sin cambiar el contrato de las lecciones ni la clave existente. La enmienda v0.6 permite pedir una lección extra por ejecución manual, sin alterar el cupo programado.
+Estado: **APPROVED**. El usuario aprobó explícitamente la especificación completa el 2026-09-19. El alcance aprobado incluye avance automático al publicar y correcciones puntuales a pedido. La enmienda v0.4 eligió Gemini 2.5 Flash gratuito; v0.5 probó 3.8 y v0.6 añadió lecciones extras manuales. Tras errores HTTP 503 repetidos con 3.8, el usuario aprobó en v0.7 volver a 2.5 sin alterar el contrato de lecciones ni el flujo de extras.
 
-La carpeta de trabajo estaba vacía al iniciar la revisión original. Ahora existe un repositorio implementado con cursos, configuración y workflow; la enmienda v0.5 se aplica sobre ese estado. Las fuentes externas verificadas están en [la revisión](review.md#fuentes-oficiales).
+La carpeta de trabajo estaba vacía al iniciar la revisión original. Ahora existe un repositorio implementado con cursos, configuración y workflow. Las fuentes externas verificadas están en [la revisión](review.md#fuentes-oficiales).
 
 ## Mapa de documentos
 
@@ -58,9 +58,10 @@ No quedan bloqueos de arquitectura en esta versión. Las decisiones de punto de 
 - Aprobado por: usuario del proyecto.
 - Fecha: 2026-09-19.
 - Alcance: especificación v0.2 completa, con Q-001 resuelta como avance automático y correcciones puntuales.
-- Enmienda aprobada por conversación: v0.4 usó Gemini 2.5 Flash gratuito; v0.5 migra a Gemini 3.8 Flash gratuito. No se implementa otro proveedor en el MVP.
+- Enmienda aprobada por conversación: v0.4 usó Gemini 2.5 Flash gratuito; v0.5 migró a Gemini 3.8 Flash gratuito. No se implementa otro proveedor en el MVP.
 - Fecha de aprobación de la enmienda v0.5: 2026-09-23. Alcance: configuración, parámetros de la API, validación y documentación; una mejora de calidad sólo se confirma tras comparar muestras reales.
 - Enmienda v0.6 aprobada por el usuario el 2026-09-23: una extra por nuevo pedido manual del curso elegido, repetible el mismo día; ejecución diaria sin cambios de frecuencia.
+- Enmienda v0.7 aprobada por el usuario el 2026-09-23: restaurar Gemini 2.5 Flash y sus parámetros anteriores tras errores HTTP 503 repetidos con 3.8; conservar la generación manual, el horario, la clave y el historial.
 - Estado de entrega: implementación iniciada; criterios funcionales todavía pendientes salvo evidencia registrada en [verification.md](verification.md).
 
 ## Entrega posterior a aprobación

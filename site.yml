@@ -6,7 +6,7 @@ site:
   baseUrl: https://santiagofj.github.io/rss-lecciones/
   language: es-AR
 generation:
-  model: gemini-3.8-flash
+  model: gemini-2.5-flash
   timeoutSeconds: 120
   maxOutputTokens: 8192
   maxInputBytes: 65536

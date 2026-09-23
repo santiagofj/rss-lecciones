@@ -94,10 +94,11 @@ async function requestLessonDraft(
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: options.prompt }] }],
       generationConfig: {
+        // Este valor ya se usaba con 2.5 para reducir adornos e improvisación.
+        temperature: 0.2,
         maxOutputTokens: options.maxOutputTokens,
-        // Gemini 3.8 usa niveles de razonamiento; medium prioriza calidad sin
-        // llevar cada lección al esfuerzo máximo.
-        thinkingConfig: { thinkingLevel: "medium" },
+        // En 2.5 el razonamiento comparte el límite de salida con el JSON.
+        thinkingConfig: { thinkingBudget: 1024 },
         responseMimeType: "application/json",
         responseJsonSchema: {
           type: "object",
