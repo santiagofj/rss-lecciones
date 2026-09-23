@@ -1,5 +1,7 @@
 import type { LoadedCourse, Lesson } from "../courses/types.js";
 
+export const LESSON_PROMPT_VERSION = "v2";
+
 type Step = LoadedCourse["syllabus"]["frontmatter"]["steps"][number];
 
 type PromptInput = {
@@ -41,14 +43,18 @@ Registro obligatorio:
 - No infantilices al lector ni exageres la importancia de una idea.
 - Prefiere oraciones directas y vocabulario técnico explicado con naturalidad.
 
-El campo markdown debe contener, en este orden:
-1. Por qué vemos este tema ahora.
-2. Una explicación gradual con un ejemplo concreto.
-3. Una práctica breve que el alumno pueda realizar hoy.
-4. Dos comprobaciones con sus respuestas al final, para autoevaluarse.
-5. Un cierre de dos o tres líneas que conecte con el próximo paso sin anticipar toda la lección.
+El campo markdown debe contener estas cinco secciones, en este orden y con estos encabezados exactos:
+## Por qué ahora
+## Explicación y ejemplo
+## Práctica
+## Comprobaciones
+## Cierre
 
-Extensión orientativa: entre 900 y 1400 palabras. Completa todas las secciones dentro de ese límite.
+En "Explicación y ejemplo", desarrolla el concepto de forma gradual con un ejemplo concreto. En "Práctica", propone una tarea que el alumno pueda realizar hoy. En "Comprobaciones", escribe exactamente dos preguntas numeradas como "1." y "2."; tras cada una, escribe una línea que empiece por "Respuesta:" con la solución. En "Cierre", escribe dos o tres líneas que conecten con el próximo paso sin anticipar toda la lección.
+
+Extensión orientativa: entre 1000 y 1500 palabras. Desarrolla el contenido sin relleno y completa todas las secciones. Una lección de menos de 900 palabras se rechazará.
+
+La última línea del campo markdown debe ser exactamente [[FIN_LECCION]]. Es una marca técnica de finalización: no la expliques ni la incluyas en otra parte del texto.
 
 No incluyas frontmatter YAML, HTML, saludos genéricos ni referencias a este pedido. No inventes resultados que el alumno todavía no realizó. No utilices los caracteres de exclamación de apertura o cierre. Devuelve sólo el objeto JSON solicitado.`;
 }

@@ -5,6 +5,7 @@ import path from "node:path";
 import { stringify as stringifyYaml } from "yaml";
 
 import type { LessonDraft } from "./gemini.js";
+import { LESSON_PROMPT_VERSION } from "./prompt.js";
 import type { LoadedCourse, Progress, SiteConfig } from "../courses/types.js";
 
 type PreparedLesson = {
@@ -43,7 +44,7 @@ export async function writePreparedLesson(
     summary: draft.summary,
     generation: {
       model: site.generation.model,
-      promptVersion: "v1",
+      promptVersion: LESSON_PROMPT_VERSION,
       contextHash: createHash("sha256").update(prompt).digest("hex"),
       ...(extraRequestId === undefined ? {} : { trigger: "extra", requestId: extraRequestId }),
     },

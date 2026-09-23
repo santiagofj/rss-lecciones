@@ -1,7 +1,7 @@
 ---
 title: Lecciones RSS — especificación del MVP
 status: APPROVED
-version: 0.7
+version: 0.8
 created: 2026-09-18
 updated: 2026-09-23
 approved: 2026-09-23
@@ -13,7 +13,7 @@ approved: 2026-09-23
 
 Sistema personal que convierte un recorrido educativo local en lecciones permanentes, numeradas y consumibles desde RSS y una web estática. ChatGPT conserva su función de conversación; no se sincroniza con este sistema.
 
-Estado: **APPROVED**. El usuario aprobó explícitamente la especificación completa el 2026-09-19. El alcance aprobado incluye avance automático al publicar y correcciones puntuales a pedido. La enmienda v0.4 eligió Gemini 2.5 Flash gratuito; v0.5 probó 3.8 y v0.6 añadió lecciones extras manuales. Tras errores HTTP 503 repetidos con 3.8, el usuario aprobó en v0.7 volver a 2.5 sin alterar el contrato de lecciones ni el flujo de extras.
+Estado: **APPROVED**. El usuario aprobó explícitamente la especificación completa el 2026-09-19. El alcance aprobado incluye avance automático al publicar y correcciones puntuales a pedido. La enmienda v0.4 eligió Gemini 2.5 Flash gratuito; v0.5 probó 3.8 y v0.6 añadió lecciones extras manuales. Tras errores HTTP 503 repetidos con 3.8, el usuario aprobó en v0.7 volver a 2.5. La enmienda v0.8 exige más extensión y cierre completo sólo a lecciones futuras.
 
 La carpeta de trabajo estaba vacía al iniciar la revisión original. Ahora existe un repositorio implementado con cursos, configuración y workflow. Las fuentes externas verificadas están en [la revisión](review.md#fuentes-oficiales).
 
@@ -30,6 +30,7 @@ La carpeta de trabajo estaba vacía al iniciar la revisión original. Ahora exis
 | [verification.md](verification.md) | Verificación prevista y evidencia pendiente |
 | [decisions.md](decisions.md) | Alternativas, propuestas y preguntas abiertas |
 | [manual-extra.spec.md](manual-extra.spec.md) | Enmienda aprobada para pedir una lección extra por ejecución manual |
+| [future-completeness.spec.md](future-completeness.spec.md) | Enmienda aprobada para alargar y validar sólo las lecciones futuras |
 
 ## Alcance
 
@@ -62,6 +63,7 @@ No quedan bloqueos de arquitectura en esta versión. Las decisiones de punto de 
 - Fecha de aprobación de la enmienda v0.5: 2026-09-23. Alcance: configuración, parámetros de la API, validación y documentación; una mejora de calidad sólo se confirma tras comparar muestras reales.
 - Enmienda v0.6 aprobada por el usuario el 2026-09-23: una extra por nuevo pedido manual del curso elegido, repetible el mismo día; ejecución diaria sin cambios de frecuencia.
 - Enmienda v0.7 aprobada por el usuario el 2026-09-23: restaurar Gemini 2.5 Flash y sus parámetros anteriores tras errores HTTP 503 repetidos con 3.8; conservar la generación manual, el horario, la clave y el historial.
+- Enmienda v0.8 aprobada por el usuario el 2026-09-23: extensión objetivo de 1000–1500 palabras y rechazo de borradores incompletos sólo para lecciones futuras; los archivos publicados no se modifican.
 - Estado de entrega: implementación iniciada; criterios funcionales todavía pendientes salvo evidencia registrada en [verification.md](verification.md).
 
 ## Entrega posterior a aprobación

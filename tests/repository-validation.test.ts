@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 
 import { validateRepository } from "../src/courses/validate-repository.js";
+import { buildLessonPrompt, LESSON_PROMPT_VERSION } from "../src/generation/prompt.js";
 import { requestFromEnvironment, selectCourses, type GenerationRequest } from "../src/generation/selection.js";
 import { writePreparedLesson } from "../src/generation/write-lesson.js";
 import { selectNextLesson } from "../src/planning/next-lesson.js";
@@ -213,6 +214,7 @@ describe("lecciones extras a pedido", () => {
     expect(course.lessons.map((lesson) => lesson.frontmatter.generation.requestId)).toEqual([
       undefined, "100", "101",
     ]);
+    expect(course.lessons.every((lesson) => lesson.frontmatter.generation.promptVersion === "v2")).toBe(true);
     expect(course.progress.cursor.nextStepId).toBe("repaso");
     expect(renderFeed(result.repository.site.site.baseUrl, course).match(/<item>/g)).toHaveLength(3);
   });
@@ -318,6 +320,23 @@ describe("validación del repositorio", () => {
       sequence: 2,
       stepId: "profundizacion",
     });
+  });
+
+  test("el prompt nuevo pide extensión y cierre sin cambiar las lecciones existentes", async () => {
+    const root = await createRoot();
+    await createCourse(root, "fullstack", { status: "active", lesson: true });
+    const result = await validateRepository(root);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const course = result.repository.courses[0];
+    const step = course?.syllabus.frontmatter.steps[1];
+    if (course === undefined || step === undefined) return;
+    const prompt = buildLessonPrompt({ course, step, recentLessons: course.lessons });
+    expect(LESSON_PROMPT_VERSION).toBe("v2");
+    expect(prompt).toContain("entre 1000 y 1500 palabras");
+    expect(prompt).toContain("[[FIN_LECCION]]");
+    expect(prompt).toContain("## Comprobaciones");
+    expect(course.lessons[0]?.frontmatter.generation.promptVersion).toBe("1");
   });
 
   test("rechaza un cursor que contradice el historial", async () => {

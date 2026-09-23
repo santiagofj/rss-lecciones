@@ -17,6 +17,16 @@ const geminiResponseSchema = z.object({
   ).min(1),
 });
 
+const lessonHeadings = [
+  "Por qué ahora",
+  "Explicación y ejemplo",
+  "Práctica",
+  "Comprobaciones",
+  "Cierre",
+] as const;
+const completionMarker = "[[FIN_LECCION]]";
+const minimumLessonWords = 900;
+
 export type LessonDraft = {
   title: string;
   summary: string;
@@ -67,12 +77,62 @@ export function normalizeLessonDraft(value: unknown): LessonDraft {
     );
   }
 
+  const markdownWithMarker = parsed.data.markdown.trim().replaceAll("\r\n", "\n");
+  if (!markdownWithMarker.endsWith(`\n${completionMarker}`)) {
+    throw new GeminiGenerationError("La lección de Gemini no tiene la marca final", true);
+  }
+  const markdown = markdownWithMarker.slice(0, -completionMarker.length).trimEnd();
+  if (markdown.includes(completionMarker)) {
+    throw new GeminiGenerationError("La lección de Gemini repite la marca final", true);
+  }
+  const headings = [...markdown.matchAll(/^## ([^\n]+)$/gm)];
+  const expectedHeadings = lessonHeadings.map((heading) => `## ${heading}`);
+  if (headings.length !== expectedHeadings.length || headings.some(
+    (match, index) => match[0] !== expectedHeadings[index],
+  )) {
+    throw new GeminiGenerationError("La lección de Gemini no tiene las cinco secciones en orden", true);
+  }
+  const sections = headings.map((match, index) => {
+    const start = (match.index ?? 0) + match[0].length;
+    const end = headings[index + 1]?.index ?? markdown.length;
+    return markdown.slice(start, end).trim();
+  });
+  if (sections.some((section) => section.length === 0)) {
+    throw new GeminiGenerationError("La lección de Gemini tiene una sección vacía", true);
+  }
+  const checks = (sections[3] ?? "").split("\n");
+  const questionIndices = checks.flatMap((line, index) =>
+    /^\d+\.\s+\S/.test(line.trim()) ? [index] : []
+  );
+  const [firstQuestion, secondQuestion] = questionIndices;
+  const hasResponse = (lines: string[]): boolean => lines.some(
+    (line) => /^Respuesta:\s+\S/.test(line.trim()),
+  );
+  if (
+    questionIndices.length !== 2 || firstQuestion === undefined || secondQuestion === undefined
+    || !/^1\.\s+\S/.test(checks[firstQuestion]?.trim() ?? "")
+    || !/^2\.\s+\S/.test(checks[secondQuestion]?.trim() ?? "")
+    || !hasResponse(checks.slice(firstQuestion + 1, secondQuestion))
+    || !hasResponse(checks.slice(secondQuestion + 1))
+  ) {
+    throw new GeminiGenerationError("La lección de Gemini no tiene dos comprobaciones respondidas", true);
+  }
+  if (!/[.!?]$/u.test(sections[4] ?? "")) {
+    throw new GeminiGenerationError("La lección de Gemini no termina con un cierre completo", true);
+  }
+  if ((markdown.match(/^```/gm)?.length ?? 0) % 2 !== 0) {
+    throw new GeminiGenerationError("La lección de Gemini deja un bloque de código abierto", true);
+  }
+  if (markdown.split(/\s+/u).length < minimumLessonWords) {
+    throw new GeminiGenerationError(`La lección de Gemini tiene menos de ${minimumLessonWords} palabras`, true);
+  }
+
   const draft = {
     title: truncateAtWord(parsed.data.title, 159),
     summary: truncateAtWord(parsed.data.summary, 599),
-    markdown: parsed.data.markdown.trim(),
+    markdown,
   };
-  if (draft.title.length === 0 || draft.summary.length === 0 || draft.markdown.length < 200) {
+  if (draft.title.length === 0 || draft.summary.length === 0) {
     throw new GeminiGenerationError(
       "La lección de Gemini está vacía o es demasiado breve",
       true,
@@ -133,7 +193,10 @@ async function requestLessonDraft(
   }
 
   const candidate = parsed.data.candidates[0];
-  if (candidate?.finishReason !== undefined && candidate.finishReason !== "STOP") {
+  if (candidate?.finishReason === undefined) {
+    throw new GeminiGenerationError("Gemini no informó el motivo de finalización", true);
+  }
+  if (candidate.finishReason !== "STOP") {
     const retryable = ["MAX_TOKENS", "OTHER", "FINISH_REASON_UNSPECIFIED"].includes(
       candidate.finishReason,
     );

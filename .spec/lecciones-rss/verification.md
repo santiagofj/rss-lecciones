@@ -10,6 +10,8 @@ Enmienda v0.6 (2026-09-23): los fixtures locales cubren pedidos extra sucesivos 
 
 Enmienda v0.7 (2026-09-23): el usuario aprobó volver a Gemini 2.5 Flash. La verificación local debe comprobar el modelo, `thinkingBudget: 1024`, `temperature: 0.2`, el JSON estructurado, los cuatro cursos y las pruebas. AC-035 seguirá pendiente hasta un pedido manual real exitoso con el nuevo commit.
 
+Enmienda v0.8 (2026-09-23): para lecciones futuras, `npm run validate` validó los cuatro cursos históricos sin modificarlos, `npm run typecheck` pasó, `npm test` pasó (19 pruebas en 3 archivos) y `git diff --check` no reportó errores. Las pruebas cubren el prompt de 1000–1500 palabras, el borrador válido sin marca publicada, el rechazo de respuestas breves/incompletas y el reintento de una respuesta JSON válida sin marca final. AC-036 y AC-037 tienen evidencia local; AC-038 conserva pendiente la ejecución real en Actions y la comprobación de que Gemini 2.5 satisfaga el nuevo contrato.
+
 La versión aprobada 0.4 contenía nueve documentos, 28 requisitos REQ/NFR y 27 criterios AC. La enmienda v0.5 mantiene los requisitos y agrega AC-028 para la migración de modelo. La comprobación documental verifica cobertura de requisitos, métodos de verificación, enlaces locales y bloques Markdown cerrados. El índice y el registro de decisiones reflejan Q-001 y Q-004 resueltas y estado `APPROVED`. Esto comprueba cobertura documental, no funcionamiento del sistema.
 
 ### Etapa 1 — 2026-09-19
@@ -45,6 +47,7 @@ Evidencia parcial: AC-001 (discovery de cuarto curso), AC-002 (parte de validaci
 | AC-028 | Evidencia histórica de la migración a 3.8 | Pruebas locales pasadas; run `35873727059` y rerun fallidos por HTTP 503, sin lección nueva |
 | AC-029 a AC-034 | Repositorio temporal con varios runs en una fecha, historial y feeds; luego dispatch real | Una extra por run nuevo, rerun inocuo, tick normal independiente, rechazo seguro y publicación remota comprobada |
 | AC-035 | Inspección de configuración, prueba simulada y pedido manual real tras subir el rollback | Solicitud compatible con 2.5, respuesta válida publicada o diagnóstico preciso sin alterar progreso |
+| AC-036 a AC-038 | Prompt y borradores simulados, validación de los cuatro cursos y una generación real posterior | Sólo nuevas lecciones completas con marca eliminada, historial intacto y avance remoto comprobado |
 
 Las pruebas deben verificar comportamiento del dominio y recuperación real en disco, no reproducir helpers internos línea por línea. No se harán pruebas de cada plantilla visual simple. Las pruebas pagadas se limitan a las necesarias una vez confirmado modelo y límites; se usan fixtures para combinaciones de errores.
 

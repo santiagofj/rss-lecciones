@@ -23,6 +23,8 @@ gh workflow run publish.yml --ref main -R santiagofj/rss-lecciones -f course=ful
 
 Repite el pedido cuando quieras la siguiente lección, incluso el mismo día. Los pedidos se procesan de uno en uno (GitHub admite hasta 100 pendientes en este grupo). El curso debe estar activo y tener pasos pendientes; la cuota gratuita de Gemini también puede impedir un pedido. Reejecutar el mismo run no pide otra lección: para eso inicia un run nuevo.
 
+Las lecciones nuevas apuntan a 1000–1500 palabras. Si Gemini entrega un texto demasiado breve o sin las secciones y el cierre completos, el generador lo reintenta hasta tres veces; si sigue incompleto, el run falla sin publicar ni avanzar el curso. Esta comprobación no modifica las lecciones ya publicadas.
+
 ## Secreto
 
 La clave se guarda como el secreto `GEMINI_API_KEY` de GitHub Actions. Nunca debe escribirse en archivos del repositorio.
