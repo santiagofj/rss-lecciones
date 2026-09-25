@@ -1,7 +1,7 @@
 ---
 title: Lecciones RSS — especificación del MVP
 status: APPROVED
-version: 0.9
+version: 1.0
 created: 2026-09-18
 updated: 2026-09-25
 approved: 2026-09-23
@@ -32,6 +32,7 @@ La carpeta de trabajo estaba vacía al iniciar la revisión original. Ahora exis
 | [manual-extra.spec.md](manual-extra.spec.md) | Enmienda aprobada para pedir una lección extra por ejecución manual |
 | [future-completeness.spec.md](future-completeness.spec.md) | Enmienda aprobada para alargar y validar sólo las lecciones futuras |
 | [reliable-generation.spec.md](reliable-generation.spec.md) | Enmienda aprobada para recuperar entregas diarias fallidas |
+| [short-draft-recovery.spec.md](short-draft-recovery.spec.md) | Enmienda aprobada para ampliar borradores futuros demasiado breves |
 
 ## Alcance
 
@@ -66,6 +67,7 @@ No quedan bloqueos de arquitectura en esta versión. Las decisiones de punto de 
 - Enmienda v0.7 aprobada por el usuario el 2026-09-23: restaurar Gemini 2.5 Flash y sus parámetros anteriores tras errores HTTP 503 repetidos con 3.8; conservar la generación manual, el horario, la clave y el historial.
 - Enmienda v0.8 aprobada por el usuario el 2026-09-23: extensión objetivo de 1000–1500 palabras y rechazo de borradores incompletos sólo para lecciones futuras; los archivos publicados no se modifican.
 - Enmienda v0.9 aprobada por el usuario el 2026-09-25: una lección normal por día programado y recuperación de todas las fallidas cuando vuelva a funcionar el proveedor; varias en un día sólo para saldar atraso.
+- Enmienda v1.0 aprobada por el usuario el 2026-09-25: ampliar dentro de los tres intentos un borrador futuro completo pero demasiado corto, sin bajar el umbral de 900 palabras ni prometer éxito frente a límites externos de Gemini.
 - Estado de entrega: implementación iniciada; criterios funcionales todavía pendientes salvo evidencia registrada en [verification.md](verification.md).
 
 ## Entrega posterior a aprobación

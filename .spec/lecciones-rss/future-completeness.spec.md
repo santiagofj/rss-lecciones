@@ -37,6 +37,8 @@ El campo JSON `markdown` debe contener encabezados `## Por qué ahora`, `## Expl
 
 Enmienda v0.9: la marca sigue pedida al modelo, pero deja de ser un requisito absoluto de aceptación cuando la respuesta termina con `STOP` y satisface las demás comprobaciones de completitud; véase [reliable-generation.spec.md](reliable-generation.spec.md). Ninguna lección histórica se revalida ni edita.
 
+Enmienda v1.0: si un borrador completo queda por debajo de 900 palabras, los intentos restantes pueden solicitar su ampliación guiada sin publicarlo antes de pasar todas las comprobaciones; véase [short-draft-recovery.spec.md](short-draft-recovery.spec.md). Esta decisión reemplaza únicamente la exclusión original de continuación automática para borradores cortos.
+
 Una respuesta que incumple se reintenta como los demás errores de contenido. Tras agotar los intentos, el run falla antes de `writePreparedLesson`. No se intenta completar una salida parcial ni se agrega automáticamente texto que el modelo no produjo. El tamaño real depende del tema, pero el umbral evita aceptar las lecciones de 221–800 palabras observadas; el marcador y la estructura detectan cortes aun por encima de 900.
 
 ## Criterios de aceptación y verificación

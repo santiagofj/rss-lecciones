@@ -1,11 +1,13 @@
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { validateRepository } from "../src/courses/validate-repository.js";
 import { buildLessonPrompt, LESSON_PROMPT_VERSION } from "../src/generation/prompt.js";
+import { generateWithGemini } from "../src/generation/gemini.js";
 import { runGenerationBatch } from "../src/generation/run-batch.js";
 import { planScheduledTasks, requestFromEnvironment, selectCourses, type GenerationRequest } from "../src/generation/selection.js";
 import { writePreparedLesson } from "../src/generation/write-lesson.js";
@@ -162,6 +164,9 @@ Contenido de prueba.
 }
 
 afterEach(async () => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
   await Promise.all(
     temporaryDirectories.splice(0).map((directory) =>
       rm(directory, { recursive: true, force: true })
@@ -230,7 +235,7 @@ describe("lecciones extras a pedido", () => {
     expect(course.lessons.map((lesson) => lesson.frontmatter.generation.requestId)).toEqual([
       undefined, "100", "101",
     ]);
-    expect(course.lessons.every((lesson) => lesson.frontmatter.generation.promptVersion === "v2")).toBe(true);
+    expect(course.lessons.every((lesson) => lesson.frontmatter.generation.promptVersion === LESSON_PROMPT_VERSION)).toBe(true);
     expect(course.progress.cursor.nextStepId).toBe("repaso");
     expect(renderFeed(result.repository.site.site.baseUrl, course).match(/<item>/g)).toHaveLength(3);
   });
@@ -348,7 +353,7 @@ describe("validación del repositorio", () => {
     const step = course?.syllabus.frontmatter.steps[1];
     if (course === undefined || step === undefined) return;
     const prompt = buildLessonPrompt({ course, step, recentLessons: course.lessons });
-    expect(LESSON_PROMPT_VERSION).toBe("v2");
+    expect(LESSON_PROMPT_VERSION).toBe("v3");
     expect(prompt).toContain("entre 1000 y 1500 palabras");
     expect(prompt).toContain("[[FIN_LECCION]]");
     expect(prompt).toContain("## Comprobaciones");
@@ -429,6 +434,87 @@ describe("recuperación de entregas diarias", () => {
     summary: "Resumen de prueba",
     markdown: completeLessonMarkdown().replace("[[FIN_LECCION]]", "").trim(),
   };
+
+  test("dos respuestas cortas y un 429 no escriben la lección ni cancelan su deuda", async () => {
+    const root = await createRoot(40);
+    await createCourse(root, "musica-clasica", {
+      status: "active", schedule: "weekly", scheduleStartDate: "2026-09-25",
+    });
+    const initial = await validateRepository(root);
+    expect(initial.ok).toBe(true);
+    if (!initial.ok) return;
+
+    const shortMarkdown = completeLessonMarkdown().replaceAll(
+      "Este ejemplo explica el concepto con precisión y muestra cómo aplicarlo en un caso concreto.",
+      "Este ejemplo explica el concepto.",
+    );
+    let calls = 0;
+    vi.stubGlobal("fetch", async () => {
+      calls += 1;
+      if (calls === 3) return new Response("Cuota agotada", { status: 429 });
+      return new Response(JSON.stringify({
+        candidates: [{
+          finishReason: "STOP",
+          content: { parts: [{ text: JSON.stringify({
+            title: "Lección breve", summary: "Resumen", markdown: shortMarkdown,
+          }) }] },
+        }],
+      }), { status: 200 });
+    });
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.useFakeTimers();
+
+    const batch = runGenerationBatch({
+      root, repository: initial.repository, now,
+      request: { kind: "scheduled" }, apiKey: "clave-de-prueba",
+      generateDraft: generateWithGemini,
+    });
+    await vi.advanceTimersByTimeAsync(30_000);
+    const failed = await batch;
+    expect(calls).toBe(3);
+    expect(failed.saved).toBe(0);
+    expect(failed.pending.map((task) => task.generationDate)).toEqual(["2026-09-25"]);
+    const stillPending = await validateRepository(root);
+    expect(stillPending.ok).toBe(true);
+    if (!stillPending.ok) return;
+    expect(stillPending.repository.courses[0]?.lessons).toHaveLength(0);
+    expect(stillPending.repository.courses[0]?.progress.cursor.nextStepId).toBe("introduccion");
+
+    vi.useRealTimers();
+    const recovered = await runGenerationBatch({
+      root, repository: stillPending.repository, now,
+      request: { kind: "scheduled" }, apiKey: "clave-de-prueba",
+      generateDraft: async () => validDraft,
+    });
+    expect(recovered.saved).toBe(1);
+    expect(recovered.pending).toHaveLength(0);
+  });
+
+  test("la auditoría usa el prompt efectivo cuando la lección fue ampliada", async () => {
+    const root = await createRoot(40);
+    await createCourse(root, "musica-clasica", {
+      status: "active", schedule: "weekly", scheduleStartDate: "2026-09-25",
+    });
+    const initial = await validateRepository(root);
+    expect(initial.ok).toBe(true);
+    if (!initial.ok) return;
+
+    const promptUsed = "Prompt completo de ampliación";
+    const result = await runGenerationBatch({
+      root, repository: initial.repository, now,
+      request: { kind: "scheduled" }, apiKey: "clave-de-prueba",
+      generateDraft: async () => ({ ...validDraft, promptUsed }),
+    });
+    expect(result.saved).toBe(1);
+    const final = await validateRepository(root);
+    expect(final.ok).toBe(true);
+    if (!final.ok) return;
+    expect(final.repository.courses[0]?.lessons[0]?.frontmatter.generation.contextHash).toBe(
+      createHash("sha256").update(promptUsed).digest("hex"),
+    );
+  });
 
   test("el atraso respeta weekdays y no inventa entregas del fin de semana", async () => {
     const root = await createRoot(40);

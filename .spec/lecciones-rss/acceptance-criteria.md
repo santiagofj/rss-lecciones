@@ -35,3 +35,5 @@ Todos están **pendientes de implementar y verificar**. Los criterios de avance 
 | AC-035 | REQ-006, NFR-001, NFR-008 | La solicitud a `gemini-2.5-flash` usa `thinkingBudget: 1024`, `temperature: 0.2` y el contrato JSON anterior; un run manual real genera y publica el siguiente paso sin modificar lecciones históricas ni cambiar el flujo diario. |
 
 La prueba programada real y la lectura desde Pages son obligatorias para llamar funcional al MVP. Las simulaciones comprueban reglas y fallos, pero no sustituyen AC-020/022.
+
+La enmienda v1.0 agrega AC-047 a AC-050 para la ampliación de borradores cortos; sus resultados observables y pruebas se mantienen en [short-draft-recovery.spec.md](short-draft-recovery.spec.md).

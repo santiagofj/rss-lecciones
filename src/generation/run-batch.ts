@@ -63,6 +63,7 @@ export async function runGenerationBatch(options: BatchOptions): Promise<BatchRe
         prompt,
         timeoutSeconds: repository.site.generation.timeoutSeconds,
         maxOutputTokens: repository.site.generation.maxOutputTokens,
+        maxInputBytes: repository.site.generation.maxInputBytes,
       });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Error desconocido de Gemini";
@@ -75,7 +76,7 @@ export async function runGenerationBatch(options: BatchOptions): Promise<BatchRe
     const filename = await writePreparedLesson(repository.site, {
       course,
       draft,
-      prompt,
+      prompt: draft.promptUsed ?? prompt,
       generationDate: task.generationDate,
       publishedAt: (options.clock?.() ?? new Date()).toISOString(),
       ...(task.kind === "extra" ? { extraRequestId: task.requestId } : {}),

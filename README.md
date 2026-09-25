@@ -31,7 +31,7 @@ gh workflow run publish.yml --ref main -R santiagofj/rss-lecciones -f recover=tr
 
 No combines `recover=true` con `course`. Si Gemini sigue fallando, las fechas restantes permanecen pendientes para el siguiente intento.
 
-Las lecciones nuevas apuntan a 1000–1500 palabras. Si Gemini entrega un texto demasiado breve o sin las secciones y el cierre completos, el generador lo reintenta hasta tres veces. Ante un 503 espera más entre intentos. Si un curso sigue fallando, no publica texto parcial ni avanza ese curso; los demás cursos válidos sí se conservan y el run informa el fallo parcial después de publicarlos. Las entregas fallidas permanecen pendientes. Esta comprobación no modifica las lecciones ya publicadas.
+Las lecciones nuevas apuntan a 1000–1500 palabras. Si Gemini entrega un texto completo pero de menos de 900 palabras, el siguiente intento usa ese borrador como base para pedir una ampliación concreta. No se superan tres solicitudes por lección ni se publica una versión corta o incompleta. Ante un 429 o 503 se aplica espera acotada; si Gemini sigue fallando, ese curso no avanza, los demás válidos sí se conservan y la entrega fallida permanece pendiente. Esta comprobación no modifica las lecciones ya publicadas ni garantiza disponibilidad de la cuota gratuita.
 
 ## Secreto
 

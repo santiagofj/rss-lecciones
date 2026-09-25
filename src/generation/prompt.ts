@@ -1,6 +1,6 @@
 import type { LoadedCourse, Lesson } from "../courses/types.js";
 
-export const LESSON_PROMPT_VERSION = "v2";
+export const LESSON_PROMPT_VERSION = "v3";
 
 type Step = LoadedCourse["syllabus"]["frontmatter"]["steps"][number];
 
@@ -53,6 +53,7 @@ El campo markdown debe contener estas cinco secciones, en este orden y con estos
 En "Explicación y ejemplo", desarrolla el concepto de forma gradual con un ejemplo concreto. En "Práctica", propone una tarea que el alumno pueda realizar hoy. En "Comprobaciones", escribe exactamente dos preguntas numeradas como "1." y "2."; tras cada una, escribe una línea que empiece por "Respuesta:" con la solución. En "Cierre", escribe dos o tres líneas que conecten con el próximo paso sin anticipar toda la lección.
 
 Extensión orientativa: entre 1000 y 1500 palabras. Desarrolla el contenido sin relleno y completa todas las secciones. Una lección de menos de 900 palabras se rechazará.
+Distribuye la extensión aproximadamente así: 100–150 palabras en "Por qué ahora", 450–600 en "Explicación y ejemplo", 250–350 en "Práctica", 100–150 en "Comprobaciones" y 80–120 en "Cierre". Profundiza el ejemplo y la tarea de escucha o aplicación cuando el tema parezca breve; no repitas ideas para alcanzar la longitud.
 
 La última línea del campo markdown debe ser exactamente [[FIN_LECCION]]. Es una marca técnica de finalización: no la expliques ni la incluyas en otra parte del texto.
 
