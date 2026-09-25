@@ -8,8 +8,13 @@ on:
     inputs:
       course:
         description: "Slug del curso para generar una lección extra (ej.: fullstack)"
-        required: true
+        required: false
         type: string
+      recover:
+        description: "Recuperar entregas normales pendientes de todos los cursos"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: lecciones-diarias
@@ -50,6 +55,7 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           EXTRA_COURSE: ${{ inputs.course }}
+          RECOVER_PENDING: ${{ inputs.recover }}
 
       - name: Verificar resultado
         run: |
@@ -80,3 +86,10 @@ jobs:
       - name: Publicar GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Informar entregas pendientes
+        run: |
+          if [ -f .work/generation-pending.txt ]; then
+            cat .work/generation-pending.txt
+            exit 1
+          fi

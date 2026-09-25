@@ -8,6 +8,7 @@ language: es-AR
 timezone: America/Argentina/Buenos_Aires
 schedule:
   type: weekly
+  startDate: 2026-09-19
   days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
 feed: true
 teaching:

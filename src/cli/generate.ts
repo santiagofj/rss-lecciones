@@ -1,11 +1,10 @@
 import process from "node:process";
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
 
 import { validateRepository } from "../courses/validate-repository.js";
-import { generateWithGemini } from "../generation/gemini.js";
-import { buildLessonPrompt } from "../generation/prompt.js";
-import { localCalendarDate } from "../generation/schedule.js";
-import { requestFromEnvironment, selectCourses } from "../generation/selection.js";
-import { writePreparedLesson } from "../generation/write-lesson.js";
+import { runGenerationBatch, type BatchResult } from "../generation/run-batch.js";
+import { planGenerationTasks, requestFromEnvironment } from "../generation/selection.js";
 import { buildPublicSite } from "../publishing/site.js";
 
 function reportInvalidRepository(result: Awaited<ReturnType<typeof validateRepository>>): never {
@@ -21,6 +20,8 @@ function reportInvalidRepository(result: Awaited<ReturnType<typeof validateRepos
 
 async function main(): Promise<void> {
   const root = process.cwd();
+  const reportPath = path.join(root, ".work", "generation-pending.txt");
+  await rm(reportPath, { force: true });
   const initial = await validateRepository(root);
   if (!initial.ok) {
     reportInvalidRepository(initial);
@@ -28,58 +29,29 @@ async function main(): Promise<void> {
 
   const now = new Date();
   const request = requestFromEnvironment(process.env);
-  const dueCourses = selectCourses(initial.repository, now, request);
+  const tasks = planGenerationTasks(initial.repository, now, request);
+  let result: BatchResult = { saved: 0, failures: [], pending: [] };
 
-  if (dueCourses.length > 0) {
+  if (tasks.length > 0) {
     const apiKey = process.env.GEMINI_API_KEY?.trim();
     if (apiKey === undefined || apiKey.length === 0) {
       throw new Error("Falta el secreto GEMINI_API_KEY");
     }
-
-    const prepared = [];
-    for (const course of dueCourses) {
-      const step = course.syllabus.frontmatter.steps.find(
-        (item) => item.id === course.progress.cursor.nextStepId,
-      );
-      if (step === undefined) {
-        throw new Error(`No se encontró el próximo paso de ${course.config.slug}`);
-      }
-      const prompt = buildLessonPrompt({
-        course,
-        step,
-        recentLessons: course.lessons.slice(-3),
-      });
-      if (Buffer.byteLength(prompt, "utf8") > initial.repository.site.generation.maxInputBytes) {
-        throw new Error(`El contexto de ${course.config.slug} supera el máximo permitido`);
-      }
-
-      console.log(`Generando ${course.config.slug}: ${step.title}`);
-      const draft = await generateWithGemini({
-        apiKey,
-        model: initial.repository.site.generation.model,
-        prompt,
-        timeoutSeconds: initial.repository.site.generation.timeoutSeconds,
-        maxOutputTokens: initial.repository.site.generation.maxOutputTokens,
-      });
-      prepared.push({
-        course,
-        draft,
-        prompt,
-        generationDate: localCalendarDate(now, course.config.timezone),
-        publishedAt: now.toISOString(),
-        ...(request.kind === "extra" ? { extraRequestId: request.requestId } : {}),
-      });
-    }
-
-    // Ningún archivo se modifica hasta que todas las respuestas fueron válidas.
-    for (const lesson of prepared) {
-      const filename = await writePreparedLesson(initial.repository.site, lesson);
-      console.log(`Guardada ${lesson.course.config.slug}/${filename}`);
-    }
+    result = await runGenerationBatch({
+      root,
+      repository: initial.repository,
+      now,
+      request,
+      apiKey,
+    });
   } else {
     console.log(request.kind === "extra"
       ? `La solicitud manual ${request.requestId} ya tiene una lección publicada`
       : "No hay lecciones pendientes para la fecha local actual");
+  }
+
+  if (result.saved === 0 && result.failures.length > 0) {
+    throw new Error(`No se generó ninguna lección; fallaron ${result.failures.length} curso(s)`);
   }
 
   const finalState = await validateRepository(root);
@@ -88,6 +60,19 @@ async function main(): Promise<void> {
   }
   await buildPublicSite(root, finalState.repository);
   console.log("Sitio HTML y feeds RSS construidos en public/");
+
+  if (result.pending.length > 0) {
+    const failures = result.failures.map((failure) =>
+      `- ${failure.courseSlug} (${failure.generationDate}): ${failure.message.replace(/\s+/gu, " ")}`
+    );
+    const report = [
+      `Se conservaron ${result.saved} lección(es), pero quedan ${result.pending.length} entrega(s) pendientes.`,
+      ...failures,
+    ].join("\n");
+    await mkdir(path.dirname(reportPath), { recursive: true });
+    await writeFile(reportPath, `${report}\n`, "utf8");
+    console.warn(report);
+  }
 }
 
 main().catch((error: unknown) => {

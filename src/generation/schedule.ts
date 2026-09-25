@@ -23,24 +23,29 @@ export function localCalendarDate(date: Date, timeZone: string): string {
   return `${values.year}-${values.month}-${values.day}`;
 }
 
-function localWeekday(date: Date, timeZone: string): Weekday {
-  const value = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    weekday: "long",
-  }).format(date).toLowerCase();
-
-  if (!weekdays.includes(value as Weekday)) {
-    throw new Error(`Día de semana inesperado: ${value}`);
-  }
-  return value as Weekday;
+export function nextCalendarDate(value: string): string {
+  const date = new Date(`${value}T00:00:00.000Z`);
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
 }
 
-export function isScheduledForDate(course: CourseConfig, date: Date): boolean {
+export function isScheduledForCalendarDate(course: CourseConfig, calendarDate: string): boolean {
   if (course.status !== "active" || course.schedule.type === "manual") {
     return false;
   }
-  if (course.schedule.type === "weekdays") {
-    return !["saturday", "sunday"].includes(localWeekday(date, course.timezone));
+  if (calendarDate < course.schedule.startDate) {
+    return false;
   }
-  return course.schedule.days.includes(localWeekday(date, course.timezone));
+  const weekday: Weekday | undefined = weekdays[new Date(`${calendarDate}T00:00:00.000Z`).getUTCDay()];
+  if (weekday === undefined) {
+    throw new Error(`Fecha de calendario inválida: ${calendarDate}`);
+  }
+  if (course.schedule.type === "weekdays") {
+    return weekday !== "saturday" && weekday !== "sunday";
+  }
+  return course.schedule.days.includes(weekday);
+}
+
+export function isScheduledForDate(course: CourseConfig, date: Date): boolean {
+  return isScheduledForCalendarDate(course, localCalendarDate(date, course.timezone));
 }

@@ -17,6 +17,7 @@ const dailyCourse: CourseConfig = {
   timezone: "America/Argentina/Buenos_Aires",
   schedule: {
     type: "weekly",
+    startDate: "2026-09-19",
     days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
   },
   feed: true,
@@ -64,8 +65,12 @@ describe("normalización de respuestas de Gemini", () => {
       "Breve.",
     ) }))
       .toThrow("menos de 900 palabras");
-    expect(() => normalizeLessonDraft({ ...metadata, markdown: valid.replace("[[FIN_LECCION]]", "") }))
-      .toThrow("no tiene la marca final");
+    expect(normalizeLessonDraft({ ...metadata, markdown: valid.replace("[[FIN_LECCION]]", "") }).markdown)
+      .toContain("## Cierre");
+    expect(() => normalizeLessonDraft({ ...metadata, markdown: valid.replace(
+      "## Práctica", "[[FIN_LECCION]]\n## Práctica",
+    ) }))
+      .toThrow("marca final fuera del cierre");
     expect(() => normalizeLessonDraft({ ...metadata, markdown: valid.replace("## Práctica", "## Ejercicio") }))
       .toThrow("no tiene las cinco secciones");
     expect(() => normalizeLessonDraft({ ...metadata, markdown: valid.replace("Respuesta: Se compara", "Solución: Se compara") }))

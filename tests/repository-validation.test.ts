@@ -6,14 +6,16 @@ import { afterEach, describe, expect, test } from "vitest";
 
 import { validateRepository } from "../src/courses/validate-repository.js";
 import { buildLessonPrompt, LESSON_PROMPT_VERSION } from "../src/generation/prompt.js";
-import { requestFromEnvironment, selectCourses, type GenerationRequest } from "../src/generation/selection.js";
+import { runGenerationBatch } from "../src/generation/run-batch.js";
+import { planScheduledTasks, requestFromEnvironment, selectCourses, type GenerationRequest } from "../src/generation/selection.js";
 import { writePreparedLesson } from "../src/generation/write-lesson.js";
 import { selectNextLesson } from "../src/planning/next-lesson.js";
 import { renderFeed } from "../src/publishing/site.js";
+import { completeLessonMarkdown } from "./lesson-draft-fixture.js";
 
 const temporaryDirectories: string[] = [];
 
-async function createRoot(): Promise<string> {
+async function createRoot(maxLessonsPerRun = 3): Promise<string> {
   const root = await mkdtemp(path.join(tmpdir(), "rss-lecciones-"));
   temporaryDirectories.push(root);
   await mkdir(path.join(root, "courses"));
@@ -31,7 +33,7 @@ generation:
   timeoutSeconds: 120
   maxOutputTokens: 6000
   maxInputBytes: 100000
-  maxLessonsPerRun: 3
+  maxLessonsPerRun: ${maxLessonsPerRun}
 `,
   );
   return root;
@@ -42,7 +44,9 @@ type CourseFixtureOptions = {
   lesson?: boolean;
   cursorNextStepId?: string | null;
   status?: "active" | "paused";
-  schedule?: "manual" | "weekdays";
+  schedule?: "manual" | "weekdays" | "weekly";
+  scheduleStartDate?: string;
+  additionalSteps?: number;
 };
 
 async function createCourse(
@@ -64,7 +68,8 @@ language: es-AR
 timezone: America/Buenos_Aires
 schedule:
   type: ${options.schedule ?? "manual"}
-feed: true
+${options.schedule === undefined || options.schedule === "manual" ? "" : `  startDate: ${options.scheduleStartDate ?? "2026-09-23"}\n`}
+${options.schedule === "weekly" ? "  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]\n" : ""}feed: true
 teaching:
   audience: Alumno de prueba
   instructions: Explicar con claridad y ejemplos concretos.
@@ -99,6 +104,12 @@ steps:
     title: Repaso
     objective: Integrar lo aprendido
     brief: Resumir el recorrido
+${Array.from({ length: options.additionalSteps ?? 0 }, (_, index) => `  - id: extra-${index + 1}
+    unitId: fundamentos
+    topicId: continuidad
+    title: Continuidad ${index + 1}
+    objective: Continuar el recorrido
+    brief: Profundizar en el próximo tema`).join("\n")}
 ---
 # Recorrido
 
@@ -186,6 +197,11 @@ describe("lecciones extras a pedido", () => {
   test("sólo workflow_dispatch activa el modo extra y exige identificador de run", async () => {
     expect(requestFromEnvironment({ GITHUB_EVENT_NAME: "schedule", EXTRA_COURSE: "fullstack" }))
       .toEqual({ kind: "scheduled" });
+    expect(requestFromEnvironment({ GITHUB_EVENT_NAME: "workflow_dispatch", RECOVER_PENDING: "true" }))
+      .toEqual({ kind: "scheduled" });
+    expect(() => requestFromEnvironment({
+      GITHUB_EVENT_NAME: "workflow_dispatch", RECOVER_PENDING: "true", EXTRA_COURSE: "fullstack",
+    })).toThrow("No combines");
     const root = await createRoot();
     await createCourse(root, "fullstack", { status: "active" });
     const result = await validateRepository(root);
@@ -403,5 +419,171 @@ campoInventado: true
       file: "courses/audio-digital/course.yml",
       message: expect.stringContaining("Unrecognized key"),
     }));
+  });
+});
+
+describe("recuperación de entregas diarias", () => {
+  const now = new Date("2026-09-25T12:00:00.000Z");
+  const validDraft = {
+    title: "Lección de prueba",
+    summary: "Resumen de prueba",
+    markdown: completeLessonMarkdown().replace("[[FIN_LECCION]]", "").trim(),
+  };
+
+  test("el atraso respeta weekdays y no inventa entregas del fin de semana", async () => {
+    const root = await createRoot(40);
+    await createCourse(root, "fullstack", {
+      status: "active", schedule: "weekdays", scheduleStartDate: "2026-09-19",
+    });
+    const initial = await validateRepository(root);
+    expect(initial.ok).toBe(true);
+    if (!initial.ok) return;
+    const tasks = planScheduledTasks(initial.repository, new Date("2026-09-22T12:00:00.000Z"));
+    expect(tasks.map((task) => task.generationDate)).toEqual(["2026-09-21", "2026-09-22"]);
+  });
+
+  test("cinco días fallidos siguen pendientes y se recuperan junto al día corriente", async () => {
+    const root = await createRoot(40);
+    await createCourse(root, "audio-digital", {
+      status: "active", schedule: "weekly", scheduleStartDate: "2026-09-19",
+      lesson: true, additionalSteps: 3,
+    });
+    const initial = await validateRepository(root);
+    expect(initial.ok).toBe(true);
+    if (!initial.ok) return;
+
+    for (const [index, day] of ["20", "21", "22", "23", "24"].entries()) {
+      const failed = await runGenerationBatch({
+        root, repository: initial.repository, now: new Date(`2026-09-${day}T12:00:00.000Z`),
+        request: { kind: "scheduled" }, apiKey: "prueba",
+        generateDraft: async () => { throw new Error("HTTP 503"); },
+      });
+      expect(failed.saved).toBe(0);
+      expect(failed.pending).toHaveLength(index + 1);
+    }
+
+    const recovered = await runGenerationBatch({
+      root, repository: initial.repository, now,
+      request: { kind: "scheduled" }, apiKey: "prueba",
+      generateDraft: async () => validDraft,
+      clock: () => now,
+    });
+    expect(recovered.saved).toBe(6);
+    expect(recovered.pending).toHaveLength(0);
+    const final = await validateRepository(root);
+    expect(final.ok).toBe(true);
+    if (!final.ok) return;
+    expect(final.repository.courses[0]?.lessons.map((lesson) => lesson.frontmatter.generationDate)).toEqual([
+      "2026-09-19", "2026-09-20", "2026-09-21", "2026-09-22", "2026-09-23", "2026-09-24", "2026-09-25",
+    ]);
+    const course = final.repository.courses[0];
+    if (course === undefined) return;
+    const feed = renderFeed(final.repository.site.site.baseUrl, course);
+    expect(feed.match(/<item>/g)).toHaveLength(7);
+    expect(new Set(course.lessons.map((lesson) => lesson.frontmatter.id)).size).toBe(7);
+    expect(course.lessons.slice(1).every((lesson) =>
+      lesson.frontmatter.publishedAt.startsWith("2026-09-25"))).toBe(true);
+  });
+
+  test("un curso fallido no descarta los otros y el rerun sólo reintenta el pendiente", async () => {
+    const root = await createRoot(40);
+    for (const slug of ["audio-digital", "fullstack", "historia-filosofia"]) {
+      await createCourse(root, slug, { status: "active", schedule: "weekdays" });
+    }
+    const initial = await validateRepository(root);
+    expect(initial.ok).toBe(true);
+    if (!initial.ok) return;
+    const first = await runGenerationBatch({
+      root, repository: initial.repository, now: new Date("2026-09-23T12:00:00.000Z"),
+      request: { kind: "scheduled" }, apiKey: "prueba",
+      generateDraft: async ({ prompt }) => {
+        if (prompt.includes("Curso fullstack")) throw new Error("HTTP 503");
+        return validDraft;
+      },
+    });
+    expect(first.saved).toBe(2);
+    expect(first.failures.map((failure) => failure.courseSlug)).toEqual(["fullstack"]);
+    expect(first.pending.map((task) => task.courseSlug)).toEqual(["fullstack"]);
+
+    const mid = await validateRepository(root);
+    expect(mid.ok).toBe(true);
+    if (!mid.ok) return;
+    const called: string[] = [];
+    const second = await runGenerationBatch({
+      root, repository: mid.repository, now: new Date("2026-09-23T12:00:00.000Z"),
+      request: { kind: "scheduled" }, apiKey: "prueba",
+      generateDraft: async ({ prompt }) => {
+        called.push(prompt);
+        return validDraft;
+      },
+    });
+    expect(second.saved).toBe(1);
+    expect(called).toHaveLength(1);
+    expect(called[0]).toContain("Curso fullstack");
+    expect(second.pending).toHaveLength(0);
+  });
+
+  test("el límite deja el atraso restante para el próximo run", async () => {
+    const root = await createRoot(3);
+    await createCourse(root, "audio-digital", {
+      status: "active", schedule: "weekly", scheduleStartDate: "2026-09-19",
+      lesson: true, additionalSteps: 3,
+    });
+    const initial = await validateRepository(root);
+    expect(initial.ok).toBe(true);
+    if (!initial.ok) return;
+    expect(planScheduledTasks(initial.repository, now, 40)).toHaveLength(6);
+
+    const first = await runGenerationBatch({
+      root, repository: initial.repository, now,
+      request: { kind: "scheduled" }, apiKey: "prueba",
+      generateDraft: async () => validDraft,
+    });
+    expect(first.saved).toBe(3);
+    expect(first.pending).toHaveLength(3);
+    const mid = await validateRepository(root);
+    expect(mid.ok).toBe(true);
+    if (!mid.ok) return;
+    const second = await runGenerationBatch({
+      root, repository: mid.repository, now,
+      request: { kind: "scheduled" }, apiKey: "prueba",
+      generateDraft: async () => validDraft,
+    });
+    expect(second.saved).toBe(3);
+    expect(second.pending).toHaveLength(0);
+  });
+
+  test("una extra manual no salda ninguna fecha normal pendiente", async () => {
+    const root = await createRoot(40);
+    await createCourse(root, "audio-digital", {
+      status: "active", schedule: "weekly", scheduleStartDate: "2026-09-19",
+      lesson: true, additionalSteps: 4,
+    });
+    const initial = await validateRepository(root);
+    expect(initial.ok).toBe(true);
+    if (!initial.ok) return;
+    expect(planScheduledTasks(initial.repository, now)).toHaveLength(6);
+
+    const extra = await runGenerationBatch({
+      root, repository: initial.repository, now,
+      request: { kind: "extra", courseSlug: "audio-digital", requestId: "900" },
+      apiKey: "prueba", generateDraft: async () => validDraft,
+    });
+    expect(extra.saved).toBe(1);
+    const afterExtra = await validateRepository(root);
+    expect(afterExtra.ok).toBe(true);
+    if (!afterExtra.ok) return;
+    expect(planScheduledTasks(afterExtra.repository, now)).toHaveLength(6);
+  });
+
+  test("el workflow informa un fallo parcial sólo después de guardar y desplegar éxitos", async () => {
+    const workflow = await readFile(path.join(process.cwd(), ".github", "workflows", "publish.yml"), "utf8");
+    const commit = workflow.indexOf("name: Guardar el avance del curso");
+    const deploy = workflow.indexOf("name: Publicar GitHub Pages");
+    const report = workflow.indexOf("name: Informar entregas pendientes");
+    expect(commit).toBeGreaterThan(0);
+    expect(deploy).toBeGreaterThan(commit);
+    expect(report).toBeGreaterThan(deploy);
+    expect(workflow).toContain(".work/generation-pending.txt");
   });
 });

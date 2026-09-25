@@ -33,7 +33,7 @@ export type LessonDraft = {
   markdown: string;
 };
 
-type GenerateWithGeminiOptions = {
+export type GenerateWithGeminiOptions = {
   apiKey: string;
   model: string;
   prompt: string;
@@ -42,7 +42,7 @@ type GenerateWithGeminiOptions = {
 };
 
 class GeminiGenerationError extends Error {
-  constructor(message: string, readonly retryable: boolean) {
+  constructor(message: string, readonly retryable: boolean, readonly transient = false) {
     super(message);
     this.name = "GeminiGenerationError";
   }
@@ -78,12 +78,12 @@ export function normalizeLessonDraft(value: unknown): LessonDraft {
   }
 
   const markdownWithMarker = parsed.data.markdown.trim().replaceAll("\r\n", "\n");
-  if (!markdownWithMarker.endsWith(`\n${completionMarker}`)) {
-    throw new GeminiGenerationError("La lección de Gemini no tiene la marca final", true);
-  }
-  const markdown = markdownWithMarker.slice(0, -completionMarker.length).trimEnd();
+  const hasFinalMarker = markdownWithMarker.endsWith(`\n${completionMarker}`);
+  const markdown = hasFinalMarker
+    ? markdownWithMarker.slice(0, -completionMarker.length).trimEnd()
+    : markdownWithMarker;
   if (markdown.includes(completionMarker)) {
-    throw new GeminiGenerationError("La lección de Gemini repite la marca final", true);
+    throw new GeminiGenerationError("La lección de Gemini tiene la marca final fuera del cierre", true);
   }
   const headings = [...markdown.matchAll(/^## ([^\n]+)$/gm)];
   const expectedHeadings = lessonHeadings.map((heading) => `## ${heading}`);
@@ -176,9 +176,10 @@ async function requestLessonDraft(
   });
 
   if (!response.ok) {
-    const retryable = response.status === 429 || response.status >= 500;
+    const retryable = response.status === 408 || response.status === 429 || response.status >= 500;
     throw new GeminiGenerationError(
       `Gemini respondió HTTP ${response.status}`,
+      retryable,
       retryable,
     );
   }
@@ -238,9 +239,13 @@ export async function generateWithGemini(
         throw new Error(`${message} después de ${attempt} intento(s)`);
       }
 
-      const waitMilliseconds = attempt * 1_000;
+      const transient = error instanceof GeminiGenerationError ? error.transient : true;
+      const baseWait = transient ? 10_000 * 2 ** (attempt - 1) : attempt * 1_000;
+      const waitMilliseconds = transient
+        ? baseWait + Math.floor(Math.random() * baseWait * 0.2)
+        : baseWait;
       console.warn(
-        `${message}; reintento ${attempt + 1}/${maximumAttempts} en ${waitMilliseconds / 1_000}s`,
+        `${message}; reintento ${attempt + 1}/${maximumAttempts} en ${Math.ceil(waitMilliseconds / 1_000)}s`,
       );
       await delay(waitMilliseconds);
     }

@@ -4,6 +4,7 @@ import { generateWithGemini } from "../src/generation/gemini.js";
 import { completeLessonMarkdown } from "./lesson-draft-fixture.js";
 
 afterEach(() => {
+  vi.useRealTimers();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
@@ -58,7 +59,7 @@ describe("solicitud a Gemini 2.5 Flash", () => {
     vi.stubGlobal("fetch", async () => {
       calls += 1;
       const markdown = calls === 1
-        ? completeLessonMarkdown().replace("[[FIN_LECCION]]", "")
+        ? completeLessonMarkdown().replace("## Cierre", "## Sin cierre")
         : completeLessonMarkdown();
       return new Response(JSON.stringify({
         candidates: [{
@@ -111,5 +112,42 @@ describe("solicitud a Gemini 2.5 Flash", () => {
     });
 
     expect(calls).toBe(2);
+  });
+
+  it("espacia los HTTP 503 y no reintenta errores permanentes", async () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    let calls = 0;
+    vi.stubGlobal("fetch", async () => {
+      calls += 1;
+      if (calls < 3) return new Response("No disponible", { status: 503 });
+      return new Response(JSON.stringify({
+        candidates: [{
+          finishReason: "STOP",
+          content: { parts: [{ text: JSON.stringify({
+            title: "Título", summary: "Resumen", markdown: completeLessonMarkdown(),
+          }) }] },
+        }],
+      }), { status: 200 });
+    });
+
+    const request = generateWithGemini({
+      apiKey: "clave-de-prueba", model: "gemini-2.5-flash", prompt: "Lección",
+      timeoutSeconds: 5, maxOutputTokens: 8192,
+    });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(calls).toBe(1);
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(calls).toBe(2);
+    await vi.advanceTimersByTimeAsync(20_000);
+    await request;
+    expect(calls).toBe(3);
+
+    vi.stubGlobal("fetch", async () => new Response("Solicitud inválida", { status: 400 }));
+    await expect(generateWithGemini({
+      apiKey: "clave-de-prueba", model: "gemini-2.5-flash", prompt: "Lección",
+      timeoutSeconds: 5, maxOutputTokens: 8192,
+    })).rejects.toThrow("HTTP 400 después de 1 intento(s)");
   });
 });

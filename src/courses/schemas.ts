@@ -54,9 +54,13 @@ const weekdays = [
 ] as const;
 
 const scheduleSchema = z.discriminatedUnion("type", [
-  z.strictObject({ type: z.literal("weekdays") }),
+  z.strictObject({
+    type: z.literal("weekdays"),
+    startDate: z.string().refine(isCalendarDate, "debe ser una fecha YYYY-MM-DD válida"),
+  }),
   z.strictObject({
     type: z.literal("weekly"),
+    startDate: z.string().refine(isCalendarDate, "debe ser una fecha YYYY-MM-DD válida"),
     days: z.array(z.enum(weekdays)).min(1).refine(
       (days) => new Set(days).size === days.length,
       "no puede contener días repetidos",

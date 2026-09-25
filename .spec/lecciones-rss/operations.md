@@ -4,7 +4,7 @@ Avance automático confirmado por el usuario en Q-001. No se exige confirmación
 
 ## Fecha y elegibilidad
 
-El reloj se recibe explícitamente para poder verificar escenarios. Al tomar el lock del curso se captura un instante UTC y se calcula `generationDate` en `course.timezone`. Esa fecha se mantiene durante toda la operación, incluso si la respuesta termina después de medianoche.
+El reloj se recibe explícitamente para poder verificar escenarios. La fecha local del curso determina hasta qué día hay entregas debidas; en una recuperación, cada lección normal conserva en `generationDate` la fecha debida que salda. `publishedAt` refleja el momento real de aceptación. Las extras manuales usan la fecha local del pedido.
 
 | Estado/situación | Ejecución programada | Ejecución manual |
 |---|---|---|
@@ -15,7 +15,7 @@ El reloj se recibe explícitamente para poder verificar escenarios. Al tomar el 
 | Fecha local con lección normal | Omitir sin API | Puede generar una extra |
 | Syllabus agotado | Omitir sin API | Error sin API |
 
-Cada ejecución manual nueva solicita una extra para un curso elegido, independientemente del calendario y de otras lecciones de ese día. La lección extra se identifica por `generation.trigger: extra` y `generation.requestId`; un rerun del mismo ID se omite. No hay backfill: si Actions no ejecutó ayer, hoy procesa sólo hoy. Una frecuencia nueva requiere extender el validador y evaluador de schedule; un curso nuevo con tipos existentes no requiere cambiar código.
+Cada ejecución manual nueva solicita una extra para un curso elegido, independientemente del calendario y de otras lecciones de ese día. La lección extra se identifica por `generation.trigger: extra` y `generation.requestId`; un rerun del mismo ID se omite. Desde la enmienda v0.9, los días normales sin lección desde `schedule.startDate` quedan pendientes y se recuperan antes del día corriente, dentro del límite por run. `generationDate` identifica el día debido y `publishedAt` el momento real de publicación. Una extra no salda deuda normal. Un curso nuevo debe declarar su fecha de inicio en la configuración.
 
 El workflow compartido debe ejecutarse diariamente a una hora aprobada para las zonas iniciales. Si más adelante se añaden zonas donde el tick cae en otra fecha local, se revisará la frecuencia del tick sin crear un workflow por curso. No se garantiza hora exacta de entrega. El horario 08:00 de cursos históricos no se traslada automáticamente a este sistema.
 
@@ -87,7 +87,7 @@ El RSS reconstruido contiene el texto corregido con el mismo GUID y fecha origin
 
 ## Límites de generación y fallos externos
 
-Una sola llamada por curso y ejecución, sin reintentos automáticos del SDK ni reparaciones mediante nuevas llamadas. Timeout según configuración; rechazo, truncamiento, contenido demasiado grande, esquema incorrecto o paso incorrecto impiden aceptación. Ante 429, error de red o 5xx se informa el fallo y se espera reintento explícito; no se avanza el paso.
+Desde v0.9, un curso puede requerir varias lecciones en un run para saldar fechas anteriores, sujeto a `maxLessonsPerRun`. Cada entrega tiene hasta tres intentos de Gemini; los errores transitorios esperan con backoff exponencial acotado. Rechazo, truncamiento, contenido demasiado grande, esquema incorrecto o paso distinto impiden aceptar esa entrega. Si el proveedor sigue fallando, la fecha y el paso quedan pendientes para otro run; las respuestas válidas de otros cursos se conservan.
 
 No se registran cuerpos crudos ni headers de API. Se informan códigos de error, curso, paso y estado; el resumen del workflow aporta el enlace de ejecución. El modelo y los límites se confirman antes de prueba pagada. No se inspeccionan ni solicitan claves durante la etapa de arquitectura.
 

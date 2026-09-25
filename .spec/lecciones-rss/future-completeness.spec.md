@@ -35,6 +35,8 @@ El alumno quiere lecciones futuras un poco más largas y completas. El prompt ac
 
 El campo JSON `markdown` debe contener encabezados `## Por qué ahora`, `## Explicación y ejemplo`, `## Práctica`, `## Comprobaciones` y `## Cierre`, en ese orden. En `## Comprobaciones` se piden exactamente dos ítems numerados, cada uno con una línea `Respuesta:`. La última línea del cuerpo debe ser `[[FIN_LECCION]]`; esa línea es una marca técnica, no parte de la lección publicada. El adaptador comprueba orden, contenido no vacío, las dos respuestas, al menos 900 palabras de cuerpo y la marca final. `finishReason` debe ser `STOP`.
 
+Enmienda v0.9: la marca sigue pedida al modelo, pero deja de ser un requisito absoluto de aceptación cuando la respuesta termina con `STOP` y satisface las demás comprobaciones de completitud; véase [reliable-generation.spec.md](reliable-generation.spec.md). Ninguna lección histórica se revalida ni edita.
+
 Una respuesta que incumple se reintenta como los demás errores de contenido. Tras agotar los intentos, el run falla antes de `writePreparedLesson`. No se intenta completar una salida parcial ni se agrega automáticamente texto que el modelo no produjo. El tamaño real depende del tema, pero el umbral evita aceptar las lecciones de 221–800 palabras observadas; el marcador y la estructura detectan cortes aun por encima de 900.
 
 ## Criterios de aceptación y verificación
@@ -42,7 +44,7 @@ Una respuesta que incumple se reintenta como los demás errores de contenido. Tr
 | ID | Requisito | Resultado observable | Verificación |
 |---|---|---|---|
 | AC-036 | REQ-020 | El prompt `v2` pide 1000–1500 palabras y las cinco partes con dos respuestas y marca final. La fuente publicada no contiene la marca. | Prueba del prompt y normalización con borrador válido. |
-| AC-037 | NFR-015 | Un borrador menor de 900 palabras, sin una sección/respuesta, sin marca final o con finalización distinta de `STOP` se rechaza antes de cualquier escritura. | Pruebas unitarias de variantes válidas e inválidas y reintentos. |
+| AC-037 | NFR-015, enmendado por AC-041 | Un borrador menor de 900 palabras, sin una sección/respuesta, sin cierre completo o con finalización distinta de `STOP` se rechaza antes de cualquier escritura. La ausencia aislada de marca final se rige por AC-041. | Pruebas unitarias de variantes válidas e inválidas y reintentos. |
 | AC-038 | NFR-015 | Los 20 archivos históricos validan sin modificación y el avance sólo cambia tras aceptar una nueva lección completa. | `npm run validate`, comparación de diff, prueba de integración del escritor y una ejecución real controlada en Actions. |
 
 ## Entrega, recuperación y aprobación

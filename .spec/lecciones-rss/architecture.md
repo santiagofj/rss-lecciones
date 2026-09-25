@@ -34,7 +34,7 @@ flowchart TD
   K --> L[Artifact y deploy explícito a Pages]
 ```
 
-El lote valida todo antes de consumir API. Los cursos se procesan secuencialmente en orden de slug para simplificar diagnóstico. Un fallo de proveedor afecta a su curso; pueden conservarse y desplegarse éxitos de los demás y marcarse el resultado global como fallo parcial.
+El lote valida todo antes de consumir API. Desde v0.9, planifica las fechas pendientes de cada curso en orden y las intercala entre cursos hasta `maxLessonsPerRun`, para que un atraso grande no monopolice el run. Un fallo de proveedor bloquea fechas posteriores de ese curso durante el run, pero permite conservar y desplegar éxitos de los demás; el resultado global se marca como fallo parcial.
 
 ## Siguiente lección: algoritmo determinista
 

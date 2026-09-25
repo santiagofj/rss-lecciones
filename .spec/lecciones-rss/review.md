@@ -14,7 +14,7 @@ La separación entre conversación, fuentes permanentes y distribución es adecu
 | Archivo frente a publicación | Guardar Markdown no significa que la URL esté disponible | Separar aceptación de fuentes, push y despliegue; estado de deploy en Actions |
 | Dos archivos | Dos renombrados no forman una transacción conjunta | Lección como registro autoritativo y reparación de cursor tras interrupción |
 | Ejecuciones repetidas | Un runner nuevo pierde el disco de una ejecución fallida | Dedupe contra fuentes de la rama remota; reconocer que no garantiza una sola llamada pagada |
-| Scheduling | Faltan zona horaria, recuperación de días y política manual | Fecha local por curso, sin backlog automático, máximo una lección por día |
+| Scheduling | Faltan zona horaria, recuperación de días y política manual | V0.9: fecha de inicio por curso, una entrega debida por día y recuperación automática del atraso, acotada por run |
 | URL de Pages | Puede haber prefijo `/nombre-repositorio/` | `site.baseUrl` obligatorio; enlaces absolutos que conservan ese prefijo |
 | Curso terminado | No se define el comportamiento al agotar el temario | `nextStepId: null`; omitir sin invocar API; ampliar el syllabus mediante revisión |
 | Migración | No hay historial ni punto de partida aportado | Revisar cada curso antes de activarlo; no reconstruir conversaciones de memoria |

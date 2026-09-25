@@ -52,7 +52,7 @@ function renderLessonPage(course: LoadedCourse, lesson: Lesson): string {
     `${metadata.title} · ${course.config.title}`,
     `<nav><a href="./">← ${escapeXml(course.config.title)}</a></nav>
 <article>
-  <p class="meta">Lección ${metadata.sequence} · ${escapeXml(metadata.generationDate)}</p>
+  <p class="meta">Lección ${metadata.sequence} · entrega del ${escapeXml(metadata.generationDate)}</p>
   <h1>${escapeXml(metadata.title)}</h1>
   <p><em>${escapeXml(metadata.summary)}</em></p>
   ${renderMarkdown(lesson.markdown)}
@@ -64,7 +64,7 @@ function renderCoursePage(baseUrl: string, course: LoadedCourse): string {
   const feedUrl = `${baseUrl}${course.config.slug}/feed.xml`;
   const lessons = [...course.lessons]
     .sort((left, right) => right.frontmatter.sequence - left.frontmatter.sequence)
-    .map((lesson) => `<li><a href="${lessonFilename(lesson)}">Lección ${lesson.frontmatter.sequence}: ${escapeXml(lesson.frontmatter.title)}</a><br><span class="meta">${escapeXml(lesson.frontmatter.generationDate)}</span></li>`)
+    .map((lesson) => `<li><a href="${lessonFilename(lesson)}">Lección ${lesson.frontmatter.sequence}: ${escapeXml(lesson.frontmatter.title)}</a><br><span class="meta">Entrega del ${escapeXml(lesson.frontmatter.generationDate)}</span></li>`)
     .join("\n");
   const content = lessons.length === 0 ? "<p>La primera lección todavía no fue publicada.</p>" : `<ol>${lessons}</ol>`;
   return document(

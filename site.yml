@@ -10,4 +10,4 @@ generation:
   timeoutSeconds: 120
   maxOutputTokens: 8192
   maxInputBytes: 65536
-  maxLessonsPerRun: 4
+  maxLessonsPerRun: 40

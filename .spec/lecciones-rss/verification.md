@@ -12,6 +12,8 @@ Enmienda v0.7 (2026-09-23): el usuario aprobó volver a Gemini 2.5 Flash. La ver
 
 Enmienda v0.8 (2026-09-23): para lecciones futuras, `npm run validate` validó los cuatro cursos históricos sin modificarlos, `npm run typecheck` pasó, `npm test` pasó (19 pruebas en 3 archivos) y `git diff --check` no reportó errores. Las pruebas cubren el prompt de 1000–1500 palabras, el borrador válido sin marca publicada, el rechazo de respuestas breves/incompletas y el reintento de una respuesta JSON válida sin marca final. AC-036 y AC-037 tienen evidencia local; AC-038 conserva pendiente la ejecución real en Actions y la comprobación de que Gemini 2.5 satisfaga el nuevo contrato.
 
+Enmienda v0.9 (2026-09-25): la evidencia local cubre cinco días programados fallidos y su recuperación junto al día corriente, un curso fallido entre dos válidos, rerun sin duplicados, extras que no saldan deuda y límite por run que conserva el resto. El adaptador acepta textos completos sin marca literal y espacia los HTTP 503. `npm run validate` validó cuatro cursos, `npm run typecheck` pasó, `npm test` pasó (26 pruebas en 3 archivos) y `git diff --check` no reportó errores. La persistencia, Pages y Gemini reales siguen pendientes de un run remoto posterior al push.
+
 La versión aprobada 0.4 contenía nueve documentos, 28 requisitos REQ/NFR y 27 criterios AC. La enmienda v0.5 mantiene los requisitos y agrega AC-028 para la migración de modelo. La comprobación documental verifica cobertura de requisitos, métodos de verificación, enlaces locales y bloques Markdown cerrados. El índice y el registro de decisiones reflejan Q-001 y Q-004 resueltas y estado `APPROVED`. Esto comprueba cobertura documental, no funcionamiento del sistema.
 
 ### Etapa 1 — 2026-09-19

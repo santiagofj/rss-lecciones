@@ -30,7 +30,7 @@ generation:
 
 Todos estos campos son obligatorios. `site.id` es permanente y no se deriva del dominio. `baseUrl` MUST ser HTTPS absoluta sin query ni fragmento y terminar en `/`; incluye el prefijo de Pages. La enmienda v0.7 restaura `gemini-2.5-flash` y sus parámetros de generación tras los errores HTTP 503 observados con 3.8. El modelo 2.5 admite salida estructurada y nivel gratuito para proyectos con acceso; una ejecución real debe confirmar que el proyecto conserva ese acceso. Las lecciones existentes mantienen en `generation.model` el modelo con que fueron creadas.
 
-Los límites numéricos MUST ser enteros positivos. Los valores del ejemplo son recomendaciones iniciales sujetas a pruebas de calidad; no representan límites propios de Gemini. `maxLessonsPerRun` limita llamadas: si hay más cursos elegibles, se rechaza el lote con diagnóstico antes de llamar a la API, evitando dejar siempre sin ejecutar los últimos cursos. Al agregar cursos se revisa este límite de configuración.
+Los límites numéricos MUST ser enteros positivos. Los valores del ejemplo son recomendaciones iniciales sujetas a pruebas de calidad; no representan límites propios de Gemini. Desde v0.9, `maxLessonsPerRun` limita entregas normales intentadas por ejecución; las restantes permanecen pendientes para siguientes runs. La configuración operativa actual usa 40 para poder recuperar cinco días de los cuatro cursos existentes.
 
 ## `course.yml`
 
@@ -45,6 +45,7 @@ language: es-AR
 timezone: America/Buenos_Aires
 schedule:
   type: weekdays
+  startDate: "2026-09-18"
 feed: true
 teaching:
   audience: Alumno con experiencia práctica; explicar los fundamentos
@@ -54,7 +55,7 @@ teaching:
     No cerrar con preguntas triviales ni afirmar que el alumno aprendió.
 ```
 
-Todos los campos son obligatorios. `id` identifica permanentemente el curso y no se reutiliza; `title` y `description` son texto plano no vacío; `status` es `active | paused`; `language` es una etiqueta BCP 47 validada; `timezone` una zona IANA reconocida por el runtime. `teaching.audience` y `teaching.instructions` son strings no vacíos, incluidos en el contexto de generación. El ID permite mantener identidad aunque cambie el dominio; el slug queda congelado tras publicar para evitar romper URLs.
+Todos los campos son obligatorios. Para calendarios `weekly` y `weekdays`, `schedule.startDate` fija la primera entrega debida; no aplica a `manual`. `id` identifica permanentemente el curso y no se reutiliza; `title` y `description` son texto plano no vacío; `status` es `active | paused`; `language` es una etiqueta BCP 47 validada; `timezone` una zona IANA reconocida por el runtime. `teaching.audience` y `teaching.instructions` son strings no vacíos, incluidos en el contexto de generación. El ID permite mantener identidad aunque cambie el dominio; el slug queda congelado tras publicar para evitar romper URLs.
 
 `feed` es booleano: `false` excluye ese curso de todos los feeds, pero conserva su publicación web. Los tres iniciales se habilitan con `feed: true`. Pausar no oculta archivos ni feeds existentes.
 
@@ -164,7 +165,7 @@ generation:
 ---
 ```
 
-Todos los campos son obligatorios. `sequence` es entero positivo, único y consecutivo por curso empezando en 1. `stepId` existe en el syllabus y no se repite en lecciones. `course` coincide con la carpeta y configuración. `title` y `summary` son texto plano no vacío. `publishedAt` es RFC 3339 UTC, se fija al aceptar la fuente y nunca cambia al reconstruir; no certifica disponibilidad en Pages. `generationDate` es fecha civil válida `YYYY-MM-DD`, calculada al iniciar la operación en la zona del curso y utilizada para dedupe. La publicación puede terminar tras medianoche sin alterar esa clave.
+Todos los campos son obligatorios. `sequence` es entero positivo, único y consecutivo por curso empezando en 1. `stepId` existe en el syllabus y no se repite en lecciones. `course` coincide con la carpeta y configuración. `title` y `summary` son texto plano no vacío. `publishedAt` es RFC 3339 UTC, se fija al aceptar la fuente y nunca cambia al reconstruir; no certifica disponibilidad en Pages. `generationDate` es fecha civil válida `YYYY-MM-DD` y, desde v0.9, representa la fecha programada que la lección salda. Puede ser anterior a `publishedAt` si se recupera atraso; las extras manuales usan la fecha local del pedido.
 
 El programa MUST asignar identidad, número, fechas, ruta y datos de auditoría; no la IA. `generation.model` es el modelo enviado al proveedor, `promptVersion` la versión del contrato y prompt local, `contextHash` SHA-256 hexadecimal de 64 caracteres del contexto enviado, serializado de forma canónica. No se guardan clave, headers, prompt bruto ni respuesta cruda.
 
