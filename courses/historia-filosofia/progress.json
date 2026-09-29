@@ -3,7 +3,7 @@
   "startStepId": "estudiar-historia-filosofia",
   "learnerContext": "El alumno conoce superficialmente varios autores desde Platón hasta Nietzsche. El curso debe proporcionar desde cero las herramientas para comprender y reconstruir argumentos, sin convertir el inicio en una evaluación diagnóstica.",
   "cursor": {
-    "lastLessonId": "527d4589-4f76-4ecd-9e23-74e1368889e7",
-    "nextStepId": "aristoteles-acto-potencia"
+    "lastLessonId": "fc8bb1f9-1f71-4d6b-b49b-7031efe995cf",
+    "nextStepId": "aristoteles-etica-politica"
   }
 }
