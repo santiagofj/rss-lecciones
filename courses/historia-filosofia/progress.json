@@ -3,7 +3,7 @@
   "startStepId": "estudiar-historia-filosofia",
   "learnerContext": "El alumno conoce superficialmente varios autores desde Platón hasta Nietzsche. El curso debe proporcionar desde cero las herramientas para comprender y reconstruir argumentos, sin convertir el inicio en una evaluación diagnóstica.",
   "cursor": {
-    "lastLessonId": "4e94b926-5a98-4321-8baa-f659e64651f8",
-    "nextStepId": "leibniz-razon-suficiente"
+    "lastLessonId": "023f1a92-8a0c-440c-a693-2bc5627c641d",
+    "nextStepId": "hobbes-estado"
   }
 }
