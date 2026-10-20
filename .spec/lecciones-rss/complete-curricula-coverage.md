@@ -1,6 +1,6 @@
 # Cobertura de los cursos ampliados
 
-Implementación de [la enmienda aprobada](complete-curricula.spec.md). Cada fila es una lección futura, no una lección ya generada. Las primeras 14 se conservan íntegramente.
+Implementación de [la enmienda aprobada](complete-curricula.spec.md). Cada fila define un paso del recorrido; no acredita que se haya generado o estudiado. Las primeras 14 se conservan íntegramente.
 
 ## audio-digital: 86 lecciones en total
 

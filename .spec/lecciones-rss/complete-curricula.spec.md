@@ -204,7 +204,12 @@ Base remota: `694f689`. El [mapa de cobertura](complete-curricula-coverage.md) d
 - CC-AC-006: instrucciones de Full Stack y briefs orientados a explicar, predecir, comparar y diagnosticar sin stack ni instalación obligatorios. Todos los prompts futuros permanecen dentro del límite de entrada configurado.
 - Construcción local de HTML y RSS completada sin llamar a Gemini; cada feed contiene el número de lecciones realmente publicadas, no todos los pasos del temario.
 
-La fecha preparada de reactivación es `2026-10-20`, en la zona local de los cursos. La comprobación de primera generación y publicación remota se registra después del run real.
+La reactivación se realizó el `2026-10-20`, en la zona local de los cursos. Implementación: commit `3f139b6`; contenido conservado por Actions: `35afd93` y `2451135`.
+
+- [Primera ejecución, 39462661545](https://github.com/santiagofj/rss-lecciones/actions/runs/39462661545): publicó las lecciones 15 de Full Stack y Música. Audio quedó pendiente tras un HTTP 503 y rechazos de formato; el workflow conservó los éxitos y señaló el fallo parcial.
+- [Recuperación, 39463442350](https://github.com/santiagofj/rss-lecciones/actions/runs/39463442350): generó sólo la entrega pendiente de Audio, superó los checks y terminó con publicación exitosa. No duplicó Full Stack ni Música.
+- Comprobación HTTP directa de los cuatro feeds tras el deploy: estado 200; Audio, Full Stack y Música contienen 15 items cada uno y sus nuevas lecciones del 2026-10-20. Filosofía mantiene 33 items y su última publicación de Berkeley.
+- La numeración continuó desde 15 y los siguientes pasos son `periodo-y-fase`, `url-dns-conexion` y `tempo-y-flexibilidad`, respectivamente. No se generaron entregas del intervalo agotado.
 
 ## Fuentes de contraste para los mapas
 
