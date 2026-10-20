@@ -33,6 +33,8 @@ La carpeta de trabajo estaba vacía al iniciar la revisión original. Ahora exis
 | [future-completeness.spec.md](future-completeness.spec.md) | Enmienda aprobada para alargar y validar sólo las lecciones futuras |
 | [reliable-generation.spec.md](reliable-generation.spec.md) | Enmienda aprobada para recuperar entregas diarias fallidas |
 | [short-draft-recovery.spec.md](short-draft-recovery.spec.md) | Enmienda aprobada para ampliar borradores futuros demasiado breves |
+| [complete-curricula.spec.md](complete-curricula.spec.md) | Ampliación aprobada de Audio, Full Stack conceptual y Música, con reactivación diaria sin recuperar el intervalo agotado |
+| [complete-curricula-coverage.md](complete-curricula-coverage.md) | Desglose de los nuevos módulos, lecciones y objetivos observables |
 
 ## Alcance
 

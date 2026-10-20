@@ -2,15 +2,15 @@ schemaVersion: 1
 id: a87e1485-1a86-46d7-b53d-d6f745dbcb11
 slug: audio-digital
 title: Audio digital práctico
-description: Reproducción digital, bit-perfect y diagnóstico con Roon y foobar2000.
+description: "Comprender, configurar y diagnosticar audio digital: señal, formatos, procesamiento, conversión, medición y escucha crítica con Roon y foobar2000."
 status: active
 language: es-AR
 timezone: America/Argentina/Buenos_Aires
 schedule:
   type: weekly
-  startDate: 2026-09-19
+  startDate: 2026-10-20
   days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
 feed: true
 teaching:
   audience: Usuario con experiencia práctica inicial en reproducción digital.
-  instructions: Mantener un tono técnico, profesional y preciso. Priorizar pruebas concretas y observables. Explicar un concepto por vez, evitar matemática innecesaria y usar Roon, foobar2000 y el indicador del DAC cuando corresponda.
+  instructions: "Mantener un tono técnico, profesional y preciso. Introducir un concepto por vez desde un problema observable, con matemática sólo cuando aporte comprensión. Conservar el enfoque práctico con Roon y foobar2000, explicando funciones sin inventar menús de una versión. Ofrecer datos de ejemplo o alternativas sin instrumental ni compras. Distinguir datos, mediciones, hipótesis y audibilidad. Usar el objetivo y la práctica del paso actual; recuperar conceptos anteriores sólo cuando sean necesarios, sin atribuir dominio ni ejercicios realizados al alumno. En cada integración, conectar los conceptos del módulo con los anteriores. No presentar bit-perfect, mayor resolución o un formato como garantía de mejor sonido."

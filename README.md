@@ -4,16 +4,22 @@ Este repositorio genera cuatro cursos personales con Gemini y los publica como p
 
 ## Cursos
 
-- Audio digital práctico
-- Full Stack progresivo
-- Historia de la filosofía
-- Música clásica desde cero
+| Curso | Lecciones del recorrido | Enfoque |
+|---|---:|---|
+| Audio digital práctico | 86 | Señal, formatos, procesamiento, reproducción, medición y escucha crítica. |
+| Full Stack progresivo | 130 | Comprensión conceptual de frontend, backend, datos, seguridad, arquitectura y operación, sin stack obligatorio. |
+| Historia de la filosofía | 63 | Recorrido histórico de problemas y argumentos. |
+| Música clásica desde cero | 95 | Lenguaje, instrumentos, formas, historia, repertorio e interpretación. |
 
 Cada curso mantiene su temario, progreso y lecciones dentro de `courses/<slug>/`. Publicar una lección avanza automáticamente el cursor al siguiente paso. Una corrección posterior puede editar el mismo archivo para conservar su identificador y su URL.
+
+La [ampliación aprobada](.spec/lecciones-rss/complete-curricula.spec.md) conserva las primeras 14 lecciones de Audio, Full Stack y Música y añade módulos con prácticas, repasos e integración. El [mapa de cobertura](.spec/lecciones-rss/complete-curricula-coverage.md) enumera las futuras lecciones y sus objetivos. Los totales describen el temario disponible, no cuántas lecciones se han publicado ni qué conocimientos domina el alumno. El motor se detiene al terminar los pasos; no inventa temas para continuar indefinidamente.
 
 ## Horario
 
 El flujo `.github/workflows/publish.yml` se ejecuta todos los días a las 03:00 UTC, equivalente a las 00:00 de Buenos Aires. Corresponde una lección normal por curso y día programado. Si una entrega falla, queda pendiente: la siguiente ejecución genera primero las atrasadas y luego la del día, sin saltar pasos. Puede haber varias publicaciones el mismo día para recuperar el atraso, hasta 40 lecciones por run; lo que exceda ese límite sigue pendiente. Cada curso declara su `schedule.startDate`.
+
+Para la ampliación de Audio, Full Stack y Música, `schedule.startDate` queda preparado en `2026-10-20`: es el inicio del nuevo tramo de entregas debidas, no una modificación de las fechas históricas. No se recupera el intervalo agotado desde el 3 de octubre. Si se publica esta ampliación otro día, hay que fijar esa fecha local de reactivación antes de activarla. Después se mantiene fija, también ante fallos y reintentos; así los errores posteriores continúan siendo recuperables. Filosofía conserva su calendario.
 
 Para pedir **otra lección** de un curso, inicia `Generar y publicar lecciones` desde GitHub Actions con el campo `course` (por ejemplo, `fullstack`). También puedes ejecutar:
 

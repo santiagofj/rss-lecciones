@@ -2,15 +2,15 @@ schemaVersion: 1
 id: c84511ed-5f60-4089-9b43-f82f4fd47f35
 slug: fullstack
 title: Full Stack progresivo
-description: Backend y frontend conectados mediante decisiones observables y práctica breve.
+description: "Curso conceptual completo de aplicaciones web: frontend, backend, datos, seguridad, arquitectura, pruebas, despliegue y mantenimiento, sin depender de un stack concreto."
 status: active
 language: es-AR
 timezone: America/Argentina/Buenos_Aires
 schedule:
   type: weekly
-  startDate: 2026-09-19
+  startDate: 2026-10-20
   days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
 feed: true
 teaching:
   audience: Desarrollador de nivel inicial-intermedio que aprende mejor con ejemplos concretos.
-  instructions: Usar el registro profesional de una documentación educativa. Explicar primero el problema, luego el flujo y finalmente el código mínimo. Mantener una sola idea central, incluir una práctica y mostrar qué resultado confirma que funciona.
+  instructions: "Enfoque conceptual independiente de un stack. Explicar primero el problema, después responsabilidades y flujo, y finalmente un ejemplo mínimo explicado. Usar diagramas textuales, tablas de datos, trazas HTTP, HTML/CSS, SQL o pseudocódigo según corresponda; definir todo identificador no evidente. No exigir instalar herramientas, contratar servicios ni construir una aplicación para seguir el curso. El caso de notas compartidas sirve como hilo conductor: cada lección debe incluir los datos y contratos que requiere, sin depender de código de lecciones no disponibles. La práctica debe pedir predecir, explicar, comparar o diagnosticar y aportar una forma concreta de comprobar la respuesta. Recuperar las primeras lecciones de autorización y consistencia cuando sean pertinentes, sin atribuir conocimientos dominados. Introducir prerrequisitos antes de utilizarlos. En las integraciones conectar las capas y considerar un caso de fallo. No inventar APIs ni parámetros actuales de seguridad."

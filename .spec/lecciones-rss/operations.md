@@ -6,6 +6,8 @@ Avance automático confirmado por el usuario en Q-001. No se exige confirmación
 
 El reloj se recibe explícitamente para poder verificar escenarios. La fecha local del curso determina hasta qué día hay entregas debidas; en una recuperación, cada lección normal conserva en `generationDate` la fecha debida que salda. `publishedAt` refleja el momento real de aceptación. Las extras manuales usan la fecha local del pedido.
 
+La [ampliación de cursos completos aprobada el 2026-10-20](complete-curricula.spec.md) reanuda Audio digital, Full Stack y Música sin recuperar el intervalo agotado desde el 3 de octubre. Sólo para esos tres cursos, `schedule.startDate` marca el inicio del nuevo tramo de entregas debidas. La fecha preparada es `2026-10-20`; si la activación ocurre después, se ajusta antes de publicar. Se conservan las lecciones históricas, su identidad y fechas, el contexto del alumno y el calendario de Filosofía. Una vez reactivados, no se vuelve a mover `startDate`: un fallo posterior deja una entrega pendiente y conserva la recuperación habitual.
+
 | Estado/situación | Ejecución programada | Ejecución manual |
 |---|---|---|
 | `paused` | Omitir | Error; activar exige editar configuración |
