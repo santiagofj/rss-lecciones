@@ -3,7 +3,7 @@
   "startStepId": "estudiar-historia-filosofia",
   "learnerContext": "El alumno conoce superficialmente varios autores desde Platón hasta Nietzsche. El curso debe proporcionar desde cero las herramientas para comprender y reconstruir argumentos, sin convertir el inicio en una evaluación diagnóstica.",
   "cursor": {
-    "lastLessonId": "0a73db0a-d214-46f1-87cc-a294c6369de6",
-    "nextStepId": "rousseau-libertad"
+    "lastLessonId": "60d58ed6-4271-4cd2-9394-56c62f4b1b91",
+    "nextStepId": "kant-conocimiento"
   }
 }
