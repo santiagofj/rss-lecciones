@@ -3,7 +3,7 @@
   "startStepId": "estudiar-historia-filosofia",
   "learnerContext": "El alumno conoce superficialmente varios autores desde Platón hasta Nietzsche. El curso debe proporcionar desde cero las herramientas para comprender y reconstruir argumentos, sin convertir el inicio en una evaluación diagnóstica.",
   "cursor": {
-    "lastLessonId": "488a5681-8ac8-489c-abd5-d2cc3c731bfa",
-    "nextStepId": "kant-estetica-historia"
+    "lastLessonId": "c97bb6dd-bc56-42a9-9467-cdaf646323ec",
+    "nextStepId": "hegel-dialectica"
   }
 }
