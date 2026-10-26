@@ -3,7 +3,7 @@
   "startStepId": "verificar-signal-path",
   "learnerContext": "El curso anterior llegó hasta headroom digital. El alumno usa Roon y foobar2000. Cuantización y dither resultaron confusos, por lo que esta etapa comienza con diagnóstico práctico y evidencia visible.",
   "cursor": {
-    "lastLessonId": "a01011f4-d9cb-40be-8a79-0af62a8a96e5",
-    "nextStepId": "integracion-senal"
+    "lastLessonId": "4b618e13-8174-4651-b38e-130718e69c8b",
+    "nextStepId": "banda-y-nyquist"
   }
 }
