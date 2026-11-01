@@ -3,7 +3,7 @@
   "startStepId": "ownership-recursos",
   "learnerContext": "El alumno ya estudió event loop, promesas, HTTP, estado, cookies, sesiones y la diferencia entre autenticación y autorización. Su respuesta más reciente identificó correctamente un fallo de autorización como HTTP 403.",
   "cursor": {
-    "lastLessonId": "1cf1c7c5-ccc9-49da-b2ad-cc2ad2abc673",
-    "nextStepId": "errores-y-efectos"
+    "lastLessonId": "52ca0826-85d6-477d-97b9-49dba56bf6ee",
+    "nextStepId": "tiempo-y-asincronia"
   }
 }

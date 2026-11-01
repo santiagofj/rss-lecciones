@@ -3,7 +3,7 @@
   "startStepId": "estudiar-historia-filosofia",
   "learnerContext": "El alumno conoce superficialmente varios autores desde Platón hasta Nietzsche. El curso debe proporcionar desde cero las herramientas para comprender y reconstruir argumentos, sin convertir el inicio en una evaluación diagnóstica.",
   "cursor": {
-    "lastLessonId": "3f825fc0-63e2-4bc5-9aea-9aca43f70904",
-    "nextStepId": "marx-alienacion"
+    "lastLessonId": "a3b12fb0-edaf-4b14-8e19-c99f78c1082d",
+    "nextStepId": "mill-utilidad-libertad"
   }
 }
