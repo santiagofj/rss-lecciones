@@ -104,24 +104,46 @@ export const courseSchema = z.strictObject({
   timezone: z.string().refine(isTimeZone, "debe ser una zona horaria IANA válida"),
   schedule: scheduleSchema,
   feed: z.boolean(),
+  continuation: z.strictObject({
+    type: z.literal("card-games"),
+    lowWaterMark: z.int().min(1).max(10),
+    batchSize: z.int().min(2).max(10),
+    excludedGames: z.array(nonEmptyText).min(1),
+  }).optional(),
   teaching: z.strictObject({
     audience: nonEmptyText,
     instructions: nonEmptyText,
   }),
 });
 
+export const syllabusStepSchema = z.strictObject({
+  id: slug,
+  unitId: slug,
+  topicId: slug,
+  title: nonEmptyText,
+  objective: nonEmptyText,
+  brief: nonEmptyText,
+  game: z.strictObject({
+    key: slug,
+    aliases: z.array(nonEmptyText).min(1),
+    sources: z.array(z.url({ protocol: /^https$/ })).min(1),
+  }).optional(),
+});
+
 export const syllabusFrontmatterSchema = z.strictObject({
   schemaVersion: z.literal(1),
-  steps: z.array(
-    z.strictObject({
-      id: slug,
-      unitId: slug,
-      topicId: slug,
-      title: nonEmptyText,
-      objective: nonEmptyText,
-      brief: nonEmptyText,
-    }),
-  ).min(1),
+  steps: z.array(syllabusStepSchema).min(1),
+});
+
+export const courseExtensionSchema = z.strictObject({
+  schemaVersion: z.literal(1),
+  afterStepId: slug,
+  generatedAt: z.iso.datetime({ offset: true }),
+  steps: z.array(syllabusStepSchema).min(1).max(10),
+  research: z.strictObject({
+    text: nonEmptyText,
+    sources: z.array(z.strictObject({ title: nonEmptyText, url: z.url({ protocol: /^https$/ }) })).min(1),
+  }),
 });
 
 export const progressSchema = z.strictObject({

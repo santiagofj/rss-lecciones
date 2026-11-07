@@ -11,7 +11,7 @@ export type GenerationTask =
 
 function pendingDates(course: LoadedCourse, now: Date): string[] {
   if (course.config.status !== "active" || course.config.schedule.type === "manual"
-    || course.progress.cursor.nextStepId === null) {
+    || (course.progress.cursor.nextStepId === null && course.config.continuation === undefined)) {
     return [];
   }
 
@@ -90,7 +90,7 @@ export function selectCourses(
     if (course.config.status !== "active") {
       throw new Error(`El curso ${request.courseSlug} está pausado`);
     }
-    if (course.progress.cursor.nextStepId === null) {
+    if (course.progress.cursor.nextStepId === null && course.config.continuation === undefined) {
       throw new Error(`El curso ${request.courseSlug} no tiene pasos pendientes`);
     }
     return [course];

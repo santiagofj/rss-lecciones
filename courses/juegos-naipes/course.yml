@@ -1,0 +1,51 @@
+schemaVersion: 1
+id: 9faa1864-28f6-4b5c-b601-61dab69f8d8f
+slug: juegos-naipes
+title: Un juego de naipes por día
+description: "Juegos de cartas de distintas tradiciones, uno distinto por día, con reglas simples y completas para jugar. Sin solitarios ni juegos de casino."
+status: active
+language: es-AR
+timezone: America/Argentina/Buenos_Aires
+schedule:
+  type: weekly
+  startDate: 2026-11-08
+  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+feed: true
+continuation:
+  type: card-games
+  lowWaterMark: 5
+  batchSize: 7
+  excludedGames: [truco, conga, chinchón, canasta, rummy, escoba, poker, póquer, blackjack, baccarat, bacará, casino, roulette, ruleta, solitario, solitaire]
+teaching:
+  audience: "Persona adulta que conoce truco, conga, canasta, rummy y Escoba y quiere descubrir otros juegos de cartas."
+  instructions: >-
+    Enseñar exactamente el juego del paso actual, completo y en una única entrega.
+    Usar lenguaje simple y directo, sin infantilizar ni dar por estudiadas las lecciones anteriores.
+    Dentro de Explicación y ejemplo, usar subtítulos para ficha del juego, preparación,
+    turnos, final de mano, puntuación y victoria. Identificar número de jugadores,
+    baraja, cartas retiradas, objetivo, valores, jerarquías, dirección de juego,
+    quién comienza, obligaciones, reposición, excepciones y desempates.
+    Explicar brevemente palo, baza, triunfo y cualquier término al usarlo,
+    con el significado que tenga en este juego. Distinguir valor para ganar
+    una baza, valor en puntos y posición en una secuencia cuando sean diferentes.
+    Seguir la variante y las decisiones del brief: no mezclar reglamentos ni
+    sumar reglas de otros juegos. Identificar las convenciones de mesa como tales.
+    Dar contexto geográfico breve sin inventar orígenes, antigüedad ni rankings.
+    Incluir un ejemplo legal con decisiones explicadas y un recuento comprobable
+    cuando haya puntuación. La práctica permite ensayar una situación con cartas
+    físicas sin compañeros; no es una entrega de un juego solitario.
+    Dar consejos iniciales y errores comunes. Mantener las dos comprobaciones
+    con respuestas del formato común y un cierre breve que nombre el próximo juego.
+    Ampliar ejemplos antes que repetir ideas para alcanzar la extensión.
+    En juegos complejos, priorizar reglas completas y ejemplos claros frente a
+    la extensión orientativa, sin convertir la explicación en un catálogo de variantes.
+    Incluir las fuentes del brief como enlaces Markdown junto a las reglas
+    correspondientes; fueron consultadas al preparar el temario. No afirmar
+    que se consultaron en tiempo real, no inventar enlaces ni citar texto literal.
+    Señalar al final las diferencias regionales principales sin desarrollar
+    otro reglamento. No usar apuestas, dinero, solitarios ni juegos de casino.
+    No dedicar entregas a truco, conga, canasta, rummy ni Escoba. Scopa es un juego
+    diferente de Escoba: explicar su captura por igualdad, no por suma de quince.
+    El recorrido continúa automáticamente con juegos nuevos. No anunciar un fin
+    de curso al terminar la reserva inicial ni prometer un próximo título que
+    todavía no figure en los pasos disponibles.

@@ -1,6 +1,6 @@
 # Lecciones RSS
 
-Este repositorio genera cuatro cursos personales con Gemini y los publica como páginas HTML y feeds RSS mediante GitHub Actions.
+Este repositorio genera cursos personales con Gemini y los publica como páginas HTML y feeds RSS mediante GitHub Actions.
 
 ## Cursos
 
@@ -10,10 +10,15 @@ Este repositorio genera cuatro cursos personales con Gemini y los publica como p
 | Full Stack progresivo | 130 | Comprensión conceptual de frontend, backend, datos, seguridad, arquitectura y operación, sin stack obligatorio. |
 | Historia de la filosofía | 63 | Recorrido histórico de problemas y argumentos. |
 | Música clásica desde cero | 95 | Lenguaje, instrumentos, formas, historia, repertorio e interpretación. |
+| Un juego de naipes por día | Abierto; 15 juegos iniciales | Juegos de distintas tradiciones, sin solitarios ni casino; comienza con Brisca. |
 
 Cada curso mantiene su temario, progreso y lecciones dentro de `courses/<slug>/`. Publicar una lección avanza automáticamente el cursor al siguiente paso. Una corrección posterior puede editar el mismo archivo para conservar su identificador y su URL.
 
-La [ampliación aprobada](.spec/lecciones-rss/complete-curricula.spec.md) conserva las primeras 14 lecciones de Audio, Full Stack y Música y añade módulos con prácticas, repasos e integración. El [mapa de cobertura](.spec/lecciones-rss/complete-curricula-coverage.md) enumera las futuras lecciones y sus objetivos. Los totales describen el temario disponible, no cuántas lecciones se han publicado ni qué conocimientos domina el alumno. El motor se detiene al terminar los pasos; no inventa temas para continuar indefinidamente.
+La [ampliación aprobada](.spec/lecciones-rss/complete-curricula.spec.md) conserva las primeras 14 lecciones de Audio, Full Stack y Música y añade módulos con prácticas, repasos e integración. El [mapa de cobertura](.spec/lecciones-rss/complete-curricula-coverage.md) enumera las futuras lecciones y sus objetivos. Los totales describen el temario disponible, no cuántas lecciones se han publicado ni qué conocimientos domina el alumno. Los cursos finitos se detienen al terminar sus pasos.
+
+[Naipes](.spec/lecciones-rss/juegos-naipes.spec.md) comienza el `2026-11-08` y no tiene un total de entregas ni una fecha final. Cuando quedan cinco juegos preparados o menos, el mismo proceso diario investiga hasta siete nuevos con Google Search y Gemini y los incorpora en lotes documentados dentro de `courses/juegos-naipes/continuation/`. Comprueba identidades, nombres, alias y fuentes contra todo el recorrido, aunque la investigación sólo recibe una ventana reciente para acotar el contexto. No se aceptan lotes sin fuentes de búsqueda. La generación no garantiza por sí sola exactitud editorial ni detecta toda equivalencia semántica entre variantes.
+
+Los lotes se publican como archivos completos; el historial anterior permanece intacto. Si la investigación falla, se usa la reserva y se reintenta otro día. Si no quedan juegos preparados, la entrega queda pendiente y el curso conserva su continuación automática. El estado `paused` detiene tanto ampliaciones como lecciones. Los tamaños de reserva y lote son parámetros operativos, no un límite del curso. Se conserva el proveedor y el secreto existentes; la ampliación hace solicitudes adicionales de búsqueda y extracción cuando es necesaria.
 
 ## Horario
 
@@ -51,6 +56,7 @@ Después de activar GitHub Pages:
 - `https://santiagofj.github.io/rss-lecciones/fullstack/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/historia-filosofia/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/musica-clasica/feed.xml`
+- `https://santiagofj.github.io/rss-lecciones/juegos-naipes/feed.xml` (disponible después del primer despliegue que incluya el curso)
 
 ## Comandos de comprobación
 

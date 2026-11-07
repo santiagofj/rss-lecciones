@@ -1,5 +1,7 @@
 import { validateRepository } from "../courses/validate-repository.js";
 import type { LoadedRepository } from "../courses/types.js";
+import { saveCourseExtension, type CourseExtension } from "../courses/extensions.js";
+import { generateCourseExtension, type ExtensionInput } from "../planning/continue-card-games.js";
 import { generateWithGemini, type GenerateWithGeminiOptions, type LessonDraft } from "./gemini.js";
 import { buildLessonPrompt } from "./prompt.js";
 import { planGenerationTasks, planScheduledTasks, type GenerationRequest, type GenerationTask } from "./selection.js";
@@ -24,28 +26,59 @@ type BatchOptions = {
   request: GenerationRequest;
   apiKey: string;
   generateDraft?: (options: GenerateWithGeminiOptions) => Promise<LessonDraft>;
+  extendCourse?: (input: ExtensionInput) => Promise<CourseExtension>;
   clock?: () => Date;
 };
 
 export async function runGenerationBatch(options: BatchOptions): Promise<BatchResult> {
   const generateDraft = options.generateDraft ?? generateWithGemini;
+  const extendCourse = options.extendCourse ?? generateCourseExtension;
   const tasks = planGenerationTasks(options.repository, options.now, options.request);
   const blockedCourses = new Set<string>();
+  const extensionFailures = new Map<string, string>();
   const failures: GenerationFailure[] = [];
   let saved = 0;
   let repository = options.repository;
 
   for (const task of tasks) {
     if (blockedCourses.has(task.courseSlug)) continue;
-    const course = repository.courses.find((item) => item.config.slug === task.courseSlug);
+    let course = repository.courses.find((item) => item.config.slug === task.courseSlug);
     if (course === undefined) {
       throw new Error(`Desapareció el curso ${task.courseSlug} durante la generación`);
+    }
+    const policy = course.config.continuation;
+    const nextStepId = course.progress.cursor.nextStepId;
+    const nextIndex = course.syllabus.frontmatter.steps.findIndex((item) => item.id === nextStepId);
+    const remaining = nextIndex < 0 ? 0 : course.syllabus.frontmatter.steps.length - nextIndex;
+    if (policy !== undefined && remaining <= policy.lowWaterMark && !extensionFailures.has(task.courseSlug)) {
+      let extension: CourseExtension | undefined;
+      try {
+        console.log(`Ampliando automáticamente ${task.courseSlug}: quedan ${remaining} juegos preparados`);
+        extension = await extendCourse({ course, site: repository.site, apiKey: options.apiKey });
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Error al ampliar el recorrido";
+        extensionFailures.set(task.courseSlug, message);
+        console.warn(`Ampliación pendiente de ${task.courseSlug}: ${message}`);
+      }
+      if (extension !== undefined) {
+        await saveCourseExtension(options.root, course, extension);
+        const expanded = await validateRepository(options.root);
+        if (!expanded.ok) throw new Error(`El lote de ${task.courseSlug} no cumple el contrato del repositorio`);
+        repository = expanded.repository;
+        course = repository.courses.find((item) => item.config.slug === task.courseSlug);
+        if (course === undefined) throw new Error(`Desapareció ${task.courseSlug} tras ampliar el recorrido`);
+      }
     }
     const step = course.syllabus.frontmatter.steps.find(
       (item) => item.id === course.progress.cursor.nextStepId,
     );
     if (step === undefined) {
-      console.log(`Curso ${task.courseSlug} agotado; no hay más pasos para fechas pendientes`);
+      if (policy !== undefined) {
+        failures.push({ courseSlug: task.courseSlug, generationDate: task.generationDate,
+          message: extensionFailures.get(task.courseSlug) ?? "La ampliación no aportó un próximo juego" });
+      } else {
+        console.log(`Curso ${task.courseSlug} agotado; no hay más pasos para fechas pendientes`);
+      }
       blockedCourses.add(task.courseSlug);
       continue;
     }

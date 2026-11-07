@@ -10,6 +10,7 @@ import {
   syllabusFrontmatterSchema,
 } from "./schemas.js";
 import { parseFrontmatter, parseJson, parseYaml, validateSchema } from "./parse.js";
+import { loadCourseExtensions } from "./extensions.js";
 import type {
   CourseConfig,
   Lesson,
@@ -306,6 +307,7 @@ async function loadCourse(
     progress: progress.value,
     lessons: lessons.value,
   };
+  issues.push(...await loadCourseExtensions(root, value));
   issues.push(...validateCourseRelationships(root, value));
   return issues.length > 0 ? { issues } : { value, issues: [] };
 }
