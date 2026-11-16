@@ -3,7 +3,7 @@
   "startStepId": "estudiar-historia-filosofia",
   "learnerContext": "El alumno conoce superficialmente varios autores desde Platón hasta Nietzsche. El curso debe proporcionar desde cero las herramientas para comprender y reconstruir argumentos, sin convertir el inicio en una evaluación diagnóstica.",
   "cursor": {
-    "lastLessonId": "103d7234-3a72-4abf-bf67-534b58256047",
-    "nextStepId": "gadamer-hermeneutica"
+    "lastLessonId": "12a8def4-6f2b-4d41-9615-938d0167402d",
+    "nextStepId": "foucault-poder"
   }
 }
