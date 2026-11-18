@@ -27,6 +27,15 @@ async function main(): Promise<void> {
     reportInvalidRepository(initial);
   }
 
+  if (process.env.GITHUB_EVENT_NAME === "workflow_dispatch" && process.env.PUBLISH_ONLY === "true") {
+    if (process.env.RECOVER_PENDING === "true" || process.env.EXTRA_COURSE?.trim()) {
+      throw new Error("Usa publish_only sin recover ni course");
+    }
+    await buildPublicSite(root, initial.repository);
+    console.log("Sitio HTML y feeds RSS reconstruidos desde las lecciones guardadas en Git");
+    return;
+  }
+
   const now = new Date();
   const request = requestFromEnvironment(process.env);
   const tasks = planGenerationTasks(initial.repository, now, request);

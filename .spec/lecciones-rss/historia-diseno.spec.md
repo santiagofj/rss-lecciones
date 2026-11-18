@@ -29,6 +29,7 @@ El usuario aprobó el 18 de noviembre de 2026 la creación del nuevo curso RSS, 
 - DIS-DEC-003. Renderizar una figura a partir de metadatos validados, con URLs HTTPS y salida escapada. Se usan direcciones absolutas para los clientes RSS. Una imagen externa puede dejar de estar disponible o ser ocultada por el lector; el pie y el enlace al catálogo conservan la referencia a la pieza.
 - DIS-DEC-004. El alta reutiliza el calendario, el proveedor y la recuperación de entregas pendientes del sitio. Una respuesta inválida o un límite de cuota conserva la fecha pendiente. El curso se puede pausar con su configuración habitual.
 - DIS-DEC-005. La entrega de alta del 18 de noviembre se redactó y revisó con Codex. Se registra con esa procedencia y consume la fecha inicial. Las entregas siguientes pasan por la generación diaria de Gemini a partir de Arts and Crafts.
+- DIS-DEC-006. El flujo manual puede publicar las fuentes guardadas mediante `publish_only`. La publicación de alta lo usa cuando Gemini rechaza toda la generación por cuota, como ocurrió en el run `44311278566`. Esta opción valida las fuentes y construye el mismo sitio y RSS. La programación diaria conserva el modo de generación habitual.
 
 ## Criterios de aceptación
 

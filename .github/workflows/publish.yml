@@ -15,6 +15,11 @@ on:
         required: false
         default: false
         type: boolean
+      publish_only:
+        description: "Publicar las lecciones guardadas en Git sin generar nuevas"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: lecciones-diarias
@@ -56,6 +61,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           EXTRA_COURSE: ${{ inputs.course }}
           RECOVER_PENDING: ${{ inputs.recover }}
+          PUBLISH_ONLY: ${{ inputs.publish_only }}
 
       - name: Verificar resultado
         run: |
