@@ -43,7 +43,15 @@ async function addCourse(root: string, slug: string, open: boolean): Promise<voi
   const data = syllabusFrontmatterSchema.parse(syllabus.value);
   data.steps = data.steps.slice(0, 1);
   await writeFile(path.join(directory, "syllabus.md"), `---\n${stringify(data)}---\n# Prueba\n`);
-  await writeFile(path.join(directory, "progress.json"), await readFile("courses/juegos-naipes/progress.json"));
+  const firstStep = data.steps[0];
+  if (firstStep === undefined) throw new Error("Falta el paso inicial del temario de prueba");
+  // The fixture has no lessons, even after the publishing workflow advances the real course.
+  await writeFile(path.join(directory, "progress.json"), JSON.stringify({
+    schemaVersion: 1,
+    startStepId: firstStep.id,
+    learnerContext: "Curso de prueba recién iniciado.",
+    cursor: { lastLessonId: null, nextStepId: firstStep.id },
+  }));
 }
 
 async function repository(root: string) {
