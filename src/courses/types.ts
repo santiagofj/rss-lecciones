@@ -10,6 +10,7 @@ import type {
 
 export type SiteConfig = z.infer<typeof siteConfigSchema>;
 export type CourseConfig = z.infer<typeof courseSchema>;
+export type LessonFormat = NonNullable<CourseConfig["teaching"]["lessonFormat"]>;
 export type SyllabusFrontmatter = z.infer<typeof syllabusFrontmatterSchema>;
 export type Progress = z.infer<typeof progressSchema>;
 export type LessonFrontmatter = z.infer<typeof lessonFrontmatterSchema>;

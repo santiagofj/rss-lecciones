@@ -6,14 +6,14 @@ import path from "node:path";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { validateRepository } from "../src/courses/validate-repository.js";
-import { buildLessonPrompt, LESSON_PROMPT_VERSION } from "../src/generation/prompt.js";
+import { buildLessonPrompt, EXPOSITORY_PROMPT_VERSION, LESSON_PROMPT_VERSION } from "../src/generation/prompt.js";
 import { generateWithGemini } from "../src/generation/gemini.js";
 import { runGenerationBatch } from "../src/generation/run-batch.js";
 import { planScheduledTasks, requestFromEnvironment, selectCourses, type GenerationRequest } from "../src/generation/selection.js";
 import { writePreparedLesson } from "../src/generation/write-lesson.js";
 import { selectNextLesson } from "../src/planning/next-lesson.js";
-import { renderFeed } from "../src/publishing/site.js";
-import { completeLessonMarkdown } from "./lesson-draft-fixture.js";
+import { buildPublicSite, renderFeed } from "../src/publishing/site.js";
+import { completeLessonMarkdown, expositoryLessonMarkdown } from "./lesson-draft-fixture.js";
 
 const temporaryDirectories: string[] = [];
 
@@ -49,6 +49,7 @@ type CourseFixtureOptions = {
   schedule?: "manual" | "weekdays" | "weekly";
   scheduleStartDate?: string;
   additionalSteps?: number;
+  expository?: boolean;
 };
 
 async function createCourse(
@@ -73,7 +74,7 @@ schedule:
 ${options.schedule === undefined || options.schedule === "manual" ? "" : `  startDate: ${options.scheduleStartDate ?? "2026-09-23"}\n`}
 ${options.schedule === "weekly" ? "  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]\n" : ""}feed: true
 teaching:
-  audience: Alumno de prueba
+${options.expository ? "  lessonFormat: expository\n" : ""}  audience: Alumno de prueba
   instructions: Explicar con claridad y ejemplos concretos.
 `,
   );
@@ -434,6 +435,65 @@ describe("recuperación de entregas diarias", () => {
     summary: "Resumen de prueba",
     markdown: completeLessonMarkdown().replace("[[FIN_LECCION]]", "").trim(),
   };
+
+  test("genera, amplía y publica la siguiente lección de Filosofía en formato expositivo", async () => {
+    const root = await createRoot();
+    await createCourse(root, "historia-filosofia", {
+      status: "active", schedule: "weekly", scheduleStartDate: "2026-09-25", lesson: true, expository: true,
+    });
+    const oldLesson = path.join(root, "courses", "historia-filosofia", "lessons", "001-introduccion.md");
+    const oldSource = await readFile(oldLesson, "utf8");
+    const initial = await validateRepository(root);
+    if (!initial.ok) throw new Error(JSON.stringify(initial.issues));
+
+    const requests: string[] = [];
+    vi.stubGlobal("fetch", async (_url: string, init: RequestInit) => {
+      requests.push(String(init.body));
+      const draft = {
+        title: "Saber y poder",
+        summary: "Contexto y argumentos",
+        markdown: expositoryLessonMarkdown(requests.length === 1 ? 1 : 50),
+      };
+      return Response.json({ candidates: [{
+        finishReason: "STOP",
+        content: { parts: [{ text: JSON.stringify(draft) }] },
+      }] });
+    });
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.useFakeTimers();
+
+    const batch = runGenerationBatch({
+      root, repository: initial.repository, now, request: { kind: "scheduled" }, apiKey: "clave-de-prueba",
+    });
+    await vi.waitFor(() => expect(warn).toHaveBeenCalledWith(expect.stringContaining("menos de 900 palabras")));
+    await vi.advanceTimersByTimeAsync(10_000);
+    expect(await batch).toEqual({ saved: 1, failures: [], pending: [] });
+    vi.useRealTimers();
+
+    expect(requests).toHaveLength(2);
+    expect(requests[0]).toContain("## Contexto histórico y conceptual");
+    expect(requests[0]).toContain("Escribe un artículo académico");
+    expect(requests[0]).toContain("Integra los ejemplos ya resueltos");
+    expect(requests[1]).toContain("las tres secciones expositivas en orden");
+    expect(requests.every((request) => !/## (Práctica|Comprobaciones)/u.test(request))).toBe(true);
+
+    const final = await validateRepository(root);
+    if (!final.ok) throw new Error(JSON.stringify(final.issues));
+    const course = final.repository.courses[0];
+    expect(course?.lessons.at(-1)?.frontmatter).toMatchObject({
+      sequence: 2, stepId: "profundizacion", generationDate: "2026-09-25",
+      generation: { promptVersion: EXPOSITORY_PROMPT_VERSION },
+    });
+    expect(await readFile(oldLesson, "utf8")).toBe(oldSource);
+    await buildPublicSite(root, final.repository);
+    const publicCourse = path.join(root, "public", "historia-filosofia");
+    const feed = await readFile(path.join(publicCourse, "feed.xml"), "utf8");
+    const page = await readFile(path.join(publicCourse, "002-profundizacion.html"), "utf8");
+    expect(feed).toContain("<title>Saber y poder</title>");
+    expect(feed).toContain("<title>Primera lección</title>");
+    expect(page).toContain("<h2>Desarrollo</h2>");
+  });
 
   test("dos respuestas cortas y un 429 no escriben la lección ni cancelan su deuda", async () => {
     const root = await createRoot(40);

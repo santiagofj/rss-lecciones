@@ -4,7 +4,7 @@ import type { CourseConfig } from "../src/courses/types.js";
 import { normalizeLessonDraft } from "../src/generation/gemini.js";
 import { isScheduledForDate, localCalendarDate } from "../src/generation/schedule.js";
 import { renderMarkdown } from "../src/publishing/markdown.js";
-import { completeLessonMarkdown } from "./lesson-draft-fixture.js";
+import { completeLessonMarkdown, expositoryLessonMarkdown } from "./lesson-draft-fixture.js";
 
 const dailyCourse: CourseConfig = {
   schemaVersion: 1,
@@ -43,6 +43,18 @@ describe("publicación segura de Markdown", () => {
 });
 
 describe("normalización de respuestas de Gemini", () => {
+  it("valida la exposición académica y rechaza secciones de evaluación", () => {
+    const valid = { title: "Saber y poder", summary: "Contexto y argumentos", markdown: expositoryLessonMarkdown() };
+
+    expect(normalizeLessonDraft(valid, "expository").markdown).toContain("### El ejercicio del poder");
+    expect(() => normalizeLessonDraft(valid)).toThrow("no tiene las cinco secciones");
+    expect(() => normalizeLessonDraft({ ...valid, markdown: valid.markdown.replace("## Cierre", "### Cierre") }, "expository"))
+      .toThrow("no tiene las tres secciones expositivas");
+    expect(() => normalizeLessonDraft({ ...valid, markdown: valid.markdown.replace(
+      "## Cierre", "### Preguntas de repaso\n\n¿Qué se explicó?\n\n## Cierre",
+    ) }, "expository")).toThrow("contiene una sección de evaluación");
+  });
+
   it("recorta metadatos extensos sin descartar una lección válida", () => {
     const draft = normalizeLessonDraft({
       title: `Título ${"extenso ".repeat(30)}`,

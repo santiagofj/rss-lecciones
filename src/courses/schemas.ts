@@ -111,6 +111,7 @@ export const courseSchema = z.strictObject({
     excludedGames: z.array(nonEmptyText).min(1),
   }).optional(),
   teaching: z.strictObject({
+    lessonFormat: z.enum(["guided", "expository"]).optional(),
     audience: nonEmptyText,
     instructions: nonEmptyText,
   }),

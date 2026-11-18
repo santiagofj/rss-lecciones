@@ -94,6 +94,7 @@ export async function runGenerationBatch(options: BatchOptions): Promise<BatchRe
         apiKey: options.apiKey,
         model: repository.site.generation.model,
         prompt,
+        lessonFormat: course.config.teaching.lessonFormat ?? "guided",
         timeoutSeconds: repository.site.generation.timeoutSeconds,
         maxOutputTokens: repository.site.generation.maxOutputTokens,
         maxInputBytes: repository.site.generation.maxInputBytes,

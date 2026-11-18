@@ -17,3 +17,18 @@ export function completeLessonMarkdown(): string {
     "[[FIN_LECCION]]",
   ].join("\n\n");
 }
+
+export function expositoryLessonMarkdown(developmentParagraphs = 50): string {
+  return [
+    "## Contexto histórico y conceptual",
+    "El problema se sitúa en el debate sobre la relación entre saber y poder.",
+    "## Desarrollo",
+    "### El ejercicio del poder",
+    "¿Cómo se vinculan el saber y las instituciones? El análisis estudia cómo una práctica produce categorías mediante las cuales una institución observa y clasifica.\n\n"
+      .repeat(developmentParagraphs)
+      .trimEnd(),
+    "## Cierre",
+    "La distinción permite comprender el papel de las instituciones en el argumento.",
+    "[[FIN_LECCION]]",
+  ].join("\n\n");
+}
