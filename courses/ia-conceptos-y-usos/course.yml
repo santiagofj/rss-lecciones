@@ -1,0 +1,24 @@
+schemaVersion: 1
+id: 945e6980-edd4-421f-9d4b-356c8d9143bc
+slug: ia-conceptos-y-usos
+title: IA, conceptos y usos
+description: Un recorrido práctico por la inteligencia artificial, los modelos de lenguaje, la generación multimedia, RAG, MCP, los agentes y la evaluación.
+status: active
+language: es-AR
+timezone: America/Argentina/Buenos_Aires
+schedule:
+  type: weekly
+  startDate: 2026-11-18
+  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+feed: true
+teaching:
+  lessonFormat: guided
+  audience: Lector adulto con experiencia de uso de asistentes para programar y que está construyendo su vocabulario técnico sobre IA.
+  instructions: >-
+    Explicar cada término cuando ayude a entender un caso concreto. Para cada enfoque, identificar sus entradas,
+    salidas y límites. Alternar ejemplos de programación con escritura, lectura de documentos o tareas cotidianas.
+    Priorizar ejercicios reproducibles con código breve, datos de muestra o fuentes accesibles. Usar documentos
+    ficticios al practicar con información privada. Dar una manera observable de comprobar el resultado.
+    Describir capacidades generales sin atribuirlas a productos específicos salvo que la consigna aporte una fuente
+    primaria verificable. Evitar cuotas, precios, versiones y enlaces inferidos. Citar las fuentes aportadas cuando
+    respalden una afirmación concreta. Mantener claros los permisos cuando una herramienta pueda ejecutar acciones.
