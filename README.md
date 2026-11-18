@@ -8,6 +8,7 @@ Este repositorio genera cursos personales con Gemini y los publica como páginas
 |---|---:|---|
 | Audio digital práctico | 86 | Señal, formatos, procesamiento, reproducción, medición y escucha crítica. |
 | Full Stack progresivo | 130 | Comprensión conceptual de frontend, backend, datos, seguridad, arquitectura y operación, sin stack obligatorio. |
+| Historia del diseño | 18 | Movimientos y estilos, con una pieza ilustrada en cada lección. |
 | Historia de la filosofía | 63 | Recorrido histórico de problemas y argumentos. |
 | Música clásica desde cero | 95 | Lenguaje, instrumentos, formas, historia, repertorio e interpretación. |
 | Un juego de naipes por día | Abierto; 15 juegos iniciales | Juegos de distintas tradiciones, sin solitarios ni casino; comienza con Brisca. |
@@ -54,6 +55,7 @@ Después de activar GitHub Pages:
 
 - `https://santiagofj.github.io/rss-lecciones/audio-digital/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/fullstack/feed.xml`
+- `https://santiagofj.github.io/rss-lecciones/historia-diseno/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/historia-filosofia/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/musica-clasica/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/juegos-naipes/feed.xml` (disponible después del primer despliegue que incluya el curso)

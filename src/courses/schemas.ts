@@ -6,6 +6,17 @@ const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
 const nonEmptyText = z.string().trim().min(1);
 const slug = z.string().regex(slugPattern, "debe ser un slug en minúsculas");
+const httpsUrl = z.url({ protocol: /^https$/ });
+
+const illustrationSchema = z.strictObject({
+  src: httpsUrl,
+  alt: nonEmptyText,
+  caption: nonEmptyText,
+  credit: nonEmptyText,
+  sourceUrl: httpsUrl,
+  license: nonEmptyText,
+  licenseUrl: httpsUrl,
+});
 
 function isLanguageTag(value: string): boolean {
   try {
@@ -124,6 +135,7 @@ export const syllabusStepSchema = z.strictObject({
   title: nonEmptyText,
   objective: nonEmptyText,
   brief: nonEmptyText,
+  illustration: illustrationSchema.optional(),
   game: z.strictObject({
     key: slug,
     aliases: z.array(nonEmptyText).min(1),
@@ -167,6 +179,7 @@ export const lessonFrontmatterSchema = z.strictObject({
   publishedAt: z.iso.datetime({ offset: true }),
   generationDate: z.string().refine(isCalendarDate, "debe ser una fecha YYYY-MM-DD válida"),
   summary: nonEmptyText.max(600),
+  illustration: illustrationSchema.optional(),
   generation: z.strictObject({
     model: nonEmptyText,
     promptVersion: nonEmptyText,

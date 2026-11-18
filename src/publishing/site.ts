@@ -18,6 +18,20 @@ function lessonFilename(lesson: Lesson): string {
   return lesson.filename.replace(/\.md$/, ".html");
 }
 
+function renderLessonContent(lesson: Lesson): string {
+  const text = renderMarkdown(lesson.markdown);
+  const illustration = lesson.frontmatter.illustration;
+  if (illustration === undefined) return text;
+
+  return `<figure>
+  <img src="${escapeXml(illustration.src)}" alt="${escapeXml(illustration.alt)}" style="max-width:100%;height:auto" referrerpolicy="no-referrer">
+  <figcaption>${escapeXml(illustration.caption)} ${escapeXml(illustration.credit)}.
+    <a href="${escapeXml(illustration.sourceUrl)}">Ficha de la pieza</a> · <a href="${escapeXml(illustration.licenseUrl)}">${escapeXml(illustration.license)}</a>
+  </figcaption>
+</figure>
+${text}`;
+}
+
 function document(title: string, body: string, feedUrl?: string): string {
   const feedLink = feedUrl === undefined
     ? ""
@@ -35,6 +49,7 @@ function document(title: string, body: string, feedUrl?: string): string {
     nav, .meta { font-family: ui-sans-serif, system-ui, sans-serif; }
     nav { margin-bottom: 36px; } a { color: #2870bd; }
     h1, h2, h3 { line-height: 1.2; } li { margin: 0.45rem 0; }
+    figure { margin: 1.5rem 0; } figcaption { font-size: .9rem; }
     pre { overflow-x: auto; padding: 16px; background: rgba(127,127,127,.12); border-radius: 8px; }
     code { font-family: ui-monospace, monospace; }
     .course { padding: 16px 0; border-top: 1px solid rgba(127,127,127,.3); }
@@ -55,7 +70,7 @@ function renderLessonPage(course: LoadedCourse, lesson: Lesson): string {
   <p class="meta">Lección ${metadata.sequence} · entrega del ${escapeXml(metadata.generationDate)}</p>
   <h1>${escapeXml(metadata.title)}</h1>
   <p><em>${escapeXml(metadata.summary)}</em></p>
-  ${renderMarkdown(lesson.markdown)}
+  ${renderLessonContent(lesson)}
 </article>`,
   );
 }
@@ -86,7 +101,7 @@ export function renderFeed(baseUrl: string, course: LoadedCourse): string {
     .sort((left, right) => right.frontmatter.sequence - left.frontmatter.sequence)
     .map((lesson) => {
       const itemUrl = `${courseUrl}${lessonFilename(lesson)}`;
-      const html = renderMarkdown(lesson.markdown).replaceAll("]]>", "]]&gt;");
+      const html = renderLessonContent(lesson).replaceAll("]]>", "]]&gt;");
       return `<item>
   <title>${escapeXml(lesson.frontmatter.title)}</title>
   <link>${escapeXml(itemUrl)}</link>

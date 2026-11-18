@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: b26ac5b2-138b-497f-957a-0d1a9d7a60cc
+slug: historia-diseno
+title: Historia del diseño
+description: Un recorrido ilustrado por los principales movimientos del diseño, desde Arts and Crafts hasta la cultura digital y el diseño contemporáneo.
+status: active
+language: es-AR
+timezone: America/Argentina/Buenos_Aires
+schedule:
+  type: weekly
+  startDate: 2026-11-18
+  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+feed: true
+teaching:
+  lessonFormat: expository
+  audience: Lector adulto interesado en reconocer estilos, entender cómo surgen y relacionarlos con objetos concretos.
+  instructions: >-
+    Escribir en español claro con un tono académico y accesible. Organizar la exposición alrededor del movimiento,
+    estilo o problema del paso actual. Explicar su contexto, sus rasgos visuales, los materiales y procesos pertinentes,
+    y cómo distinguirlo de movimientos vecinos. Mencionar brevemente a los diseñadores en relación con una pieza o
+    una aportación; excluir perfiles biográficos. Analizar la pieza ilustrada que se indica en el temario para que el
+    lector sepa qué observar en su forma, material, composición o uso. Describir sus rasgos también en el texto.
+    El sitio publica la ilustración y su ficha, por lo que el texto no debe incluir imágenes ni créditos duplicados.
+    Seguir la secuencia general de Diseño. La guía visual definitiva, de DK, con redacción propia y sin copiar el libro.
+    Explicar solapamientos y diferencias regionales sin convertir etiquetas históricas en períodos rígidos.
+    Priorizar las afirmaciones verificables y evitar citas, páginas o datos editoriales inventados.

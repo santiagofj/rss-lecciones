@@ -42,6 +42,7 @@ export async function writePreparedLesson(
     publishedAt,
     generationDate,
     summary: draft.summary,
+    ...(step.illustration === undefined ? {} : { illustration: step.illustration }),
     generation: {
       model: site.generation.model,
       promptVersion: course.config.teaching.lessonFormat === "expository"

@@ -436,6 +436,53 @@ describe("recuperación de entregas diarias", () => {
     markdown: completeLessonMarkdown().replace("[[FIN_LECCION]]", "").trim(),
   };
 
+  test("publica la ilustración editorial en el RSS y la web", async () => {
+    const root = await createRoot();
+    await createCourse(root, "historia-diseno", { status: "active", schedule: "weekly", expository: true });
+    const syllabusPath = path.join(root, "courses", "historia-diseno", "syllabus.md");
+    const syllabus = await readFile(syllabusPath, "utf8");
+    const imageFields = `
+    illustration:
+      src: https://example.test/pieza.jpg?ancho=640&alto=480
+      alt: 'Silla de "madera"'
+      caption: 'Madera & metal <detalle>'
+      credit: Foto de archivo
+      sourceUrl: https://example.test/pieza
+      license: CC BY 4.0
+      licenseUrl: https://creativecommons.org/licenses/by/4.0/`;
+    const withImage = syllabus.replace("    brief: Explicar el concepto inicial", `    brief: Explicar el concepto inicial${imageFields}`);
+    await writeFile(syllabusPath, withImage.replace("https://example.test/pieza.jpg?ancho=640&alto=480", "javascript:alert(1)"));
+    const invalid = await validateRepository(root);
+    expect(invalid.ok).toBe(false);
+    if (!invalid.ok) expect(invalid.issues).toContainEqual(expect.objectContaining({ path: "steps.0.illustration.src" }));
+
+    await writeFile(syllabusPath, withImage);
+    const initial = await validateRepository(root);
+    if (!initial.ok) throw new Error(JSON.stringify(initial.issues));
+    const batch = await runGenerationBatch({
+      root, repository: initial.repository, now,
+      request: { kind: "extra", courseSlug: "historia-diseno", requestId: "400" }, apiKey: "prueba",
+      generateDraft: async () => ({ ...validDraft, markdown: expositoryLessonMarkdown() }),
+    });
+    expect(batch.saved).toBe(1);
+
+    const final = await validateRepository(root);
+    if (!final.ok) throw new Error(JSON.stringify(final.issues));
+    const course = final.repository.courses[0];
+    const illustration = course?.syllabus.frontmatter.steps[0]?.illustration;
+    expect(illustration?.caption).toBe("Madera & metal <detalle>");
+    expect(course?.lessons[0]?.frontmatter.illustration).toEqual(illustration);
+    await buildPublicSite(root, final.repository);
+    const directory = path.join(root, "public", "historia-diseno");
+    for (const filename of ["001-introduccion.html", "feed.xml"]) {
+      const markup = await readFile(path.join(directory, filename), "utf8");
+      expect(markup).toContain('<img src="https://example.test/pieza.jpg?ancho=640&amp;alto=480" alt="Silla de &quot;madera&quot;"');
+      expect(markup).toContain("<figcaption>Madera &amp; metal &lt;detalle&gt; Foto de archivo.");
+      expect(markup).toContain('<a href="https://example.test/pieza">Ficha de la pieza</a>');
+      expect(markup).toContain('<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>');
+    }
+  });
+
   test("genera, amplía y publica la siguiente lección de Filosofía en formato expositivo", async () => {
     const root = await createRoot();
     await createCourse(root, "historia-filosofia", {
