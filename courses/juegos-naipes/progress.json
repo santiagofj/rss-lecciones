@@ -3,7 +3,7 @@
   "startStepId": "brisca",
   "learnerContext": "Conoce truco, conga, canasta, rummy y Escoba. Reconoce términos de naipes, pero pide una explicación breve adaptada a cada juego. Quiere un juego diferente por día de cualquier país, empezando por los conocidos y accesibles. Sin solitarios, casino ni apuestas monetarias. Este recorrido nuevo comienza con Brisca; no asumir partidas, prácticas ni lecciones realizadas.",
   "cursor": {
-    "lastLessonId": "c0e3028d-a027-44cd-9f30-79f35281a5f6",
-    "nextStepId": "tute"
+    "lastLessonId": "d6f9ee5b-89cc-4d4b-b74c-6318a28ecfff",
+    "nextStepId": "whist"
   }
 }
