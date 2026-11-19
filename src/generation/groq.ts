@@ -30,6 +30,12 @@ export class ProviderError extends Error {
   }
 }
 
+export class RejectedJsonError extends ProviderError {
+  constructor() {
+    super("Groq rechazó el contenido generado (json_validate_failed)");
+  }
+}
+
 export function httpError(provider: string, response: Response): ProviderError {
   const retryAfter = response.headers.get("retry-after");
   const wait = retryAfter !== null && /^\d{1,6}$/u.test(retryAfter)
@@ -76,7 +82,7 @@ export class GroqClient {
     private readonly config: SiteConfig["generation"],
   ) {}
 
-  async structured<T extends z.ZodType>(prompt: string, name: string, schema: T): Promise<z.output<T>> {
+  async structured<T extends z.ZodType>(prompt: string, name: string, schema: T, strict = true): Promise<z.output<T>> {
     this.checkInputSize(prompt);
     if (this.quotaError !== undefined) throw this.quotaError;
     const wait = this.nextRequestAt - Date.now();
@@ -94,7 +100,9 @@ export class GroqClient {
           max_completion_tokens: this.config.maxOutputTokens,
           reasoning_effort: "low",
           include_reasoning: false,
-          response_format: { type: "json_schema", json_schema: { name, strict: true, schema: jsonSchema } },
+          response_format: strict
+            ? { type: "json_schema", json_schema: { name, strict: true, schema: jsonSchema } }
+            : { type: "json_object" },
         }),
         signal: AbortSignal.timeout(this.config.timeoutSeconds * 1_000),
       });
@@ -107,6 +115,7 @@ export class GroqClient {
         const payload: unknown = await response.json().catch(() => null);
         const rejected = rejectedGenerationSchema.safeParse(payload);
         if (rejected.success) {
+          if (rejected.data.error.code === "json_validate_failed") throw new RejectedJsonError();
           throw new ProviderError(`Groq rechazó el contenido generado (${rejected.data.error.code})`);
         }
       }
