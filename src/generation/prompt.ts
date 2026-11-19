@@ -1,12 +1,22 @@
 import type { LoadedCourse, Lesson, LessonFormat } from "../courses/types.js";
 
-export const LESSON_PROMPT_VERSION = "v3";
-export const EXPOSITORY_PROMPT_VERSION = "v4";
+export const LESSON_PROMPT_VERSION = "v5";
+export const EXPOSITORY_PROMPT_VERSION = "v6";
 
-export const lessonHeadings = {
-  guided: ["Por qué ahora", "Explicación y ejemplo", "Práctica", "Comprobaciones", "Cierre"],
-  expository: ["Contexto histórico y conceptual", "Desarrollo", "Cierre"],
-} satisfies Record<LessonFormat, readonly string[]>;
+export const lessonSections = {
+  guided: {
+    whyNow: "Por qué ahora",
+    explanation: "Explicación y ejemplo",
+    practice: "Práctica",
+    checks: "Comprobaciones",
+    closing: "Cierre",
+  },
+  expository: {
+    context: "Contexto histórico y conceptual",
+    development: "Desarrollo",
+    closing: "Cierre",
+  },
+} satisfies Record<LessonFormat, Record<string, string>>;
 
 type Step = LoadedCourse["syllabus"]["frontmatter"]["steps"][number];
 
@@ -31,7 +41,9 @@ Extensión orientativa: entre 1000 y 1500 palabras. Desarrolla el contenido sin 
 export function buildLessonPrompt(input: PromptInput): string {
   const { course, step, recentLessons } = input;
   const format = course.config.teaching.lessonFormat ?? "guided";
-  const headings = lessonHeadings[format].map((heading) => `## ${heading}`).join("\n");
+  const sections = Object.entries(lessonSections[format])
+    .map(([key, heading]) => `- ${key}: cuerpo de «${heading}».`)
+    .join("\n");
   const recentContext = recentLessons.length === 0
     ? "No hay lecciones previas en este nuevo feed."
     : recentLessons.map((lesson) => (
@@ -63,12 +75,11 @@ Registro obligatorio:
 - No infantilices al lector ni exageres la importancia de una idea.
 - Prefiere oraciones directas y vocabulario técnico explicado con naturalidad.
 
-El campo markdown debe contener estas ${format === "guided" ? "cinco" : "tres"} secciones, en este orden y con estos encabezados exactos:
-${headings}
+Completa title, summary y todas las secciones del objeto sections:
+${sections}
+Escribe el cuerpo de cada sección en Markdown, sin su encabezado principal. El sitio agrega los encabezados. Usa nivel 3 o inferior para los subtítulos internos.
 
 ${formatInstructions[format]}
-
-La última línea del campo markdown debe ser exactamente [[FIN_LECCION]]. Es una marca técnica de finalización: no la expliques ni la incluyas en otra parte del texto.
 
 No incluyas frontmatter YAML, HTML, saludos genéricos ni referencias a este pedido. No inventes resultados que el alumno todavía no realizó. No utilices los caracteres de exclamación de apertura o cierre. Devuelve sólo el objeto JSON solicitado.`;
 }

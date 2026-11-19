@@ -7,13 +7,12 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { validateRepository } from "../src/courses/validate-repository.js";
 import { buildLessonPrompt, EXPOSITORY_PROMPT_VERSION, LESSON_PROMPT_VERSION } from "../src/generation/prompt.js";
-import { generateWithGemini } from "../src/generation/gemini.js";
 import { runGenerationBatch } from "../src/generation/run-batch.js";
 import { planScheduledTasks, requestFromEnvironment, selectCourses, type GenerationRequest } from "../src/generation/selection.js";
 import { writePreparedLesson } from "../src/generation/write-lesson.js";
 import { selectNextLesson } from "../src/planning/next-lesson.js";
 import { buildPublicSite, renderFeed } from "../src/publishing/site.js";
-import { completeLessonMarkdown, expositoryLessonMarkdown } from "./lesson-draft-fixture.js";
+import { completeLessonMarkdown, expositoryLessonMarkdown, groqResponse, structuredLesson } from "./lesson-draft-fixture.js";
 
 const temporaryDirectories: string[] = [];
 
@@ -354,10 +353,10 @@ describe("validación del repositorio", () => {
     const step = course?.syllabus.frontmatter.steps[1];
     if (course === undefined || step === undefined) return;
     const prompt = buildLessonPrompt({ course, step, recentLessons: course.lessons });
-    expect(LESSON_PROMPT_VERSION).toBe("v3");
+    expect(LESSON_PROMPT_VERSION).toBe("v5");
     expect(prompt).toContain("entre 1000 y 1500 palabras");
-    expect(prompt).toContain("[[FIN_LECCION]]");
-    expect(prompt).toContain("## Comprobaciones");
+    expect(prompt).toContain("cuerpo de «Comprobaciones»");
+    expect(prompt).toContain("El sitio agrega los encabezados");
     expect(course.lessons[0]?.frontmatter.generation.promptVersion).toBe("1");
   });
 
@@ -497,14 +496,11 @@ describe("recuperación de entregas diarias", () => {
     vi.stubGlobal("fetch", async (_url: string, init: RequestInit) => {
       requests.push(String(init.body));
       const draft = {
+        ...structuredLesson(expositoryLessonMarkdown(requests.length === 1 ? 1 : 50), "expository"),
         title: "Saber y poder",
         summary: "Contexto y argumentos",
-        markdown: expositoryLessonMarkdown(requests.length === 1 ? 1 : 50),
       };
-      return Response.json({ candidates: [{
-        finishReason: "STOP",
-        content: { parts: [{ text: JSON.stringify(draft) }] },
-      }] });
+      return groqResponse(draft);
     });
     vi.spyOn(Math, "random").mockReturnValue(0);
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -519,10 +515,10 @@ describe("recuperación de entregas diarias", () => {
     vi.useRealTimers();
 
     expect(requests).toHaveLength(2);
-    expect(requests[0]).toContain("## Contexto histórico y conceptual");
+    expect(requests[0]).toContain("cuerpo de «Contexto histórico y conceptual»");
     expect(requests[0]).toContain("Escribe un artículo académico");
     expect(requests[0]).toContain("Integra los ejemplos ya resueltos");
-    expect(requests[1]).toContain("las tres secciones expositivas en orden");
+    expect(requests[1]).toContain("Amplía esa misma lección");
     expect(requests.every((request) => !/## (Práctica|Comprobaciones)/u.test(request))).toBe(true);
 
     const final = await validateRepository(root);
@@ -559,14 +555,7 @@ describe("recuperación de entregas diarias", () => {
     vi.stubGlobal("fetch", async () => {
       calls += 1;
       if (calls === 3) return new Response("Cuota agotada", { status: 429 });
-      return new Response(JSON.stringify({
-        candidates: [{
-          finishReason: "STOP",
-          content: { parts: [{ text: JSON.stringify({
-            title: "Lección breve", summary: "Resumen", markdown: shortMarkdown,
-          }) }] },
-        }],
-      }), { status: 200 });
+      return groqResponse(structuredLesson(shortMarkdown));
     });
     vi.spyOn(Math, "random").mockReturnValue(0);
     vi.spyOn(console, "warn").mockImplementation(() => {});
@@ -576,7 +565,6 @@ describe("recuperación de entregas diarias", () => {
     const batch = runGenerationBatch({
       root, repository: initial.repository, now,
       request: { kind: "scheduled" }, apiKey: "clave-de-prueba",
-      generateDraft: generateWithGemini,
     });
     await vi.advanceTimersByTimeAsync(30_000);
     const failed = await batch;
@@ -769,7 +757,7 @@ describe("recuperación de entregas diarias", () => {
     expect(planScheduledTasks(afterExtra.repository, now)).toHaveLength(6);
   });
 
-  test("el workflow informa un fallo parcial sólo después de guardar y desplegar éxitos", async () => {
+  test("el workflow resume las entregas pendientes después del despliegue sin marcar el lote parcial como fallido", async () => {
     const workflow = await readFile(path.join(process.cwd(), ".github", "workflows", "publish.yml"), "utf8");
     const commit = workflow.indexOf("name: Guardar el avance del curso");
     const deploy = workflow.indexOf("name: Publicar GitHub Pages");
@@ -777,6 +765,8 @@ describe("recuperación de entregas diarias", () => {
     expect(commit).toBeGreaterThan(0);
     expect(deploy).toBeGreaterThan(commit);
     expect(report).toBeGreaterThan(deploy);
-    expect(workflow).toContain(".work/generation-pending.txt");
+    expect(workflow.slice(report)).toContain(".work/generation-pending.txt");
+    expect(workflow.slice(report)).toContain("GITHUB_STEP_SUMMARY");
+    expect(workflow.slice(report)).not.toContain("exit 1");
   });
 });

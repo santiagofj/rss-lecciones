@@ -6,8 +6,8 @@ site:
   baseUrl: https://santiagofj.github.io/rss-lecciones/
   language: es-AR
 generation:
-  model: gemini-2.5-flash
+  model: openai/gpt-oss-120b
   timeoutSeconds: 120
-  maxOutputTokens: 8192
+  maxOutputTokens: 4096
   maxInputBytes: 65536
   maxLessonsPerRun: 40

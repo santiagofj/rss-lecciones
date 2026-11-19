@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { stringify as stringifyYaml } from "yaml";
 
-import type { LessonDraft } from "./gemini.js";
+import type { LessonDraft } from "./lesson-draft.js";
 import { EXPOSITORY_PROMPT_VERSION, LESSON_PROMPT_VERSION } from "./prompt.js";
 import type { LoadedCourse, Progress, SiteConfig } from "../courses/types.js";
 

@@ -42,9 +42,9 @@ async function main(): Promise<void> {
   let result: BatchResult = { saved: 0, failures: [], pending: [] };
 
   if (tasks.length > 0) {
-    const apiKey = process.env.GEMINI_API_KEY?.trim();
+    const apiKey = process.env.GROQ_API_KEY?.trim();
     if (apiKey === undefined || apiKey.length === 0) {
-      throw new Error("Falta el secreto GEMINI_API_KEY");
+      throw new Error("Falta el secreto GROQ_API_KEY");
     }
     result = await runGenerationBatch({
       root,
@@ -52,6 +52,7 @@ async function main(): Promise<void> {
       now,
       request,
       apiKey,
+      tavilyApiKey: process.env.TAVILY_API_KEY?.trim(),
     });
   } else {
     console.log(request.kind === "extra"
@@ -76,6 +77,7 @@ async function main(): Promise<void> {
     );
     const report = [
       `Se conservaron ${result.saved} lección(es), pero quedan ${result.pending.length} entrega(s) pendientes.`,
+      ...(failures.length > 0 ? [""] : []),
       ...failures,
     ].join("\n");
     await mkdir(path.dirname(reportPath), { recursive: true });

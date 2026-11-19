@@ -1,4 +1,7 @@
-// Un borrador suficientemente largo para comprobar la aceptación sin llamar a Gemini.
+import type { LessonFormat } from "../src/courses/types.js";
+import { lessonSections } from "../src/generation/prompt.js";
+
+// Borradores completos para las pruebas del generador y del sitio.
 const explanation = "Este ejemplo explica el concepto con precisión y muestra cómo aplicarlo en un caso concreto. ";
 
 export function completeLessonMarkdown(): string {
@@ -31,4 +34,20 @@ export function expositoryLessonMarkdown(developmentParagraphs = 50): string {
     "La distinción permite comprender el papel de las instituciones en el argumento.",
     "[[FIN_LECCION]]",
   ].join("\n\n");
+}
+
+export function structuredLesson(markdown: string, format: LessonFormat = "guided") {
+  const bodies = markdown.replace("[[FIN_LECCION]]", "").split(/^## .+$/mu).slice(1);
+  return {
+    title: "Título de prueba",
+    summary: "Resumen de prueba",
+    sections: Object.fromEntries(Object.keys(lessonSections[format]).map((key, index) => [key, bodies[index]?.trim()])),
+  };
+}
+
+export function groqResponse(value: unknown, finishReason: string | null = "stop", headers?: HeadersInit): Response {
+  return Response.json({
+    choices: [{ finish_reason: finishReason, message: { content: JSON.stringify(value) } }],
+    usage: { total_tokens: 1 },
+  }, headers === undefined ? {} : { headers });
 }

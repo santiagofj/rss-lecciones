@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { CourseConfig } from "../src/courses/types.js";
-import { normalizeLessonDraft } from "../src/generation/gemini.js";
+import { normalizeLessonDraft } from "../src/generation/lesson-draft.js";
 import { isScheduledForDate, localCalendarDate } from "../src/generation/schedule.js";
 import { renderMarkdown } from "../src/publishing/markdown.js";
 import { completeLessonMarkdown, expositoryLessonMarkdown } from "./lesson-draft-fixture.js";
@@ -42,7 +42,7 @@ describe("publicación segura de Markdown", () => {
   });
 });
 
-describe("normalización de respuestas de Gemini", () => {
+describe("validación del Markdown de las lecciones", () => {
   it("valida la exposición académica y rechaza secciones de evaluación", () => {
     const valid = { title: "Saber y poder", summary: "Contexto y argumentos", markdown: expositoryLessonMarkdown() };
 

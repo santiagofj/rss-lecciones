@@ -10,10 +10,11 @@ import { parseFrontmatter, parseYaml } from "../src/courses/parse.js";
 import { courseSchema, syllabusFrontmatterSchema } from "../src/courses/schemas.js";
 import type { LoadedCourse } from "../src/courses/types.js";
 import { validateRepository } from "../src/courses/validate-repository.js";
+import { GroqClient } from "../src/generation/groq.js";
 import { runGenerationBatch } from "../src/generation/run-batch.js";
 import { planScheduledTasks } from "../src/generation/selection.js";
 import { generateCourseExtension, selectNewGames, type ExtensionInput } from "../src/planning/continue-card-games.js";
-import { completeLessonMarkdown } from "./lesson-draft-fixture.js";
+import { completeLessonMarkdown, groqResponse } from "./lesson-draft-fixture.js";
 
 const roots: string[] = [];
 
@@ -183,24 +184,27 @@ describe("investigación y control de identidades", () => {
     expect(selected.map((step) => step.id)).toEqual(["euchre"]);
   });
 
-  it("separa búsqueda de extracción JSON y conserva las fuentes reales de grounding", async () => {
+  it("consulta Tavily y limita los juegos propuestos por Groq a las fuentes devueltas", async () => {
     const root = await fixture();
     const loaded = await repository(root);
     const bodies: unknown[] = [];
-    const fetchMock = vi.fn(async (_url: string, init: RequestInit) => {
+    const fetchMock = vi.fn(async (url: string, init: RequestInit) => {
       bodies.push(JSON.parse(String(init.body)));
-      return new Response(JSON.stringify({ candidates: [{ finishReason: "STOP",
-        content: { parts: [{ text: bodies.length === 1 ? "Investigación fundamentada del Euchre." : JSON.stringify({ games: [candidate] }) }] },
-        ...(bodies.length === 1 ? { groundingMetadata: { groundingChunks: [{ web: { title: "Euchre", uri: sources[0]?.url } }] } } : {}),
-      }] }), { status: 200 });
+      if (bodies.length === 1) return groqResponse({ first: "Euchre card game rules", second: "Euchre for four players" });
+      if (url === "https://api.tavily.com/search") {
+        expect(init.headers).toMatchObject({ Authorization: "Bearer tavily-test" });
+        return Response.json({ results: [{ ...sources[0], content: "Reglamento de Euchre por parejas." }] });
+      }
+      expect(String(init.body)).toContain(sources[0]?.url);
+      return groqResponse({ research: "Resumen de las reglas de Euchre.", games: [candidate] });
     });
     vi.stubGlobal("fetch", fetchMock);
-    const extension = await generateCourseExtension({ course: courseAt(loaded.courses), site: loaded.site, apiKey: "test" });
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(bodies[0]).toMatchObject({ tools: [{ google_search: {} }] });
-    expect(bodies[0]).not.toHaveProperty("generationConfig.responseMimeType");
-    expect(bodies[1]).toMatchObject({ generationConfig: { responseMimeType: "application/json" } });
-    expect(bodies[1]).not.toHaveProperty("tools");
+    const client = new GroqClient("groq-test", loaded.site.generation);
+    const extension = await generateCourseExtension({ course: courseAt(loaded.courses), client, tavilyApiKey: "tavily-test" });
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(bodies[1]).toMatchObject({ query: "Euchre card game rules", search_depth: "basic" });
+    expect(bodies[2]).toMatchObject({ query: "Euchre for four players", search_depth: "basic" });
+    expect(bodies[3]).toMatchObject({ response_format: { type: "json_schema", json_schema: { strict: true } } });
     expect(extension.steps[0]?.game?.sources).toEqual([sources[0]?.url]);
     expect(extension.research.sources).toEqual(sources);
   });
@@ -208,12 +212,14 @@ describe("investigación y control de identidades", () => {
   it("rechaza investigación sin fuentes y no sustituye esas fuentes por URLs inventadas", async () => {
     const root = await fixture();
     const loaded = await repository(root);
-    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ candidates: [{ finishReason: "STOP",
-      content: { parts: [{ text: "Texto sin grounding" }] },
-    }] }), { status: 200 }));
+    const fetchMock = vi.fn(async (url: string) => url === "https://api.tavily.com/search"
+      ? Response.json({ results: [] })
+      : groqResponse({ first: "juegos tradicionales", second: "reglas de naipes" }));
     vi.stubGlobal("fetch", fetchMock);
-    await expect(generateCourseExtension({ course: courseAt(loaded.courses), site: loaded.site, apiKey: "test" })).rejects.toThrow("fuentes verificables");
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const client = new GroqClient("groq-test", loaded.site.generation);
+    await expect(generateCourseExtension({ course: courseAt(loaded.courses), client, tavilyApiKey: "tavily-test" }))
+      .rejects.toThrow("fuentes verificables");
+    expect(fetchMock).toHaveBeenCalledTimes(3);
     expect(() => selectNewGames(courseAt(loaded.courses), [{ ...candidate, sourceIndexes: [99] }], sources)).toThrow("juegos nuevos");
   });
 });

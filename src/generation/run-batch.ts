@@ -2,7 +2,8 @@ import { validateRepository } from "../courses/validate-repository.js";
 import type { LoadedRepository } from "../courses/types.js";
 import { saveCourseExtension, type CourseExtension } from "../courses/extensions.js";
 import { generateCourseExtension, type ExtensionInput } from "../planning/continue-card-games.js";
-import { generateWithGemini, type GenerateWithGeminiOptions, type LessonDraft } from "./gemini.js";
+import { GroqClient } from "./groq.js";
+import { generateWithGroq, type GenerateLessonOptions, type LessonDraft } from "./lesson-draft.js";
 import { buildLessonPrompt } from "./prompt.js";
 import { planGenerationTasks, planScheduledTasks, type GenerationRequest, type GenerationTask } from "./selection.js";
 import { writePreparedLesson } from "./write-lesson.js";
@@ -25,13 +26,15 @@ type BatchOptions = {
   now: Date;
   request: GenerationRequest;
   apiKey: string;
-  generateDraft?: (options: GenerateWithGeminiOptions) => Promise<LessonDraft>;
+  tavilyApiKey?: string | undefined;
+  generateDraft?: (options: GenerateLessonOptions) => Promise<LessonDraft>;
   extendCourse?: (input: ExtensionInput) => Promise<CourseExtension>;
   clock?: () => Date;
 };
 
 export async function runGenerationBatch(options: BatchOptions): Promise<BatchResult> {
-  const generateDraft = options.generateDraft ?? generateWithGemini;
+  const generateDraft = options.generateDraft ?? generateWithGroq;
+  const client = new GroqClient(options.apiKey, options.repository.site.generation);
   const extendCourse = options.extendCourse ?? generateCourseExtension;
   const tasks = planGenerationTasks(options.repository, options.now, options.request);
   const blockedCourses = new Set<string>();
@@ -54,7 +57,7 @@ export async function runGenerationBatch(options: BatchOptions): Promise<BatchRe
       let extension: CourseExtension | undefined;
       try {
         console.log(`Ampliando automáticamente ${task.courseSlug}: quedan ${remaining} juegos preparados`);
-        extension = await extendCourse({ course, site: repository.site, apiKey: options.apiKey });
+        extension = await extendCourse({ course, client, tavilyApiKey: options.tavilyApiKey });
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Error al ampliar el recorrido";
         extensionFailures.set(task.courseSlug, message);
@@ -91,16 +94,12 @@ export async function runGenerationBatch(options: BatchOptions): Promise<BatchRe
     let draft: LessonDraft;
     try {
       draft = await generateDraft({
-        apiKey: options.apiKey,
-        model: repository.site.generation.model,
+        client,
         prompt,
         lessonFormat: course.config.teaching.lessonFormat ?? "guided",
-        timeoutSeconds: repository.site.generation.timeoutSeconds,
-        maxOutputTokens: repository.site.generation.maxOutputTokens,
-        maxInputBytes: repository.site.generation.maxInputBytes,
       });
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Error desconocido de Gemini";
+      const message = error instanceof Error ? error.message : "Error desconocido de generación";
       failures.push({ courseSlug: task.courseSlug, generationDate: task.generationDate, message });
       blockedCourses.add(task.courseSlug);
       console.error(`Falló ${task.courseSlug} (${task.generationDate}): ${message}`);
