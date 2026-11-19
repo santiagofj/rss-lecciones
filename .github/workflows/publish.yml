@@ -1,103 +1,106 @@
-name: Generar y publicar lecciones
+name: Prueba aislada de Groq y Tavily
 
 on:
-  schedule:
-    # GitHub interpreta cron en UTC. 03:00 UTC = 00:00 en Buenos Aires.
-    - cron: "0 3 * * *"
   workflow_dispatch:
-    inputs:
-      course:
-        description: "Slug del curso para generar una lección extra (ej.: fullstack)"
-        required: false
-        type: string
-      recover:
-        description: "Recuperar entregas normales pendientes de todos los cursos"
-        required: false
-        default: false
-        type: boolean
-      publish_only:
-        description: "Publicar las lecciones guardadas en Git sin generar nuevas"
-        required: false
-        default: false
-        type: boolean
-
-concurrency:
-  group: lecciones-diarias
-  cancel-in-progress: false
-  queue: max
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read
 
 jobs:
-  publish:
+  smoke:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 12
     steps:
-      - name: Descargar el repositorio
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          ref: main
-
-      - name: Preparar Node.js
-        uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
-      - name: Instalar dependencias reproducibles
-        run: npm ci
-
-      - name: Validar configuración inicial
-        run: npm run validate
-
-      - name: Generar lecciones y sitio
-        run: npm run generate
+      - run: npm ci
+      - run: npm run validate
+      - run: npm run typecheck
+      - name: Probar generación, búsqueda y feeds en la copia de Actions
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
-          EXTRA_COURSE: ${{ inputs.course }}
-          RECOVER_PENDING: ${{ inputs.recover }}
-          PUBLISH_ONLY: ${{ inputs.publish_only }}
-
-      - name: Verificar resultado
         run: |
-          npm run validate
-          npm run typecheck
-          npm test
+          node --import tsx --input-type=module <<'JS'
+          import assert from "node:assert/strict";
+          import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+          import path from "node:path";
+          import { saveCourseExtension } from "./src/courses/extensions.ts";
+          import { validateRepository } from "./src/courses/validate-repository.ts";
+          import { GroqClient } from "./src/generation/groq.ts";
+          import { generateWithGroq } from "./src/generation/lesson-draft.ts";
+          import { buildLessonPrompt } from "./src/generation/prompt.ts";
+          import { localCalendarDate } from "./src/generation/schedule.ts";
+          import { writePreparedLesson } from "./src/generation/write-lesson.ts";
+          import { generateCourseExtension } from "./src/planning/continue-card-games.ts";
+          import { buildPublicSite } from "./src/publishing/site.ts";
 
-      - name: Guardar el avance del curso
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add courses
-          if git diff --cached --quiet; then
-            echo "No hay una lección nueva para guardar"
-          else
-            git commit -m "content: publicar lecciones"
-            git push
-          fi
+          const groqKey = process.env.GROQ_API_KEY?.trim();
+          const tavilyKey = process.env.TAVILY_API_KEY?.trim();
+          assert.ok(groqKey && tavilyKey, "Faltan secretos de los proveedores");
+          const root = process.cwd();
+          const initial = await validateRepository(root);
+          assert.ok(initial.ok, JSON.stringify(initial.issues));
+          const { repository } = initial;
+          const client = new GroqClient(groqKey, repository.site.generation);
+          const preview = path.join(root, "provider-preview");
+          await mkdir(preview, { recursive: true });
+          const getCourse = (slug) => {
+            const course = repository.courses.find((item) => item.config.slug === slug);
+            assert.ok(course, slug);
+            return course;
+          };
 
-      - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v5
+          const publishedAt = new Date();
+          const samples = [["audio-digital", "guided"], ["historia-filosofia", "expository"]];
+          const files = [];
+          for (const [slug, lessonFormat] of samples) {
+            const course = getCourse(slug);
+            const step = course.syllabus.frontmatter.steps.find(({ id }) => id === course.progress.cursor.nextStepId);
+            assert.ok(step, slug);
+            console.log(`Probando ${slug}: ${step.title}`);
+            const prompt = buildLessonPrompt({ course, step, recentLessons: course.lessons.slice(-3) });
+            const draft = await generateWithGroq({ client, prompt, lessonFormat });
+            const filename = await writePreparedLesson(repository.site, {
+              course, draft, prompt: draft.promptUsed ?? prompt,
+              generationDate: localCalendarDate(publishedAt, course.config.timezone),
+              publishedAt: publishedAt.toISOString(),
+              extraRequestId: process.env.GITHUB_RUN_ID,
+            });
+            files.push({ slug, filename, stepId: step.id, lessonFormat });
+            await copyFile(path.join(course.directory, "lessons", filename), path.join(preview, `${slug}.md`));
+            console.log(`Lección ${lessonFormat} validada: ${draft.markdown.split(/\s+/u).length} palabras`);
+          }
 
-      - name: Preparar archivos de Pages
-        uses: actions/upload-pages-artifact@v3
+          console.log("Probando ampliación de Naipes con fuentes de Tavily");
+          const cardGames = getCourse("juegos-naipes");
+          const extension = await generateCourseExtension({ course: cardGames, client, tavilyApiKey: tavilyKey });
+          await saveCourseExtension(root, cardGames, extension);
+          await writeFile(path.join(preview, "naipes.json"), JSON.stringify(extension, null, 2));
+          console.log(`Ampliación validada: ${extension.steps.length} juego(s) y ${extension.research.sources.length} fuente(s)`);
+
+          const result = await validateRepository(root);
+          assert.ok(result.ok, JSON.stringify(result.issues));
+          await buildPublicSite(root, result.repository);
+          for (const { slug, filename, lessonFormat } of files) {
+            const basename = filename.replace(/\.md$/u, ".html");
+            const feed = await readFile(path.join(root, "public", slug, "feed.xml"), "utf8");
+            assert.ok(feed.includes(basename), slug);
+            const page = await readFile(path.join(root, "public", slug, basename), "utf8");
+            assert.equal((page.match(/<h2>/gu) ?? []).length, lessonFormat === "guided" ? 5 : 3, slug);
+          }
+          console.log("RSS y HTML verificados en la copia temporal.");
+          JS
+      - name: Guardar muestras de la prueba
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          path: public
-
-      - name: Publicar GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Informar entregas pendientes
-        run: |
-          if [ -f .work/generation-pending.txt ]; then
-            cat .work/generation-pending.txt
-            printf '## Entregas pendientes\n\n' >> "$GITHUB_STEP_SUMMARY"
-            cat .work/generation-pending.txt >> "$GITHUB_STEP_SUMMARY"
-          fi
+          name: groq-tavily-muestras
+          path: provider-preview/*
+          if-no-files-found: ignore
+          retention-days: 2
