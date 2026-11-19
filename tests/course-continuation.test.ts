@@ -202,8 +202,8 @@ describe("investigación y control de identidades", () => {
     const client = new GroqClient("groq-test", loaded.site.generation);
     const extension = await generateCourseExtension({ course: courseAt(loaded.courses), client, tavilyApiKey: "tavily-test" });
     expect(fetchMock).toHaveBeenCalledTimes(4);
-    expect(bodies[1]).toMatchObject({ query: "Euchre card game rules", search_depth: "basic" });
-    expect(bodies[2]).toMatchObject({ query: "Euchre for four players", search_depth: "basic" });
+    expect(bodies[1]).toMatchObject({ query: "Euchre card game rules", search_depth: "advanced", chunks_per_source: 3 });
+    expect(bodies[2]).toMatchObject({ query: "Euchre for four players", search_depth: "advanced", chunks_per_source: 3 });
     expect(bodies[3]).toMatchObject({ response_format: { type: "json_schema", json_schema: { strict: true } } });
     expect(extension.steps[0]?.game?.sources).toEqual([sources[0]?.url]);
     expect(extension.research.sources).toEqual(sources);

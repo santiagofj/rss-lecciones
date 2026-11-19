@@ -252,7 +252,7 @@ steps:
     topicId: "coma-flotante-audio"
     title: "Entender el margen de procesamiento"
     objective: "Distinguir representación interna de límites de entrada y salida."
-    brief: "Trazar una cadena en coma flotante con un pico interno superior al techo de entrega y decidir dónde se produce el recorte irreversible. Continuidad: el siguiente paso es «Leer un ecualizador paramétrico»."
+    brief: "Trazar una cadena genérica en coma flotante. Usar una muestra normalizada de 0,8 y ganancia 1,5, con resultado interno 1,2. Contrastar aplicar una atenuación de 0,5 antes de una salida PCM entera que satura a ±1 (queda 0,6) con aplicarla después de saturar (queda 0,5). Superar la unidad en coma flotante no implica recorte: la pérdida ocurre en la primera etapa que satura. Presentar la práctica como simulación, sin asumir el formato interno ni los menús de reproductores concretos. Continuidad: el siguiente paso es «Leer un ecualizador paramétrico»."
   - id: "ecualizacion-parametros"
     unitId: "procesamiento-senal"
     topicId: "ecualizacion-parametros"

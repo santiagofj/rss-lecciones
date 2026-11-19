@@ -348,7 +348,7 @@ steps:
     topicId: derrida
     title: Derrida y la deconstrucción
     objective: Explicar diferencia, escritura y crítica de oposiciones jerárquicas.
-    brief: Evitar definir deconstrucción como destrucción o como interpretación arbitraria.
+    brief: Explicar la oposición entre habla y escritura con De la gramatología (1967) y distinguir los dos sentidos de différance, diferir y diferenciar. Presentar la reversión de la jerarquía como un momento del análisis que muestra la dependencia mutua de los términos. Evitar definir deconstrucción como destrucción o como interpretación arbitraria. Apoyar el ejemplo en esa obra y evitar fechas o citas de otras obras que no sean necesarias para el argumento.
   - id: rawls-justicia
     unitId: contemporanea
     topicId: politica

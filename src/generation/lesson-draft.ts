@@ -147,9 +147,12 @@ export async function generateWithGroq(options: GenerateLessonOptions): Promise<
   return retryGeneration(async () => {
     const requestPrompt = strict ? prompt : `${prompt}\n\nDevuelve solamente un objeto JSON con title, summary y sections. Las claves de sections son ${sections.map(([key]) => key).join(", ")}. Usa cadenas JSON para sus cuerpos y escapa sus saltos de línea.`;
     const value = await options.client.structured(requestPrompt, "leccion", schema, strict);
-    const markdown = sections.map(([key, heading]) =>
-      `## ${heading}\n\n${value.sections[key]?.trim() ?? ""}`
-    ).join("\n\n");
+    const markdown = sections.map(([key, heading]) => {
+      const body = value.sections[key]?.trim() ?? "";
+      const leadingHeading = /^#{1,6}[ \t]+([^\n]+)\n*/u.exec(body);
+      const content = leadingHeading?.[1]?.trim() === heading ? body.slice(leadingHeading[0].length).trimStart() : body;
+      return `## ${heading}\n\n${content}`;
+    }).join("\n\n");
     const draft = normalizeLessonDraft({ title: value.title, summary: value.summary, markdown }, options.lessonFormat);
     return { ...draft, promptUsed: requestPrompt };
   }, (error) => {

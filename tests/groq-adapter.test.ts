@@ -45,7 +45,7 @@ describe("generación con Groq", () => {
     expect(init?.headers).toMatchObject({ Authorization: "Bearer clave-de-prueba" });
     expect(JSON.parse(String(init?.body))).toMatchObject({
       model: config.model,
-      reasoning_effort: "low",
+      reasoning_effort: "medium",
       max_completion_tokens: config.maxOutputTokens,
       response_format: {
         type: "json_schema",
