@@ -94,6 +94,24 @@ describe("generación con Groq", () => {
     expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
+  it("reintenta un 400 que corresponde a generación rechazada sin mostrar el borrador", async () => {
+    vi.useFakeTimers();
+    const warnings = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const fetchMock = vi.fn()
+      .mockImplementationOnce(() => Response.json({
+        error: { code: "json_validate_failed", failed_generation: "contenido del proveedor" },
+      }, { status: 400 }))
+      .mockImplementationOnce(() => groqResponse(guidedLesson));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const draft = generate();
+    await vi.advanceTimersByTimeAsync(1_000);
+    await expect(draft).resolves.toHaveProperty("title", guidedLesson.title);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(warnings.mock.calls.flat().join(" ")).toContain("json_validate_failed");
+    expect(warnings.mock.calls.flat().join(" ")).not.toContain("contenido del proveedor");
+  });
+
   it("amplía el borrador corto y audita el prompt aceptado", async () => {
     vi.useFakeTimers();
     vi.spyOn(Math, "random").mockReturnValue(0);
