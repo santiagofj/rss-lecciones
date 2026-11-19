@@ -9,6 +9,11 @@ const completionSchema = z.object({
   })).min(1),
   usage: z.object({ total_tokens: z.number().positive() }).optional(),
 });
+const rejectedGenerationSchema = z.object({
+  error: z.object({
+    code: z.enum(["json_validate_failed", "tool_use_failed"]),
+  }),
+});
 const maxWait = 120_000;
 
 function delay(milliseconds: number): Promise<void> {
@@ -97,6 +102,14 @@ export class GroqClient {
       throw new ProviderError("No se pudo conectar con Groq", true, 10_000);
     }
     if (!response.ok) {
+      if (response.status === 400) {
+        // Some incomplete generations arrive as a client error with a rejected draft.
+        const payload: unknown = await response.json().catch(() => null);
+        const rejected = rejectedGenerationSchema.safeParse(payload);
+        if (rejected.success) {
+          throw new ProviderError(`Groq rechazó el contenido generado (${rejected.data.error.code})`);
+        }
+      }
       const error = httpError("Groq", response);
       if (response.status === 429 && (!error.retryable || response.headers.get("x-ratelimit-remaining-requests") === "0")) {
         this.quotaError = new ProviderError("Groq respondió HTTP 429 y la cuota no se recupera dentro del lote", false);
