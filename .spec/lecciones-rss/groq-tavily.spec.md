@@ -30,6 +30,8 @@ La ejecución 44513432590 publicó nueve lecciones y dejó veintisiete pendiente
 | GT-AC-003 · GT-REQ-003 | Prueba de resultados simulados de Tavily, exclusiones y fuentes referenciadas. Prueba real de ampliación en la copia temporal. |
 | GT-AC-004 · GT-REQ-004 | Ejecutar el paso de informe con y sin archivo de pendientes y corroborar su posición después de Pages. Verificar que un fallo total de generación conserva salida distinta de cero. |
 
-El usuario aprobó avanzar el 19 de noviembre tras revisar el alcance. Se incluye el criterio de correo presentado en la misma propuesta. Las pruebas reales requieren que estén cargadas las claves de los planes gratuitos.
+El usuario aprobó avanzar el 19 de noviembre tras revisar el alcance e instaló las claves de Groq y Tavily como secretos de Actions.
 
-Pasaron la validación de los siete cursos, el chequeo de tipos y las 42 pruebas. La ejecución local del paso de resumen terminó con código 0 con y sin pendientes, y el CLI terminó con código 1 durante un fallo total simulado. El cambio de avisos se publicó primero en `d272ff8`. La prueba real de los dos formatos y la ampliación de Naipes quedan pendientes de las claves.
+Pasaron la validación de los siete cursos, el chequeo de tipos y las 43 pruebas. El paso de resumen terminó con código 0 con y sin pendientes. El CLI terminó con código 1 durante un fallo total simulado. El cambio de avisos se publicó primero en `d272ff8`.
+
+La [prueba aislada de los dos formatos](https://github.com/santiagofj/rss-lecciones/actions/runs/44529270752) generó y validó un borrador guiado de Audio y uno expositivo de Filosofía. Las pruebas con Naipes confirmaron acceso a Tavily y revelaron fuentes irrelevantes para algunos juegos propuestos. El filtro exige una fuente que identifique el juego en su título o ruta y descarta resultados mal formados individualmente. Si se agotan los intentos, el curso usa su reserva.

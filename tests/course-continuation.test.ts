@@ -190,7 +190,7 @@ describe("investigación y control de identidades", () => {
     const bodies: unknown[] = [];
     const fetchMock = vi.fn(async (url: string, init: RequestInit) => {
       bodies.push(JSON.parse(String(init.body)));
-      if (bodies.length === 1) return groqResponse({ first: "Euchre card game rules", second: "Euchre for four players" });
+      if (bodies.length === 1) return groqResponse({ first: "Euchre", second: "Piquet" });
       if (url === "https://api.tavily.com/search") {
         expect(init.headers).toMatchObject({ Authorization: "Bearer tavily-test" });
         return Response.json({ results: [
@@ -203,17 +203,21 @@ describe("investigación y control de identidades", () => {
       if (bodies.length === 4) {
         return Response.json({ error: { code: "json_validate_failed" } }, { status: 400 });
       }
-      return groqResponse({ research: "Resumen de las reglas de Euchre.", games: [candidate] });
+      return groqResponse({
+        research: "Resumen de las reglas de Euchre.",
+        games: [{ ...candidate, key: "scopone", title: "Scopone", aliases: ["Scopone clásico"] }, candidate],
+      });
     });
     vi.stubGlobal("fetch", fetchMock);
     const client = new GroqClient("groq-test", loaded.site.generation);
     const extension = await generateCourseExtension({ course: courseAt(loaded.courses), client, tavilyApiKey: "tavily-test" });
     expect(fetchMock).toHaveBeenCalledTimes(5);
-    expect(bodies[1]).toMatchObject({ query: "Euchre card game rules", search_depth: "advanced", chunks_per_source: 3 });
-    expect(bodies[2]).toMatchObject({ query: "Euchre for four players", search_depth: "advanced", chunks_per_source: 3 });
+    expect(bodies[1]).toMatchObject({ query: "Euchre card game rules deck deal play scoring", search_depth: "advanced", chunks_per_source: 3 });
+    expect(bodies[2]).toMatchObject({ query: "Piquet card game rules deck deal play scoring", search_depth: "advanced", chunks_per_source: 3 });
     expect(bodies[3]).toMatchObject({ response_format: { type: "json_schema", json_schema: { strict: true } } });
     expect(bodies[4]).toMatchObject({ response_format: { type: "json_object" } });
     expect(extension.steps[0]?.game?.sources).toEqual([sources[0]?.url]);
+    expect(extension.steps.map(({ id }) => id)).toEqual(["euchre"]);
     expect(extension.research.sources).toEqual(sources);
   });
 
@@ -222,7 +226,7 @@ describe("investigación y control de identidades", () => {
     const loaded = await repository(root);
     const fetchMock = vi.fn(async (url: string) => url === "https://api.tavily.com/search"
       ? Response.json({ results: [] })
-      : groqResponse({ first: "juegos tradicionales", second: "reglas de naipes" }));
+      : groqResponse({ first: "Euchre", second: "Piquet" }));
     vi.stubGlobal("fetch", fetchMock);
     const client = new GroqClient("groq-test", loaded.site.generation);
     await expect(generateCourseExtension({ course: courseAt(loaded.courses), client, tavilyApiKey: "tavily-test" }))
