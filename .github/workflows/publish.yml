@@ -57,7 +57,7 @@ jobs:
           };
 
           const publishedAt = new Date();
-          const samples = [["audio-digital", "guided"], ["historia-filosofia", "expository"]];
+          const samples = [];
           const files = [];
           for (const [slug, lessonFormat] of samples) {
             const course = getCourse(slug);

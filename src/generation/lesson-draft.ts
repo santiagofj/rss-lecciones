@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import type { LessonFormat } from "../courses/types.js";
-import { ProviderError, RejectedJsonError, retryGeneration, type GroqClient } from "./groq.js";
+import { ProviderError, retryStructuredGeneration, type GroqClient } from "./groq.js";
 import { lessonSections } from "./prompt.js";
 
 const rawLessonDraftSchema = z.object({
@@ -143,10 +143,8 @@ export async function generateWithGroq(options: GenerateLessonOptions): Promise<
   });
 
   let prompt = options.prompt;
-  let strict = true;
-  return retryGeneration(async () => {
-    const requestPrompt = strict ? prompt : `${prompt}\n\nDevuelve solamente un objeto JSON con title, summary y sections. Las claves de sections son ${sections.map(([key]) => key).join(", ")}. Usa cadenas JSON para sus cuerpos y escapa sus saltos de línea.`;
-    const value = await options.client.structured(requestPrompt, "leccion", schema, strict);
+  return retryStructuredGeneration(async (strict) => {
+    const { value, promptUsed } = await options.client.structured(prompt, "leccion", schema, strict);
     const markdown = sections.map(([key, heading]) => {
       const body = value.sections[key]?.trim() ?? "";
       const leadingHeading = /^#{1,6}[ \t]+([^\n]+)\n*/u.exec(body);
@@ -154,9 +152,8 @@ export async function generateWithGroq(options: GenerateLessonOptions): Promise<
       return `## ${heading}\n\n${content}`;
     }).join("\n\n");
     const draft = normalizeLessonDraft({ title: value.title, summary: value.summary, markdown }, options.lessonFormat);
-    return { ...draft, promptUsed: requestPrompt };
+    return { ...draft, promptUsed };
   }, (error) => {
-    if (error instanceof RejectedJsonError) strict = false;
     if (!(error instanceof ShortLessonError)) return;
     const expanded = `${options.prompt}
 

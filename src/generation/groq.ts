@@ -30,7 +30,7 @@ export class ProviderError extends Error {
   }
 }
 
-export class RejectedJsonError extends ProviderError {
+class RejectedJsonError extends ProviderError {
   constructor() {
     super("Groq rechazó el contenido generado (json_validate_failed)");
   }
@@ -73,6 +73,17 @@ export async function retryGeneration<T>(
   }
 }
 
+export function retryStructuredGeneration<T>(
+  operation: (strict: boolean) => Promise<T>,
+  prepareRetry?: (error: unknown) => void,
+): Promise<T> {
+  let strict = true;
+  return retryGeneration(() => operation(strict), (error) => {
+    if (error instanceof RejectedJsonError) strict = false;
+    prepareRetry?.(error);
+  });
+}
+
 export class GroqClient {
   private nextRequestAt = 0;
   private quotaError?: ProviderError;
@@ -82,13 +93,17 @@ export class GroqClient {
     private readonly config: SiteConfig["generation"],
   ) {}
 
-  async structured<T extends z.ZodType>(prompt: string, name: string, schema: T, strict = true): Promise<z.output<T>> {
-    this.checkInputSize(prompt);
+  async structured<T extends z.ZodType>(
+    prompt: string, name: string, schema: T, strict: boolean,
+  ): Promise<{ value: z.output<T>; promptUsed: string }> {
+    const { $schema: _schema, ...jsonSchema } = z.toJSONSchema(schema);
+    const promptUsed = strict ? prompt
+      : `${prompt}\n\nDevuelve únicamente un objeto JSON conforme a este esquema. Escapa los saltos de línea de las cadenas.\n${JSON.stringify(jsonSchema)}`;
+    this.checkInputSize(promptUsed);
     if (this.quotaError !== undefined) throw this.quotaError;
     const wait = this.nextRequestAt - Date.now();
     if (wait > 0) await delay(wait);
 
-    const { $schema: _schema, ...jsonSchema } = z.toJSONSchema(schema);
     let response: Response;
     try {
       response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -96,7 +111,7 @@ export class GroqClient {
         headers: { Authorization: `Bearer ${this.apiKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           model: this.config.model,
-          messages: [{ role: "user", content: prompt }],
+          messages: [{ role: "user", content: promptUsed }],
           max_completion_tokens: this.config.maxOutputTokens,
           reasoning_effort: "medium",
           include_reasoning: false,
@@ -147,7 +162,7 @@ export class GroqClient {
     }
     const parsed = schema.safeParse(value);
     if (!parsed.success) throw new ProviderError("La respuesta de Groq no cumple el esquema");
-    return parsed.data;
+    return { value: parsed.data, promptUsed };
   }
 
   checkInputSize(prompt: string): void {
