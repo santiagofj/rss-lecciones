@@ -74,6 +74,7 @@ Registro obligatorio:
 - Evita expresiones coloquiales como "vamos", "genial", "ojo con esto", "acá está la magia", "tranquilo" o equivalentes.
 - No infantilices al lector ni exageres la importancia de una idea.
 - Prefiere oraciones directas y vocabulario técnico explicado con naturalidad.
+- Verifica los cálculos, unidades, condiciones y orden de operaciones de cada ejemplo. Distingue los resultados de un ejemplo hipotético de las afirmaciones sobre productos concretos. Usa nombres de menús o datos de implementación sólo cuando estén sustentados en el contexto. Si el resultado depende de dónde se aplica un proceso o un límite, explica esa diferencia de forma explícita.
 
 Completa title, summary y todas las secciones del objeto sections:
 ${sections}
