@@ -98,7 +98,7 @@ export class GroqClient {
           model: this.config.model,
           messages: [{ role: "user", content: prompt }],
           max_completion_tokens: this.config.maxOutputTokens,
-          reasoning_effort: "low",
+          reasoning_effort: "medium",
           include_reasoning: false,
           response_format: strict
             ? { type: "json_schema", json_schema: { name, strict: true, schema: jsonSchema } }
