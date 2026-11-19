@@ -108,7 +108,7 @@ describe("generación con Groq", () => {
     await vi.advanceTimersByTimeAsync(1_000);
     await expect(draft).resolves.toMatchObject({
       title: guidedLesson.title,
-      promptUsed: expect.stringContaining("Las claves de sections son"),
+      promptUsed: expect.stringContaining("Devuelve únicamente un objeto JSON conforme a este esquema"),
     });
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body))).toMatchObject({
