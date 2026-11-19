@@ -6,13 +6,12 @@ import type { LoadedCourse } from "../courses/types.js";
 import { httpError, ProviderError, retryGeneration, retryStructuredGeneration, type GroqClient } from "../generation/groq.js";
 
 export type ExtensionInput = { course: LoadedCourse; client: GroqClient; tavilyApiKey: string | undefined };
-const searchSchema = z.object({
-  results: z.array(z.object({
-    title: z.string().min(1),
-    url: z.url({ protocol: /^https$/ }),
-    content: z.string(),
-  })),
+const searchResultSchema = z.object({
+  title: z.string().trim().min(1),
+  url: z.url({ protocol: /^https$/ }),
+  content: z.string().trim().min(1),
 });
+const searchResponseSchema = z.object({ results: z.array(z.unknown()) });
 const queriesSchema = z.strictObject({
   first: z.string().min(1).max(240),
   second: z.string().min(1).max(240),
@@ -105,9 +104,12 @@ async function searchTavily(query: string, apiKey: string) {
     }
     if (!response.ok) throw httpError("Tavily", response);
     const payload: unknown = await response.json().catch(() => null);
-    const parsed = searchSchema.safeParse(payload);
+    const parsed = searchResponseSchema.safeParse(payload);
     if (!parsed.success) throw new ProviderError("Tavily devolvió resultados inválidos");
-    return parsed.data.results;
+    return parsed.data.results.flatMap((item) => {
+      const result = searchResultSchema.safeParse(item);
+      return result.success ? [result.data] : [];
+    });
   });
 }
 
@@ -131,11 +133,13 @@ Juegos recientes y preparados: ${recent.join("; ")}.`,
     strict,
   ));
 
-  const groups = await Promise.all([...new Set(Object.values(queries))].map(
+  const groups = await Promise.allSettled([...new Set(Object.values(queries))].map(
     (query) => searchTavily(query, apiKey),
   ));
+  const failed = groups.find((group) => group.status === "rejected");
+  const found = groups.flatMap((group) => group.status === "fulfilled" ? group.value : []);
   const results = new Map<string, { title: string; url: string; excerpt: string }>();
-  for (const result of groups.flat()) {
+  for (const result of found) {
     const key = normalizedSource(result.url);
     // Tavily devuelve hasta tres pasajes relevantes por URL en modo avanzado.
     const excerpt = result.content.trim().slice(0, 1_500);
@@ -144,7 +148,10 @@ Juegos recientes y preparados: ${recent.join("; ")}.`,
     }
   }
   const evidence = [...results.values()];
-  if (evidence.length === 0) throw new Error("La búsqueda no aportó fuentes verificables para la ampliación");
+  if (evidence.length === 0) {
+    if (failed?.reason instanceof Error) throw failed.reason;
+    throw new Error("La búsqueda no aportó fuentes verificables para la ampliación");
+  }
   const sources = evidence.map(({ title, url }) => ({ title, url }));
   const { plan, steps } = await retryStructuredGeneration(async (strict) => {
     const { value: candidatePlan } = await input.client.structured(

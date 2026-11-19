@@ -193,7 +193,11 @@ describe("investigación y control de identidades", () => {
       if (bodies.length === 1) return groqResponse({ first: "Euchre card game rules", second: "Euchre for four players" });
       if (url === "https://api.tavily.com/search") {
         expect(init.headers).toMatchObject({ Authorization: "Bearer tavily-test" });
-        return Response.json({ results: [{ ...sources[0], content: "Reglamento de Euchre por parejas." }] });
+        return Response.json({ results: [
+          { title: "Reglamento sin HTTPS", url: "http://example.test/naipes", content: "Reglas no admitidas." },
+          { ...sources[0], content: "Reglamento de Euchre por parejas." },
+          { ...sources[0], content: null },
+        ] });
       }
       expect(String(init.body)).toContain(sources[0]?.url);
       if (bodies.length === 4) {
