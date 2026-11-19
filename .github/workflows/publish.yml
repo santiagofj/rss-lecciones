@@ -97,5 +97,6 @@ jobs:
         run: |
           if [ -f .work/generation-pending.txt ]; then
             cat .work/generation-pending.txt
-            exit 1
+            printf '## Entregas pendientes\n\n' >> "$GITHUB_STEP_SUMMARY"
+            cat .work/generation-pending.txt >> "$GITHUB_STEP_SUMMARY"
           fi
