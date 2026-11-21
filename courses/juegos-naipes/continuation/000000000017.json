@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "afterStepId": "mau-mau",
+  "generatedAt": "2026-11-21T10:51:53.672Z",
+  "steps": [
+    {
+      "id": "piquet",
+      "unitId": "juegos-del-mundo",
+      "topicId": "piquet",
+      "title": "Piquet",
+      "objective": "Obtener al menos 100 puntos y terminar la partie con la mayor puntuación después de seis manos.",
+      "brief": "Jugadores: 2. Baraja: 32 cartas (A, K, Q, J, 10, 9, 8, 7 de cada palo), sin comodines. Preparación: se baraja y corta; el ganador decide quién reparte primero. El repartidor (joven) entrega 12 cartas a cada jugador en grupos de 2 o 3, dejando 8 cartas como talón boca abajo. Fase de descarte y extracción: el jugador no repartidor (anciano) puede cambiar hasta 5 cartas con el talón; el repartidor cambia las restantes. Declaración de combinaciones: se cuentan punto (máxima serie del mismo palo), secuencia (runa más larga del mismo palo) y juego (trío o póquer de rango 10 o superior). Sólo la mejor combinación de cada tipo se declara y se anotan los puntos correspondientes. Juego de bazas: el anciano lidera; cada jugador sigue palo si puede, la carta más alta del palo liderado gana la baza. Se juegan 12 bazas. Puntuación: 1 punto por baza ganada, 1 punto por la última baza, 10 puntos por mayoría de bazas, 40 por capot (todas las bazas), bonos de repique (60) y pique (30) según se alcancen 30 puntos antes que el oponente en la fase de declaraciones. Al final de cada mano se suman los puntos; después de seis manos se compara el total. Condición de fin: la partida finaliza tras seis manos o antes si un jugador alcanza 100 puntos, declarándose vencedor el que tenga más puntos.\nVariante y reglas investigadas para este paso. Fuentes: https://www.pagat.com/notrump/piquet.html ; https://www.britannica.com/topic/piquet ; https://officialgamerules.org/game-rules/piquet. Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "piquet",
+        "aliases": [
+          "Piquet",
+          "Piquet (France)"
+        ],
+        "sources": [
+          "https://www.pagat.com/notrump/piquet.html",
+          "https://www.britannica.com/topic/piquet",
+          "https://officialgamerules.org/game-rules/piquet"
+        ]
+      }
+    },
+    {
+      "id": "old-maid",
+      "unitId": "juegos-del-mundo",
+      "topicId": "old-maid",
+      "title": "Old Maid",
+      "objective": "No quedarse con la carta única (la Old Maid) al terminar el juego.",
+      "brief": "Jugadores: 2‑8. Baraja: mazo estándar de 52 cartas del que se elimina una reina, quedando 51 cartas. Preparación: se baraja bien y se reparten todas las cartas lo más equitativamente posible (algunos pueden tener una carta extra). Cada jugador revisa su mano y descarta inmediatamente todos los pares idénticos (dos cartas del mismo rango). El juego procede en sentido horario. En su turno, el jugador ofrece su mano boca abajo al jugador a su izquierda, quien elige una carta al azar. Si esa carta forma un par con alguna de sus propias cartas, el par se descarta boca arriba; de lo contrario la carta se añade a la mano del jugador que la tomó. Se repite el proceso, con cada jugador tomando una carta del vecino y descartando pares cuando sea posible. El juego continúa hasta que todos los jugadores, salvo uno, hayan descartado todas sus cartas. El jugador que retiene la única reina sin pareja es el \"Old Maid\" y pierde. La partida termina cuando solo queda esa carta en una mano; no se lleva puntuación adicional.\nVariante y reglas investigadas para este paso. Fuentes: https://www.playiro.com/card-games/old-maid-rules ; https://en.wikipedia.org/wiki/Old_maid_(card_game). Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "old-maid",
+        "aliases": [
+          "Old Maid",
+          "Vieja Doncella",
+          "La Vieille Fille"
+        ],
+        "sources": [
+          "https://www.playiro.com/card-games/old-maid-rules",
+          "https://en.wikipedia.org/wiki/Old_maid_(card_game)"
+        ]
+      }
+    }
+  ],
+  "research": {
+    "text": "Se revisaron fuentes indexadas que describen dos juegos de naipes tradicionales con reglas completas y suficientes para reproducir una variante única. Piquet se documenta en tres fuentes que detallan la baraja de 32 cartas, la fase de descarte y extracción, la declaración de combinaciones, la partida de 12 bazas y el sistema de puntuación que incluye bonos y el objetivo de superar los 100 puntos (cruzar el Rubicón) en una serie de seis manos. Old Maid se describe en dos fuentes que explican la eliminación de una reina, la distribución de todas las cartas, la descarte inicial de pares y el ciclo de turnos en que cada jugador toma una carta del vecino y descarta nuevos pares, finalizando cuando un solo jugador retiene la carta no emparejada, que pierde. Ambas descripciones son lo suficientemente exhaustivas para enseñar el juego sin recurrir a material externo adicional.",
+    "sources": [
+      {
+        "title": "Piquet - card game rules",
+        "url": "https://www.pagat.com/notrump/piquet.html"
+      },
+      {
+        "title": "Piquet | Rules, Strategy & History",
+        "url": "https://www.britannica.com/topic/piquet"
+      },
+      {
+        "title": "How to Play Piquet | Official Rules",
+        "url": "https://officialgamerules.org/game-rules/piquet"
+      },
+      {
+        "title": "Old Maid Rules → How to Play Old Maid Card Game",
+        "url": "https://www.playiro.com/card-games/old-maid-rules"
+      },
+      {
+        "title": "Old maid (card game) - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Old_maid_(card_game)"
+      },
+      {
+        "title": "How to play Old Maid (Card Game)",
+        "url": "https://www.youtube.com/watch?v=n6UFbZ0jGWw"
+      }
+    ]
+  }
+}

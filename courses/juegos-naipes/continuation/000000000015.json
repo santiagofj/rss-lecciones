@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "afterStepId": "bridge",
+  "generatedAt": "2026-11-21T10:49:29.868Z",
+  "steps": [
+    {
+      "id": "mus",
+      "unitId": "juegos-del-mundo",
+      "topicId": "mus",
+      "title": "Mus",
+      "objective": "Obtener 40 puntos antes que el equipo contrario mediante apuestas en Grande, Chica, Pares y Juego.",
+      "brief": "Jugadores: 4 (dos parejas). Baraja: española de 40 cartas, sin relevancia de palos; los 3 equivalen a reyes y se usan como cartas altas. Preparación: el crupier baraja, el jugador a su izquierda corta y reparte 4 cartas a cada jugador en sentido antihorario. Se designa al \"mano\" (jugador a la derecha del crupier) que inicia la ronda de apuestas. Secuencia: 1) Ronda de Mus: los jugadores pueden descartar y volver a recibir cartas (opcional, una sola vez). 2) Cuatro rondas de apuestas (Grande, Chica, Pares, Juego) donde se pujan puntos o se pasa; las pujas se resuelven al final de la mano. 3) Showdown: se revelan cartas y se puntúan según la categoría ganadora; se anotan puntos en piedras y amarracos. Jugadas legales: descartar y robar (solo en Mus), pujar o pasar en cada ronda, declarar órdago para terminar la partida. Puntuación: se suman puntos por cada categoría ganada (Grande y Chica 1‑2 pts, Pares según pares, Juego según combinación). El juego finaliza cuando una pareja alcanza 40 puntos y gana la partida.\nVariante y reglas investigadas para este paso. Fuentes: https://www.pagat.com/vying/mus.html ; https://en.wikipedia.org/wiki/Mus_(card_game) ; https://www.nhfournier.es/en/como-jugar/mus. Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "mus",
+        "aliases": [
+          "Mus",
+          "Mus (juego de naipes)"
+        ],
+        "sources": [
+          "https://www.pagat.com/vying/mus.html",
+          "https://en.wikipedia.org/wiki/Mus_(card_game)",
+          "https://www.nhfournier.es/en/como-jugar/mus"
+        ]
+      }
+    },
+    {
+      "id": "mau-mau",
+      "unitId": "juegos-del-mundo",
+      "topicId": "mau-mau",
+      "title": "Mau-Mau",
+      "objective": "Ser el primer jugador en descartar todas sus cartas.",
+      "brief": "Jugadores: 2‑6. Baraja: francesa de 52 cartas (o 32 excluyendo cartas menores a 7 en variantes regionales). Cartas excluidas: en versiones de 32 se omiten 2‑6. Preparación: se baraja, el crupier corta y reparte 5 cartas a cada jugador (7 en partida de 2 jugadores). Se coloca la carta superior del mazo como inicio de la pila de descarte. Secuencia de juego: en su turno el jugador debe colocar una carta que coincida en rango o palo con la carta visible de la pila, o robar una carta si no puede jugar. Cartas especiales: 8 (cambia palo), 7 (el siguiente jugador roba 2 o se acumula), As (salta turno). Al quedarse con una carta debe anunciar \"Mau\"; al jugar la última carta debe anunciar \"Mau-Mau\" o recibir penalización. Jugadas legales: jugar una carta válida, jugar varias del mismo rango en sucesión si la regla lo permite, usar cartas especiales para obligar robar o cambiar turno. Puntuación: el ganador de la ronda no recibe puntos; los demás suman el valor de sus cartas restantes (cifras valen su número, figuras 10). El juego puede jugarse a varios rondos acumulando puntuación hasta alcanzar un total acordado (por ejemplo 100 puntos) o simplemente por rondas sucesivas. Condición de fin: la partida termina cuando un jugador se queda sin cartas en una ronda o cuando se alcanza la puntuación objetivo en juego acumulativo.\nVariante y reglas investigadas para este paso. Fuentes: https://cardrulesplus.com/games/mau-mau ; https://en.wikipedia.org/wiki/Mau-Mau_(card_game) ; https://grokipedia.com/page/Mau-Mau_(card_game). Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "mau-mau",
+        "aliases": [
+          "Mau-Mau",
+          "Mau Mau",
+          "Mau-Mau (juego)"
+        ],
+        "sources": [
+          "https://cardrulesplus.com/games/mau-mau",
+          "https://en.wikipedia.org/wiki/Mau-Mau_(card_game)",
+          "https://grokipedia.com/page/Mau-Mau_(card_game)"
+        ]
+      }
+    }
+  ],
+  "research": {
+    "text": "Se analizaron las fuentes indexadas para extraer reglas completas y verificables de dos juegos tradicionales de naipes. Mus, descrito en pagat.com, Wikipedia y NHFournier, ofrece una variante completa de cuatro rondas de apuestas y puntuación en parejas, usando una baraja española de 40 cartas sin distinción de palos y con los 3 equivalentes a reyes. Mau‑Mau, documentado en CardRules+, Wikipedia y Grokipedia, es un juego de descarte (shedding) para 2‑6 jugadores con una baraja francesa de 52 cartas (o 32 excluyendo menores) y cartas especiales que obligan a robar o saltar turnos. Ambas descripciones incluyen preparación, desarrollo de todas las fases, jugadas permitidas, método de puntuación y condición de finalización, cumpliendo los criterios de completa sustentación.",
+    "sources": [
+      {
+        "title": "Mus - card game rules",
+        "url": "https://www.pagat.com/vying/mus.html"
+      },
+      {
+        "title": "Mus (card game) - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Mus_(card_game)"
+      },
+      {
+        "title": "How to play Mus: card game instructions",
+        "url": "https://www.nhfournier.es/en/como-jugar/mus"
+      },
+      {
+        "title": "How to Play Mau Mau | CardRules+",
+        "url": "https://cardrulesplus.com/games/mau-mau"
+      },
+      {
+        "title": "Mau-Mau (card game) - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Mau-Mau_(card_game)"
+      },
+      {
+        "title": "Mau-Mau (card game) — Grokipedia",
+        "url": "https://grokipedia.com/page/Mau-Mau_(card_game)"
+      }
+    ]
+  }
+}
