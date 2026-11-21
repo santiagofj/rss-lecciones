@@ -7,7 +7,6 @@ Este repositorio genera cursos personales con Groq y los publica como páginas H
 | Curso | Lecciones del recorrido | Enfoque |
 |---|---:|---|
 | Audio digital práctico | 86 | Señal, formatos, procesamiento, reproducción, medición y escucha crítica. |
-| Full Stack progresivo | 130 | Comprensión conceptual de frontend, backend, datos, seguridad, arquitectura y operación, sin stack obligatorio. |
 | Historia del diseño | 18 | Movimientos y estilos, con una pieza ilustrada en cada lección. |
 | Historia de la filosofía | 63 | Recorrido histórico de problemas y argumentos. |
 | IA, conceptos y usos | 24 | Fundamentos, modelos de lenguaje, multimodalidad, RAG, herramientas, agentes y evaluación. |
@@ -28,10 +27,10 @@ El flujo `.github/workflows/publish.yml` se ejecuta todos los días a las 03:00 
 
 Audio, Full Stack y Música se reactivaron el `2026-10-20`, con `schedule.startDate` fijado en esa fecha: es el inicio del nuevo tramo de entregas debidas, no una modificación de las fechas históricas. No se recupera el intervalo agotado desde el 3 de octubre. La fecha se mantiene fija, también ante fallos y reintentos; así los errores posteriores continúan siendo recuperables. Filosofía conserva su calendario. Una futura reactivación sin recuperación de un intervalo deberá fijar y documentar su propia fecha antes de activarse.
 
-Para pedir **otra lección** de un curso, inicia `Generar y publicar lecciones` desde GitHub Actions con el campo `course` (por ejemplo, `fullstack`). También puedes ejecutar:
+Para pedir **otra lección** de un curso, inicia `Generar y publicar lecciones` desde GitHub Actions con el campo `course` (por ejemplo, `audio-digital`). También puedes ejecutar:
 
 ```powershell
-gh workflow run publish.yml --ref main -R santiagofj/rss-lecciones -f course=fullstack
+gh workflow run publish.yml --ref main -R santiagofj/rss-lecciones -f course=audio-digital
 ```
 
 Repite el pedido cuando quieras la siguiente lección, incluso el mismo día. Los pedidos se procesan de uno en uno. El curso debe estar activo, tener pasos pendientes y contar con cuota disponible en Groq. Para pedir otra lección, inicia una ejecución nueva.
@@ -57,7 +56,6 @@ Guarda las claves de los planes gratuitos como secretos de GitHub Actions. Usa `
 Después de activar GitHub Pages:
 
 - `https://santiagofj.github.io/rss-lecciones/audio-digital/feed.xml`
-- `https://santiagofj.github.io/rss-lecciones/fullstack/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/historia-diseno/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/historia-filosofia/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/ia-conceptos-y-usos/feed.xml`

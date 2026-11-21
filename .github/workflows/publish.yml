@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       course:
-        description: "Slug del curso para generar una lección extra (ej.: fullstack)"
+        description: "Slug del curso para generar una lección extra (ej.: audio-digital)"
         required: false
         type: string
       recover:

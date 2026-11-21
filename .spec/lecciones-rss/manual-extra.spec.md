@@ -40,7 +40,7 @@ Esta enmienda reemplaza la parte de NFR-003 que aplicaba el máximo de una lecci
 `publish.yml` añade un input obligatorio `course` para `workflow_dispatch`. Desde la interfaz de Actions se escribe el slug; desde PowerShell se usa, por ejemplo:
 
 ```powershell
-gh workflow run publish.yml --ref main -R santiagofj/rss-lecciones -f course=fullstack
+gh workflow run publish.yml --ref main -R santiagofj/rss-lecciones -f course=audio-digital
 ```
 
 Ese comando se repite cada vez que se quiera otra lección. No se necesita editar archivos entre pedidos. El input se pasa al proceso mediante una variable de entorno, se valida como slug y se resuelve contra los cursos cargados; no se interpola como comando de shell. En ejecuciones programadas no hay input y se usa el flujo diario actual.
