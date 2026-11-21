@@ -7,6 +7,8 @@ Este repositorio genera cursos personales con Groq y los publica como páginas H
 | Curso | Lecciones del recorrido | Enfoque |
 |---|---:|---|
 | Audio digital práctico | 86 | Señal, formatos, procesamiento, reproducción, medición y escucha crítica. |
+| Estilos del flamenco | 16 | Un palo por día, con historia, rasgos musicales y grabaciones comentadas. |
+| Estilos del folklore argentino | 22 | Un género por día, con contexto regional, rasgos de escucha y grabaciones clásicas. |
 | Historia del diseño | 18 | Movimientos y estilos, con una pieza ilustrada en cada lección. |
 | Historia de la filosofía | 63 | Recorrido histórico de problemas y argumentos. |
 | IA, conceptos y usos | 24 | Fundamentos, modelos de lenguaje, multimodalidad, RAG, herramientas, agentes y evaluación. |
@@ -56,6 +58,8 @@ Guarda las claves de los planes gratuitos como secretos de GitHub Actions. Usa `
 Después de activar GitHub Pages:
 
 - `https://santiagofj.github.io/rss-lecciones/audio-digital/feed.xml`
+- `https://santiagofj.github.io/rss-lecciones/estilos-flamenco/feed.xml`
+- `https://santiagofj.github.io/rss-lecciones/folklore-argentino/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/historia-diseno/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/historia-filosofia/feed.xml`
 - `https://santiagofj.github.io/rss-lecciones/ia-conceptos-y-usos/feed.xml`

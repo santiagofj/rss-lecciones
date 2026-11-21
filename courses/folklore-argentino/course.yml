@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: 238bae96-28a0-42bb-b530-94a79acf04a8
+slug: folklore-argentino
+title: Estilos del folklore argentino
+description: Un género del folklore argentino por día, con contexto regional, rasgos de escucha y grabaciones clásicas comentadas.
+status: active
+language: es-AR
+timezone: America/Argentina/Buenos_Aires
+schedule:
+  type: weekly
+  startDate: 2026-11-21
+  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+feed: true
+teaching:
+  lessonFormat: expository
+  audience: Oyente interesado en comprender y distinguir los géneros del folklore argentino sin formación musical previa.
+  instructions: >-
+    Dedicar la entrega exclusivamente al género indicado. Describir dónde y en qué contextos se practica, sus
+    antecedentes documentados, el pulso, el acompañamiento, la forma y, cuando corresponda, su relación con la danza.
+    Explicar con palabras corrientes y ejemplos audibles cómo se organizan los acentos. Evitar reducir el género a una
+    provincia, un instrumento o un tempo fijo. Tratar los cruces regionales y los orígenes discutidos con precisión.
+    Comentar por lo menos dos ejemplos previstos para el paso, identificando la obra, intérprete o colección y señalando
+    qué se puede oír en cada caso. Distinguir autoría, recopilación y versión, y señalar el carácter tradicional cuando
+    esté documentado. Incorporar los enlaces aportados al final de los párrafos en formato Markdown [título](URL).
+    Conservar esos enlaces literalmente y no inventar otros, minutajes, letras, créditos ni fechas.
+    Usar géneros vecinos solo como contraste para reconocer el del día. Integrar la escucha en la exposición.

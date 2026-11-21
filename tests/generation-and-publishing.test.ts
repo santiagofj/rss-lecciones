@@ -40,6 +40,21 @@ describe("publicación segura de Markdown", () => {
     expect(html).not.toContain("<script>");
     expect(html).toContain("<strong>Práctica</strong>");
   });
+
+  it("publica enlaces web y conserva como texto los destinos no admitidos", () => {
+    const html = renderMarkdown(
+      '[Escuchar <grabación>](https://example.com/track_(live)?a=1&b=2) ' +
+      '[Enlace inválido](https://?x=1) [Otro destino](data:text/html,test) ' +
+      '`[Código](https://example.com/ejemplo)`',
+    );
+    expect(html).toContain(
+      '<a href="https://example.com/track_(live)?a=1&amp;b=2">Escuchar &lt;grabación&gt;</a>',
+    );
+    expect(html).toContain("[Enlace inválido](https://?x=1)");
+    expect(html).toContain("[Otro destino](data:text/html,test)");
+    expect(html).toContain("<code>[Código](https://example.com/ejemplo)</code>");
+    expect(html.match(/<a href=/g)).toHaveLength(1);
+  });
 });
 
 describe("validación del Markdown de las lecciones", () => {

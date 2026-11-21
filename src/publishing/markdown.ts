@@ -7,11 +7,29 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
-function renderInline(value: string): string {
+function renderEmphasis(value: string): string {
   return escapeHtml(value)
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+}
+
+function renderInline(value: string): string {
+  const tokens = /`([^`]+)`|\[([^\[\]]+)\]\((https?:\/\/[^\s<>"'()]+(?:\([^\s<>"'()]*\)[^\s<>"'()]*)*)\)/giu;
+  let rendered = "";
+  let offset = 0;
+  for (const match of value.matchAll(tokens)) {
+    const [token, code, label, url] = match;
+    rendered += renderEmphasis(value.slice(offset, match.index));
+    if (code !== undefined) {
+      rendered += "<code>" + escapeHtml(code) + "</code>";
+    } else if (label !== undefined && url !== undefined && URL.canParse(url)) {
+      rendered += '<a href="' + escapeHtml(url) + '">' + renderEmphasis(label) + "</a>";
+    } else {
+      rendered += renderEmphasis(token);
+    }
+    offset = match.index + token.length;
+  }
+  return rendered + renderEmphasis(value.slice(offset));
 }
 
 export function renderMarkdown(markdown: string): string {

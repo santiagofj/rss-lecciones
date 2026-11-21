@@ -1,0 +1,26 @@
+schemaVersion: 1
+id: ad05fcb8-c425-47fb-a493-5a2fa3854760
+slug: estilos-flamenco
+title: Estilos del flamenco
+description: Un palo flamenco por día, con su historia, sus rasgos musicales y grabaciones de referencia comentadas.
+status: active
+language: es-AR
+timezone: America/Argentina/Buenos_Aires
+schedule:
+  type: weekly
+  startDate: 2026-11-21
+  days: [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
+feed: true
+teaching:
+  lessonFormat: expository
+  audience: Oyente interesado en reconocer los palos flamencos sin necesidad de leer partituras ni tocar un instrumento.
+  instructions: >-
+    Dedicar la entrega exclusivamente al palo indicado. Introducir su procedencia y primeros testimonios distinguiendo
+    documentación, atribuciones e hipótesis. Explicar los rasgos de compás, acentos, armonía o fraseo que se puedan oír,
+    así como el papel del cante, el toque y el baile cuando corresponda. Definir cada término con un ejemplo audible.
+    Comentar por lo menos dos ejemplos concretos previstos para el paso, con el título o la denominación y el intérprete.
+    Explicar qué escuchar en cada grabación. Incorporar los enlaces aportados al final de los párrafos en formato
+    Markdown [título](URL), según correspondan a audios, videos, fichas discográficas o fuentes de historia.
+    Conservar esos enlaces literalmente y no inventar otros, minutajes, letras, créditos ni fechas. Si una pieza es un
+    toque instrumental, identificarla como tal. Usar estilos vecinos solo como contraste para reconocer el palo del día.
+    Integrar la comparación de escucha en la exposición, sin consignas de evaluación.
