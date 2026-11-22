@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "afterStepId": "old-maid",
+  "generatedAt": "2026-11-22T10:56:43.625Z",
+  "steps": [
+    {
+      "id": "cuarenta",
+      "unitId": "juegos-del-mundo",
+      "topicId": "cuarenta",
+      "title": "Cuarenta",
+      "objective": "Capture more than half the cards (at least 20) to earn points and be the first team to reach 40 points.",
+      "brief": "Players: 2 or 4 (teams of two opposite each other). Deck: 40 cards (standard 52‑card deck minus all 8s, 9s, 10s). The removed 8‑10 cards are kept aside as scoring markers. Deal: The first dealer is the player who first receives a diamond when cards are dealt face‑up one at a time clockwise. After each hand the deal passes left. Each player receives five cards; the remaining cards form the stock and are set aside after the deal. Play: Players capture cards from the table by matching rank or by forming combinations according to traditional Cuarenta rules (capture by exact rank, sum to 15, etc.). Special immediate scoring: a \"Ronda\" (three of a kind in hand) scores 4 points; a four‑of‑a‑kind wins the hand outright. After all 40 cards have been played (two deals for 4‑player games, four deals for 2‑player games) the hand ends. Scoring: Teams count captured cards. 20 cards = 6 points; each extra card adds one point rounded up to the next even number (21‑22 cards = 8 points, 23‑24 = 10 points, etc.). If neither team reaches 20 cards, the team with more cards scores 2 points; if tied under 20, the non‑dealer scores 2 points. The first team to accumulate 40 points wins the match.\nVariante y reglas investigadas para este paso. Fuentes: https://itchyfeetonthecheap.com/2020/04/16/how-to-play-cuarenta-ecuadors-favorite-card-game ; https://www.pagat.com/fishing/cuarenta.html ; https://officialgamerules.org?p=8344. Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "cuarenta",
+        "aliases": [
+          "Cuarenta"
+        ],
+        "sources": [
+          "https://itchyfeetonthecheap.com/2020/04/16/how-to-play-cuarenta-ecuadors-favorite-card-game",
+          "https://www.pagat.com/fishing/cuarenta.html",
+          "https://officialgamerules.org?p=8344"
+        ]
+      }
+    },
+    {
+      "id": "siete-y-media",
+      "unitId": "juegos-del-mundo",
+      "topicId": "siete-y-media",
+      "title": "Siete y Media",
+      "objective": "Achieve a total of 7.5 points or as close as possible without exceeding, beating the dealer's hand.",
+      "brief": "Players: 2 or more. Deck: 40‑card Spanish‑style deck (cards 1‑7 and three face cards; 8s, 9s, 10s are omitted). The half‑point value is assigned to each face card (J, Q, K = 0.5). Deal: The dealer shuffles and deals one face‑up card to each player and one to themselves. Play proceeds clockwise. On a turn a player may either stand with the total they have or request an additional face‑up card from the stock. If the total exceeds 7.5 the player busts and loses the bid. If a player reaches exactly 7.5 they immediately reveal and win double the bet; otherwise the round ends when all players have stood or busted. Scoring: The hand with the highest total ≤ 7.5 wins even‑money; ties result in a push. The game continues for a predetermined number of rounds or until a player wins all chips. The objective is to outscore the dealer while avoiding busting.\nVariante y reglas investigadas para este paso. Fuentes: https://www.youtube.com/watch?v=VGW7SZbKxXI ; https://wizardofvegas.com/forum/gambling/tables/7393-siete-y-medio-seven-and-a-half-game ; https://wizardofodds.com/games/siete-y-media. Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "siete-y-media",
+        "aliases": [
+          "Seven and a Half",
+          "Siete y Medio"
+        ],
+        "sources": [
+          "https://www.youtube.com/watch?v=VGW7SZbKxXI",
+          "https://wizardofvegas.com/forum/gambling/tables/7393-siete-y-medio-seven-and-a-half-game",
+          "https://wizardofodds.com/games/siete-y-media"
+        ]
+      }
+    }
+  ],
+  "research": {
+    "text": "Both indexed sources provide complete rule sets for two traditional Latin American card games that are not on the exclusion list. Cuarenta is documented in three sources (indexes 0‑2) with clear instructions on deck composition, dealing, special scoring (ronda, four‑of‑a‑kind), regular scoring by captured cards and win condition. Siete y Media is covered in three sources (indexes 3‑5) describing its 40‑card deck, turn‑order, drawing rules, point values, scoring and termination. No other indexed material describes a full, self‑contained variant, so only these two games qualify.",
+    "sources": [
+      {
+        "title": "How To Play Cuarenta - Ecuador's Favorite Card Game",
+        "url": "https://itchyfeetonthecheap.com/2020/04/16/how-to-play-cuarenta-ecuadors-favorite-card-game"
+      },
+      {
+        "title": "Cuarenta: card game rules",
+        "url": "https://www.pagat.com/fishing/cuarenta.html"
+      },
+      {
+        "title": "Cuarenta Rules – Compelte Guide to Setup, Gameplay, & Winning Strategies",
+        "url": "https://officialgamerules.org?p=8344"
+      },
+      {
+        "title": "7 ½ ITALIAN BLACK JACK - HOW TO PLAY - Sette e Mezzo (Siete y Media) LONGER VIDEO",
+        "url": "https://www.youtube.com/watch?v=VGW7SZbKxXI"
+      },
+      {
+        "title": "Siete y Medio (Seven and a Half) Game - Wizard of Vegas",
+        "url": "https://wizardofvegas.com/forum/gambling/tables/7393-siete-y-medio-seven-and-a-half-game"
+      },
+      {
+        "title": "Siete y Media - Games - Wizard of Odds",
+        "url": "https://wizardofodds.com/games/siete-y-media"
+      }
+    ]
+  }
+}
