@@ -3,7 +3,7 @@
   "startStepId": "que-llamamos-ia",
   "learnerContext": "El punto de partida es el uso práctico de asistentes de programación. Interesan las diferencias observables entre modelos, la consulta de documentos, las herramientas y los agentes, y cómo verificar las respuestas.",
   "cursor": {
-    "lastLessonId": "ec5d3947-bc68-4501-9cba-65cf377eaab5",
-    "nextStepId": "contexto-historial-y-memoria"
+    "lastLessonId": "c9507b32-9856-47e5-bb31-c0d00b92c5e7",
+    "nextStepId": "elegir-otro-modelo"
   }
 }

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "afterStepId": "siete-y-media",
+  "generatedAt": "2026-11-24T13:27:55.621Z",
+  "steps": [
+    {
+      "id": "macau",
+      "unitId": "juegos-del-mundo",
+      "topicId": "macau",
+      "title": "Macau",
+      "objective": "Be the first player to reach the target score (typically 500 points) by shedding cards and accumulating penalty points from opponents' hands.",
+      "brief": "Players: 2‑10 (2‑4 use a single 52‑card deck; larger groups may add decks). Deck: standard 52 cards, twos through aces; no jokers. No cards are removed. Deal: each player receives 5 cards (2‑4 players) or more if multiple decks are used. The remaining deck is shuffled, cut, and the cut card starts the discard pile (if it is an action card it is returned and the next card turned up). Play proceeds clockwise. Turn sequence: on a turn a player may play one card unless it is a 5, in which case they may immediately play a second card on top of the 5. Aces and Queens are wild and may be played at any time; a Queen changes the current suit to its suit, an Ace lets the player declare any suit. Penalties: playing a 2 forces the next player to draw 2 cards unless they also play a 2; playing a 3 forces the next player to draw 3 unless they also play a 3; playing the King of Hearts forces the next player to draw 5 cards. After playing, the player may discard any matching‑suit card if they have one, otherwise they draw from the stock. Scoring: when a round ends (stock depleted), each player tallies points in hand: 4‑9 =5 pts, 10s & face cards =10 pts, 2s =20 pts, 3s =30 pts, Aces =50 pts, King of Hearts =150 pts. Points are added to the player’s cumulative total. End condition: the first player whose cumulative total reaches or exceeds 500 points wins the match.\nVariante y reglas investigadas para este paso. Fuentes: https://en.wikipedia.org/wiki/Macau_(card_game) ; https://gambiter.com/cards/Macau_card_game.html. Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "macau",
+        "aliases": [
+          "Macao"
+        ],
+        "sources": [
+          "https://en.wikipedia.org/wiki/Macau_(card_game)",
+          "https://gambiter.com/cards/Macau_card_game.html"
+        ]
+      }
+    },
+    {
+      "id": "go-fish",
+      "unitId": "juegos-del-mundo",
+      "topicId": "go-fish",
+      "title": "Go Fish",
+      "objective": "Collect the most complete sets of four cards (books) before the game ends.",
+      "brief": "Players: 2‑4 (the rules cover 2‑3 players with 7 cards each, or 4 players with 5 cards each). Deck: standard 52‑card deck, no cards removed. Deal: each player receives 5 cards (4‑player game) or 7 cards (2‑3 players). The remaining cards form the \"pond\" facedown. Play proceeds clockwise. Turn sequence: on a turn a player selects another player and asks for a specific rank (e.g., \"Do you have any threes?\"). If the asked player holds one or more cards of that rank, they must surrender all of them; the asker then gets another turn. If the asked player has none, they say \"Go fish\" and the asker draws the top card of the pond. If the drawn card matches the requested rank, the asker shows it and gets another turn; otherwise turn passes. When a player collects all four cards of a rank, they immediately lay the book face‑up and score one point. Scoring: each completed book counts as one point. End condition: the game ends when a player empties their hand or the pond is exhausted; the player with the highest point total (most books) wins.\nVariante y reglas investigadas para este paso. Fuentes: https://worldofcardgames.com/go-fish ; https://www.youtube.com/watch?v=hRpXLSMdve0 ; https://cms5.revize.com/revize/chemungcounty/go%20fish%20card%20game%20pdf.pdf. Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "go-fish",
+        "aliases": [
+          "GoFish"
+        ],
+        "sources": [
+          "https://worldofcardgames.com/go-fish",
+          "https://www.youtube.com/watch?v=hRpXLSMdve0",
+          "https://cms5.revize.com/revize/chemungcounty/go%20fish%20card%20game%20pdf.pdf"
+        ]
+      }
+    }
+  ],
+  "research": {
+    "text": "Both Macau and Go Fish are long‑standing, non‑gambling card games that can be taught solely from the indexed excerpts. Macau is a shedding game where players discard cards, trigger draw penalties, and score points from the cards left in opponents' hands; the first player to reach a target score (commonly 500) wins. Go Fish is a matching/fishing game in which players ask opponents for ranks, collect complete sets of four cards (books), and the player with the most books when the hand or deck is exhausted wins. The sources provide complete rules, deck composition, turn order, legal actions, scoring, and end‑game conditions, allowing full instructional coverage without external references.",
+    "sources": [
+      {
+        "title": "Macau (card game) - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Macau_(card_game)"
+      },
+      {
+        "title": "1995",
+        "url": "https://www.icm.gov.mo/rc/viewer/20023/1083"
+      },
+      {
+        "title": "Macau - card game - Rules and strategy of card games",
+        "url": "https://gambiter.com/cards/Macau_card_game.html"
+      },
+      {
+        "title": "Go Fish - Online & Free | Play Classic Card Games",
+        "url": "https://worldofcardgames.com/go-fish"
+      },
+      {
+        "title": "How to play Go Fish (Card Game)",
+        "url": "https://www.youtube.com/watch?v=hRpXLSMdve0"
+      },
+      {
+        "title": "Go Fish Card Game PDF",
+        "url": "https://cms5.revize.com/revize/chemungcounty/go%20fish%20card%20game%20pdf.pdf"
+      }
+    ]
+  }
+}
