@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "afterStepId": "go-fish",
+  "generatedAt": "2026-11-26T12:05:06.365Z",
+  "steps": [
+    {
+      "id": "euchre",
+      "unitId": "juegos-del-mundo",
+      "topicId": "euchre",
+      "title": "Euchre",
+      "objective": "Win at least three of the five tricks in a hand to earn points and ultimately reach the target score before the opponents do.",
+      "brief": "Four players sit in two partnerships opposite each other. A 24‑card deck (9,10,J,Q,K,A of each suit) is used; cards 2‑8 are excluded. The dealer shuffles, the player to the dealer's right cuts, then deals five cards to each player in two‑three or three‑two batches. The remaining four cards form the kitty; the top card is turned face up as the trump candidate. Starting with the player left of dealer, each may accept the turned‑up card as trump (ordering up) and the dealer picks it up, discarding a card, or may pass. If all pass, a second round of trump calling occurs where any suit may be named or the hand may be passed again (stick the dealer optional). A player may declare “going alone,” discarding their partner’s hand for that hand. Play proceeds for five tricks: the leader plays any card, followers must follow suit if able; if unable, they may play any card, with the highest card of the led suit winning unless a trump is played, in which case the highest trump wins. The left bower (Jack of the same colour as trump) is the second‑highest trump, right bower (Jack of trump suit) highest. The winner of each trick leads the next. After all tricks, scoring is applied: the maker’s team (who called trump) scores 1 point for taking 3 or 4 tricks, 2 points for all 5, and 4 points if they went alone and swept all 5. If the maker fails to take at least 3 tricks they are euchred; the defending team scores 2 points (or 1 each if tied). The game continues hand after hand until a team reaches 10 points (or 11 per some variations).\nVariante y reglas investigadas para este paso. Fuentes: https://www.worldeuchrefederation.com/how-to-play-euchre ; https://chicagosocial.com/euchre-rules ; https://en.wikipedia.org/wiki/Euchre. Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "euchre",
+        "aliases": [
+          "Euchre",
+          "American Euchre"
+        ],
+        "sources": [
+          "https://www.worldeuchrefederation.com/how-to-play-euchre",
+          "https://chicagosocial.com/euchre-rules",
+          "https://en.wikipedia.org/wiki/Euchre"
+        ]
+      }
+    }
+  ],
+  "research": {
+    "text": "The three indexed sources give a coherent, complete description of Euchre, a traditional four‑player partnership trick‑taking game played with a 24‑card deck. They cover deck composition, dealing, trump selection (including ordering up and going alone), the five‑trick play, scoring rules and the win‑condition, enabling a full rule set to be compiled from them alone.",
+    "sources": [
+      {
+        "title": "How to Play Euchre — World Euchre Federation",
+        "url": "https://www.worldeuchrefederation.com/how-to-play-euchre"
+      },
+      {
+        "title": "Euchre Rules | Chicago Sport and Social Club",
+        "url": "https://chicagosocial.com/euchre-rules"
+      },
+      {
+        "title": "Euchre - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Euchre"
+      }
+    ]
+  }
+}
