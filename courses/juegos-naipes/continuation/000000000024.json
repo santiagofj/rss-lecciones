@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "afterStepId": "euchre",
+  "generatedAt": "2026-11-27T11:56:59.870Z",
+  "steps": [
+    {
+      "id": "jass",
+      "unitId": "juegos-del-mundo",
+      "topicId": "jass",
+      "title": "Jass (Suiza)",
+      "objective": "Ser la primera pareja en alcanzar la puntuación objetivo acumulando puntos de trucos y de melds.",
+      "brief": "Se juega con una baraja suiza de 36 cartas (6‑A). Cuatro jugadores forman dos parejas sentadas frente a frente. Cada ronda comienza con el reparto de 9 cartas a cada jugador en paquetes de tres. El jugador a la derecha del repartidor (forehand) elige el contrato o \"schiebt\" una vez al compañero. El contrato fija el palo de triunfo. Se juega en sentido antihorario; cada jugador debe seguir el palo liderado y, si no posee, debe triunfar si puede. Los puntos de cada carta (A=11, 10=10, K=4, Q=3, J=2, 9‑6=0) y los melds (p.ej., K+Q de triunfo = 20) se anotan. El último truco vale 10 puntos, sumando 157 puntos por partida. El juego continúa hasta que una pareja supera el umbral fijado (1000 o 2500 puntos) y se declara ganadora.\nVariante y reglas investigadas para este paso. Fuentes: https://jasvel.org/rules/how-to-play-jass ; https://www.gemopedia.online/sports/jass ; https://en.wikipedia.org/wiki/Jass. Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "jass",
+        "aliases": [
+          "Jass",
+          "Swiss Jass"
+        ],
+        "sources": [
+          "https://jasvel.org/rules/how-to-play-jass",
+          "https://www.gemopedia.online/sports/jass",
+          "https://en.wikipedia.org/wiki/Jass"
+        ]
+      }
+    },
+    {
+      "id": "belot",
+      "unitId": "juegos-del-mundo",
+      "topicId": "belot",
+      "title": "Belot (Francia)",
+      "objective": "Alcanzar 500 puntos o más capturando trucos y combinaciones antes que el rival.",
+      "brief": "Se utiliza una baraja de 28 cartas (8‑A de los cuatro palos). Dos jugadores forman parejas opuestas. El repartidor entrega cinco cartas a cada jugador, voltea una carta que define el palo de triunfo y entrega al que la tomó dos cartas adicionales; el rival recibe tres cartas más y se voltea otra carta que sólo sirve de información. El jugador no repartidor lidera el primer truco; los oponentes deben seguir el palo y, si no pueden, deben triunfar. El orden de triunfo es J > 9 > A > 10 > K > Q > 8; en otros palos el orden es A > 10 > K > Q > J > 9 > 8. Cada carta vale puntos (A=11, 10=10, K=4, Q=3, J=2, demás=0). Se anotan puntos por trucos, combinaciones y el último truco. El primero que alcance o supere 500 puntos gana la partida.\nVariante y reglas investigadas para este paso. Fuentes: https://www.cs.montana.edu/paxton/tutorial/belot.htm ; https://www.nhfournier.es/en/como-jugar/belote. Enseñar sólo este juego, sin inventar próximos títulos.",
+      "game": {
+        "key": "belot",
+        "aliases": [
+          "Belot",
+          "Color Belot"
+        ],
+        "sources": [
+          "https://www.cs.montana.edu/paxton/tutorial/belot.htm",
+          "https://www.nhfournier.es/en/como-jugar/belote"
+        ]
+      }
+    }
+  ],
+  "research": {
+    "text": "A partir de los cinco documentos indexados se describen dos juegos de naipes tradicionales de Europa central: el Jass suizo, con su sistema de contratos, melds y puntuación por trucos, y el Belot francés, que emplea una baraja de 28 cartas y combina la elección de triunfo con la captura de trucos y la puntuación de combinaciones. Ambas variantes son jugadas por parejas, usan barajas estándar sin comodines y se ganan al alcanzar un umbral de puntos predeterminado.",
+    "sources": [
+      {
+        "title": "Jass Rules Explained: Deal, Tricks and Scoring",
+        "url": "https://jasvel.org/rules/how-to-play-jass"
+      },
+      {
+        "title": "Jass — how it works, rules, scoring & terminology | Gemopedia",
+        "url": "https://www.gemopedia.online/sports/jass"
+      },
+      {
+        "title": "Jass - Wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Jass"
+      },
+      {
+        "title": "Clobyosh / Bela - card game rules",
+        "url": "https://www.pagat.com/jass/bela.html"
+      },
+      {
+        "title": "Belot Rules",
+        "url": "https://www.cs.montana.edu/paxton/tutorial/belot.htm"
+      },
+      {
+        "title": "How to play Belote: card game instructions",
+        "url": "https://www.nhfournier.es/en/como-jugar/belote"
+      }
+    ]
+  }
+}
